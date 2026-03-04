@@ -20,13 +20,13 @@ export default function CommunityPage() {
       />
 
       {/* ADDress Partnership */}
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4">
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-4">
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
               ADDressとの連携
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <ScrollReveal direction="left">
@@ -41,7 +41,7 @@ export default function CommunityPage() {
               </div>
             </ScrollReveal>
             <ScrollReveal direction="right" delay={0.2}>
-              <div className="text-haicha text-lg leading-relaxed space-y-4">
+              <div className="text-haicha text-lg leading-loose space-y-4">
                 <p>
                   多拠点生活の中で出会った2人の創業者が、
                   「旅するようにコーヒーと出会う場所」を作りたいと始めた焙煎所です。
@@ -56,7 +56,7 @@ export default function CommunityPage() {
       </section>
 
       {/* Member Registration */}
-      <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">
+      <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <ScrollReveal>
             <h2 className="font-serif text-2xl md:text-3xl text-konsumi mb-4">

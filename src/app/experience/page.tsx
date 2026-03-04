@@ -49,14 +49,14 @@ export default function ExperiencePage() {
       />
 
       {/* Flow */}
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-5xl mx-auto px-4">
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-4">
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
               体験の流れ
             </h2>
             <p className="text-center text-haicha mb-2">約90分</p>
-            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
           <div className="space-y-0">
             {steps.map((step, i) => (
@@ -65,7 +65,7 @@ export default function ExperiencePage() {
                 direction={i % 2 === 0 ? "left" : "right"}
                 delay={i * 0.08}
               >
-                <div className="flex items-start gap-8 py-8 border-b border-usuzumi last:border-b-0">
+                <div className="flex items-start gap-8 py-10 border-b border-usuzumi last:border-b-0">
                   <span className="text-3xl font-serif text-gold/40 font-bold flex-shrink-0 w-12">
                     {step.num}
                   </span>
@@ -73,7 +73,7 @@ export default function ExperiencePage() {
                     <h3 className="font-serif text-lg font-bold text-konsumi mb-2">
                       {step.title}
                     </h3>
-                    <p className="text-haicha leading-relaxed">{step.text}</p>
+                    <p className="text-haicha leading-loose">{step.text}</p>
                   </div>
                 </div>
               </ScrollReveal>
@@ -83,7 +83,7 @@ export default function ExperiencePage() {
       </section>
 
       {/* Plans */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
+      <section className="relative py-32 md:py-44 overflow-hidden">
         <Image
           src="/images/experience/interior.jpg"
           alt=""
@@ -92,23 +92,23 @@ export default function ExperiencePage() {
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-black/70" />
-        <div className="relative z-10 max-w-4xl mx-auto px-4">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-white mb-4">
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-white mb-6">
               プラン・料金
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-10">
             <ScrollReveal direction="left">
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 p-8 rounded-lg text-center">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 p-10 rounded-lg text-center">
                 <p className="text-sm tracking-[0.3em] text-white/50 mb-3">ROASTING</p>
                 <h3 className="font-serif text-xl font-bold text-white mb-4">
                   焙煎体験コース
                 </h3>
                 <p className="text-3xl font-bold text-gold mb-2">¥3,500〜</p>
                 <p className="text-xs text-white/50 mb-6">（税込 / 1名）</p>
-                <ul className="text-sm text-white/70 space-y-3 text-left">
+                <ul className="text-sm text-white/70 space-y-4 text-left">
                   <li className="flex items-center gap-3">
                     <span className="w-4 h-px bg-gold" />所要約90分
                   </li>
@@ -128,14 +128,14 @@ export default function ExperiencePage() {
               </div>
             </ScrollReveal>
             <ScrollReveal direction="right">
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 p-8 rounded-lg text-center">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 p-10 rounded-lg text-center">
                 <p className="text-sm tracking-[0.3em] text-white/50 mb-3">TOUR</p>
                 <h3 className="font-serif text-xl font-bold text-white mb-4">
                   見学コース
                 </h3>
                 <p className="text-3xl font-bold text-gold mb-2">¥1,000</p>
                 <p className="text-xs text-white/50 mb-6">（税込 / 1名）</p>
-                <ul className="text-sm text-white/70 space-y-3 text-left">
+                <ul className="text-sm text-white/70 space-y-4 text-left">
                   <li className="flex items-center gap-3">
                     <span className="w-4 h-px bg-gold" />所要約45分
                   </li>
@@ -156,14 +156,14 @@ export default function ExperiencePage() {
       </section>
 
       {/* Reservation CTA */}
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-2xl mx-auto px-4 text-center">
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-2xl mx-auto px-4 md:px-8 text-center">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-konsumi mb-4">
+            <h2 className="font-serif text-2xl md:text-3xl text-konsumi mb-6">
               ご予約
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-8" />
-            <p className="text-haicha mb-8 leading-relaxed">
+            <div className="w-16 h-px bg-gold mx-auto mb-12" />
+            <p className="text-haicha mb-12 leading-loose">
               完全予約制・少人数制です。
               <br />
               予約フォームは準備中です。お問い合わせからご連絡ください。

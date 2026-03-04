@@ -12,7 +12,7 @@ interface PageHeroProps {
 
 export function PageHero({ title, subtitle, description, image }: PageHeroProps) {
   return (
-    <section className="relative py-24 md:py-36 overflow-hidden">
+    <section className="relative py-32 md:py-44 overflow-hidden">
       {image ? (
         <>
           <Image
@@ -33,7 +33,7 @@ export function PageHero({ title, subtitle, description, image }: PageHeroProps)
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-sm tracking-[0.3em] text-white/60 mb-4"
+          className="text-sm tracking-[0.3em] text-white/60 mb-6"
         >
           {title}
         </motion.p>
@@ -41,7 +41,7 @@ export function PageHero({ title, subtitle, description, image }: PageHeroProps)
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="font-serif text-3xl md:text-5xl font-bold text-white mb-4"
+          className="font-serif text-3xl md:text-5xl font-bold text-white mb-6"
         >
           {subtitle}
         </motion.h1>
@@ -50,7 +50,7 @@ export function PageHero({ title, subtitle, description, image }: PageHeroProps)
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-white/70 leading-relaxed max-w-2xl mx-auto text-lg"
+            className="text-white/70 leading-loose max-w-2xl mx-auto text-lg"
           >
             {description}
           </motion.p>

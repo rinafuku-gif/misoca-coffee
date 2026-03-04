@@ -8,6 +8,7 @@ const navGroups = [
     label: "体験する",
     items: [
       { href: "/experience", label: "焙煎体験・見学予約" },
+      { href: "/mobile-roasting", label: "出張焙煎体験" },
       { href: "/catering", label: "ケータリング" },
     ],
   },
@@ -23,7 +24,6 @@ const navGroups = [
     label: "コーヒーを買う",
     items: [
       { href: "/menu", label: "メニュー" },
-      { href: "/subscription", label: "定期便" },
     ],
   },
   {

@@ -54,16 +54,16 @@ export default function Home() {
       <HeroSlideshow />
 
       {/* Features Section - Photo-centric with slide-in animations */}
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4">
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-4">
+            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               三十日珈琲でできること
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
 
-          <div className="space-y-24 md:space-y-32">
+          <div className="space-y-32 md:space-y-44">
             {features.map((feature, i) => (
               <div
                 key={feature.title}
@@ -90,13 +90,13 @@ export default function Home() {
                   delay={0.2}
                   className="w-full md:w-2/5"
                 >
-                  <span className="text-sm tracking-[0.3em] text-gold font-medium mb-6 block">
+                  <span className="text-sm tracking-[0.3em] text-gold font-medium mb-8 block">
                     {feature.label}
                   </span>
-                  <h3 className="font-serif text-2xl md:text-3xl font-bold text-konsumi mb-4">
+                  <h3 className="font-serif text-2xl md:text-3xl font-bold text-konsumi mb-6">
                     {feature.title}
                   </h3>
-                  <p className="text-haicha text-lg leading-relaxed">
+                  <p className="text-haicha text-lg leading-loose">
                     {feature.description}
                   </p>
                 </ScrollReveal>
@@ -107,7 +107,7 @@ export default function Home() {
       </section>
 
       {/* Experience CTA - Full-width photo background */}
-      <section className="relative py-32 md:py-40 overflow-hidden">
+      <section className="relative py-36 md:py-48 overflow-hidden">
         <Image
           src="/images/experience/interior.jpg"
           alt="古民家の内部"
@@ -121,10 +121,10 @@ export default function Home() {
             <p className="text-sm tracking-[0.3em] text-white/60 mb-4">
               EXPERIENCE
             </p>
-            <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6">
+            <h2 className="font-serif text-3xl md:text-5xl font-bold mb-8">
               焙煎体験・見学のご予約
             </h2>
-            <p className="text-lg text-white/80 mb-8 leading-relaxed">
+            <p className="text-lg text-white/80 mb-10 leading-loose">
               生豆の選別から焙煎、ドリップまで。
               <br />
               あなただけのコーヒーを、古民家で仕上げる特別な時間。
@@ -147,20 +147,20 @@ export default function Home() {
       </section>
 
       {/* Pickup Menu - Photo cards with hover effects */}
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4">
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-4">
+            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               今月のおすすめ
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-10 md:gap-12">
             {pickupMenus.map((item, i) => (
               <ScrollReveal key={item.name} direction="up" delay={i * 0.15}>
                 <div className="group cursor-pointer">
-                  <div className="relative aspect-square rounded-lg overflow-hidden shadow-lg mb-6">
+                  <div className="relative aspect-square rounded-lg overflow-hidden shadow-lg mb-8">
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -170,10 +170,10 @@ export default function Home() {
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
                   </div>
-                  <h3 className="font-serif text-lg font-bold text-konsumi mb-2">
+                  <h3 className="font-serif text-lg font-bold text-konsumi mb-3">
                     {item.name}
                   </h3>
-                  <p className="text-sm text-haicha mb-3">
+                  <p className="text-sm text-haicha mb-4 leading-relaxed">
                     {item.description}
                   </p>
                   <p className="font-bold text-karekusa text-lg">
@@ -185,7 +185,7 @@ export default function Home() {
           </div>
 
           <ScrollReveal delay={0.4}>
-            <div className="text-center mt-12">
+            <div className="text-center mt-16">
               <Link
                 href="/menu"
                 className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-10 py-4 rounded font-medium transition-all duration-300"
@@ -197,59 +197,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Subscription CTA - Dark section with background texture */}
-      <section className="relative py-32 md:py-40 bg-konsumi overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <Image
-            src="/images/hero/hero-2.jpg"
-            alt=""
-            fill
-            className="object-cover"
-            sizes="100vw"
-          />
-        </div>
-        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
-          <ScrollReveal>
-            <p className="text-sm tracking-[0.3em] text-white/50 mb-4">
-              SUBSCRIPTION
-            </p>
-            <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6">
-              毎月届く、
-              <br className="md:hidden" />
-              上野原からの手紙。
-            </h2>
-            <p className="text-lg text-white/70 mb-8 leading-relaxed">
-              焙煎したてのコーヒーと、
-              <br />
-              里山の暮らしの便り。
-            </p>
-          </ScrollReveal>
-          <ScrollReveal delay={0.2}>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center text-sm text-white/60 mb-10">
-              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />焙煎から3日以内に発送</span>
-              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />焙煎所からの近況レター同封</span>
-              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />いつでもスキップ・解約OK</span>
-            </div>
-            <p className="text-2xl font-bold mb-8">
-              月額 ¥2,980〜
-              <span className="text-sm font-normal text-white/60 ml-2">
-                （税・送料込）
-              </span>
-            </p>
-            <Link
-              href="/subscription"
-              className="inline-block bg-gold hover:bg-gold-dark text-white px-10 py-4 rounded text-lg font-medium transition-colors"
-            >
-              定期便プランを見る
-            </Link>
-          </ScrollReveal>
-        </div>
-      </section>
-
       {/* Catering - Photo split layout */}
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-center">
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="flex flex-col md:flex-row gap-10 md:gap-20 items-center">
             <ScrollReveal direction="left" className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-xl">
                 <Image
@@ -265,12 +216,12 @@ export default function Home() {
               <p className="text-sm tracking-[0.3em] text-haicha mb-4">
                 CATERING
               </p>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-konsumi mb-6">
+              <h2 className="font-serif text-3xl md:text-4xl font-bold text-konsumi mb-8">
                 イベント・企業向け
                 <br />
                 出張珈琲
               </h2>
-              <p className="text-haicha text-lg leading-relaxed mb-8">
+              <p className="text-haicha text-lg leading-loose mb-10">
                 お客様のイベントに焙煎士が伺い、
                 その場で淹れたてのコーヒーをご提供します。
               </p>
@@ -286,18 +237,18 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 md:py-32 bg-tsuchikabe overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4">
+      <section className="py-32 md:py-44 bg-tsuchikabe overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-4">
+            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               訪れた方の声
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
 
-          <div className="space-y-8">
+          <div className="space-y-10">
             <ScrollReveal direction="left">
-              <blockquote className="bg-white p-8 md:p-10 rounded-lg shadow-sm border-l-4 border-gold">
+              <blockquote className="bg-white p-10 md:p-12 rounded-lg shadow-sm border-l-4 border-gold">
                 <p className="text-lg text-sumi leading-relaxed mb-4 font-serif italic">
                   &ldquo;東京から1時間で、まるで別世界。古民家で自分で焙煎したコーヒーは格別でした。&rdquo;
                 </p>
@@ -307,7 +258,7 @@ export default function Home() {
               </blockquote>
             </ScrollReveal>
             <ScrollReveal direction="right">
-              <blockquote className="bg-white p-8 md:p-10 rounded-lg shadow-sm border-l-4 border-gold">
+              <blockquote className="bg-white p-10 md:p-12 rounded-lg shadow-sm border-l-4 border-gold">
                 <p className="text-lg text-sumi leading-relaxed mb-4 font-serif italic">
                   &ldquo;ADDressで知って訪問。後藤さん・稲福さんのお話が面白くて、毎月通いたくなります。&rdquo;
                 </p>
@@ -321,13 +272,13 @@ export default function Home() {
       </section>
 
       {/* Instagram Section */}
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4">
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-4">
+            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               @misoca_coffee
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
 
           <ScrollReveal delay={0.2}>
@@ -348,7 +299,7 @@ export default function Home() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.4}>
-            <div className="text-center mt-10">
+            <div className="text-center mt-14">
               <a
                 href="https://instagram.com/misoca_coffee"
                 target="_blank"

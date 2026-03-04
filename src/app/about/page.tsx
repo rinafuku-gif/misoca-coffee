@@ -19,13 +19,13 @@ export default function AboutPage() {
       />
 
       {/* Brand Name Origin */}
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-3xl mx-auto px-4">
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-3xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-4">
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
               「三十日」の由来
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-12" />
+            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
             <div className="text-center text-haicha text-lg leading-loose">
@@ -43,15 +43,15 @@ export default function AboutPage() {
       </section>
 
       {/* Founders Story */}
-      <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">
-        <div className="max-w-5xl mx-auto px-4">
+      <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-4">
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
               2人の出会い
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
+          <div className="grid md:grid-cols-2 gap-10 mb-12">
             <ScrollReveal direction="left">
               <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-xl">
                 <Image
@@ -76,7 +76,7 @@ export default function AboutPage() {
             </ScrollReveal>
           </div>
           <ScrollReveal>
-            <p className="text-center text-haicha leading-relaxed max-w-2xl mx-auto">
+            <p className="text-center text-haicha leading-loose max-w-2xl mx-auto">
               ※実際のインタビュー・コンセプトブックの内容をもとに、2人の出会い、
               コーヒーへの想い、なぜ上野原を選んだか、ADDressとの関わりなどの
               リアルストーリーを掲載予定。
@@ -86,13 +86,13 @@ export default function AboutPage() {
       </section>
 
       {/* The House */}
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-5xl mx-auto px-4">
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-4">
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
               築300年の古民家
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
           <ScrollReveal direction="up">
             <div className="relative aspect-video rounded-lg overflow-hidden shadow-xl mb-12">
@@ -118,7 +118,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
+      <section className="relative py-32 md:py-44 overflow-hidden">
         <Image
           src="/images/about/kominka.jpg"
           alt=""
@@ -127,12 +127,12 @@ export default function AboutPage() {
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-black/70" />
-        <div className="relative z-10 max-w-4xl mx-auto px-4">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-white mb-4">
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-white mb-6">
               3つの約束
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
           <div className="space-y-12">
             {[
@@ -160,7 +160,7 @@ export default function AboutPage() {
                   <p className="text-gold font-bold text-xl mb-2">
                     {value.num}. {value.title}
                   </p>
-                  <p className="text-white/80 leading-relaxed text-lg">
+                  <p className="text-white/80 leading-loose text-lg">
                     {value.text}
                   </p>
                 </div>

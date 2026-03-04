@@ -31,6 +31,12 @@ body {
   background: var(--color-kominka-white);
   color: var(--color-sumi);
   font-family: var(--font-sans);
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+p {
+  line-height: 2;
 }
 
 h1, h2, h3 {

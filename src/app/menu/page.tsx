@@ -64,9 +64,9 @@ export default function MenuPage() {
         image="/images/menu/ethiopia.jpg"
       />
 
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 md:px-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
             {products.map((product, i) => (
               <ScrollReveal key={product.name} direction="up" delay={i * 0.1}>
                 <div className="group bg-white rounded-lg overflow-hidden shadow-sm">
@@ -80,7 +80,7 @@ export default function MenuPage() {
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
                   </div>
-                  <div className="p-6">
+                  <div className="p-8">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-xs border border-karekusa/30 text-karekusa px-2 py-1 rounded">
                         {product.roast}

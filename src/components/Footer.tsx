@@ -5,6 +5,7 @@ const footerLinks = [
     title: "体験する",
     links: [
       { href: "/experience", label: "焙煎体験・見学予約" },
+      { href: "/mobile-roasting", label: "出張焙煎体験" },
       { href: "/catering", label: "ケータリング依頼" },
     ],
   },
@@ -21,7 +22,6 @@ const footerLinks = [
     title: "コーヒーを買う",
     links: [
       { href: "/menu", label: "メニュー" },
-      { href: "/subscription", label: "定期便" },
     ],
   },
   {
@@ -42,8 +42,8 @@ const legalLinks = [
 export function Footer() {
   return (
     <footer className="bg-konsumi text-white">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand */}
           <div className="lg:col-span-1">
             <p className="font-serif text-xl font-bold mb-3">三十日珈琲</p>
@@ -76,7 +76,7 @@ export function Footer() {
         </div>
 
         {/* Legal & Copyright */}
-        <div className="mt-10 pt-6 border-t border-white/20">
+        <div className="mt-14 pt-8 border-t border-white/20">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex flex-wrap gap-4">
               {legalLinks.map((link) => (
