@@ -1,14 +1,9 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { PageHero } from "@/components/PageHero";
 import { ScrollReveal } from "@/components/ScrollReveal";
-
-export const metadata: Metadata = {
-  title: "ケータリング・出張珈琲",
-  description:
-    "三十日珈琲の焙煎士がイベントに伺い、その場で淹れたてのコーヒーをご提供。結婚式、企業イベント、マルシェなど。",
-};
 
 const scenes = [
   {
@@ -16,24 +11,28 @@ const scenes = [
     title: "ウェディング・パーティー",
     description:
       "大切なゲストに、焙煎士が一杯ずつ心を込めてお淹れします。新郎新婦のオリジナルブレンドもご用意可能。",
+    image: "/images/catering/event.jpg",
   },
   {
     label: "CORPORATE",
     title: "企業イベント・展示会",
     description:
       "来場者の記憶に残る特別な体験を。ブースでの焙煎デモンストレーションは集客力も抜群です。",
+    image: "/images/catering/event.jpg",
   },
   {
     label: "MARCHÉ",
     title: "マルシェ・フェスティバル",
     description:
       "屋外イベントにも対応。目の前で豆を挽き、淹れる臨場感が、お客様との会話を生みます。",
+    image: "/images/catering/event.jpg",
   },
   {
     label: "PRIVATE",
     title: "プライベートパーティー",
     description:
       "ご自宅やレンタルスペースでの少人数の集まりにも。ゲストと一緒に焙煎を楽しむ演出もおすすめです。",
+    image: "/images/catering/event.jpg",
   },
 ];
 
@@ -106,7 +105,7 @@ const flow = [
 const faqs = [
   {
     q: "対応エリアはどこですか？",
-    a: "山梨県・東京都・神奈川県が基本エリアです。その他の地域も交通費のご相談で対応可能です。",
+    a: "山梨県上野原市（全域）、相模原市緑区（藤野エリア周辺）、山梨県大月市（市内中心部・近隣）が基本エリアです。その他の近隣エリアも柔軟に対応いたしますので、お気軽にご相談ください。",
   },
   {
     q: "何日前までに依頼すればいいですか？",
@@ -136,23 +135,26 @@ export default function CateringPage() {
         image="/images/catering/event.jpg"
       />
 
-      {/* Introduction */}
+      {/* Introduction - Top page style split layout */}
       <section className="py-32 md:py-44 overflow-hidden">
-        <div className="max-w-5xl mx-auto px-4 md:px-8">
-          <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
-            <ScrollReveal direction="left">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="flex flex-col md:flex-row gap-10 md:gap-20 items-center">
+            <ScrollReveal direction="left" className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-xl">
                 <Image
                   src="/images/catering/event.jpg"
                   alt="ケータリング提供風景"
                   fill
-                  className="object-cover"
+                  className="object-cover hover:scale-105 transition-transform duration-700"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
             </ScrollReveal>
-            <ScrollReveal direction="right" delay={0.2}>
-              <h2 className="font-serif text-2xl md:text-3xl font-bold text-konsumi mb-8">
+            <ScrollReveal direction="right" delay={0.2} className="w-full md:w-1/2">
+              <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
+                CATERING
+              </p>
+              <h2 className="font-serif text-3xl md:text-4xl font-bold text-konsumi mb-8">
                 特別な一杯を、
                 <br />
                 あなたの場所で。
@@ -172,47 +174,70 @@ export default function CateringPage() {
         </div>
       </section>
 
-      {/* Use Cases */}
-      <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
-        <div className="max-w-5xl mx-auto px-4 md:px-8">
+      {/* Use Cases - Top page alternating layout style */}
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               ご利用シーン
             </h2>
             <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
 
-          <div className="grid md:grid-cols-2 gap-10">
+          <div className="space-y-32 md:space-y-44">
             {scenes.map((scene, i) => (
-              <ScrollReveal key={scene.title} direction="up" delay={i * 0.1}>
-                <div className="bg-white p-10 rounded-lg shadow-sm">
-                  <p className="text-xs tracking-[0.3em] text-gold mb-4">
+              <div
+                key={scene.title}
+                className={`flex flex-col ${
+                  i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+                } gap-8 md:gap-16 items-center`}
+              >
+                <ScrollReveal
+                  direction={i % 2 === 0 ? "left" : "right"}
+                  className="w-full md:w-3/5"
+                >
+                  <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-xl">
+                    <Image
+                      src={scene.image}
+                      alt={scene.title}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-700"
+                      sizes="(max-width: 768px) 100vw, 60vw"
+                    />
+                  </div>
+                </ScrollReveal>
+                <ScrollReveal
+                  direction={i % 2 === 0 ? "right" : "left"}
+                  delay={0.2}
+                  className="w-full md:w-2/5"
+                >
+                  <span className="text-sm tracking-[0.3em] text-gold font-medium mb-8 block">
                     {scene.label}
-                  </p>
-                  <h3 className="font-serif text-lg font-bold text-konsumi mb-4">
+                  </span>
+                  <h3 className="font-serif text-2xl md:text-3xl font-bold text-konsumi mb-6">
                     {scene.title}
                   </h3>
-                  <p className="text-haicha leading-loose">
+                  <p className="text-haicha text-lg leading-loose">
                     {scene.description}
                   </p>
-                </div>
-              </ScrollReveal>
+                </ScrollReveal>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Plans */}
-      <section className="py-32 md:py-44 overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4 md:px-8">
+      <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               プラン・料金
             </h2>
             <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-10 md:gap-12">
             {plans.map((plan, i) => (
               <ScrollReveal key={plan.name} direction="up" delay={i * 0.15}>
                 <div
@@ -249,15 +274,67 @@ export default function CateringPage() {
           <ScrollReveal delay={0.3}>
             <p className="text-center text-sm text-haicha mt-12">
               ※ 交通費は別途。すべて税別表記です。
-              <br />
-              対応エリア: 山梨県・東京都・神奈川県（その他はご相談ください）
             </p>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* Flow */}
-      <section className="relative py-32 md:py-44 overflow-hidden">
+      {/* Service Area */}
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <ScrollReveal>
+            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+              対応エリア
+            </h2>
+            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
+          </ScrollReveal>
+
+          <div className="grid md:grid-cols-3 gap-10 md:gap-12">
+            <ScrollReveal direction="up" delay={0}>
+              <div className="bg-white p-10 rounded-lg shadow-sm text-center h-full">
+                <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
+                  AREA 01
+                </p>
+                <h3 className="font-serif text-xl font-bold text-konsumi mb-4">
+                  山梨県 上野原市
+                </h3>
+                <p className="text-haicha leading-loose">全域</p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={0.15}>
+              <div className="bg-white p-10 rounded-lg shadow-sm text-center h-full">
+                <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
+                  AREA 02
+                </p>
+                <h3 className="font-serif text-xl font-bold text-konsumi mb-4">
+                  相模原市 緑区
+                </h3>
+                <p className="text-haicha leading-loose">藤野エリア周辺</p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={0.3}>
+              <div className="bg-white p-10 rounded-lg shadow-sm text-center h-full">
+                <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
+                  AREA 03
+                </p>
+                <h3 className="font-serif text-xl font-bold text-konsumi mb-4">
+                  山梨県 大月市
+                </h3>
+                <p className="text-haicha leading-loose">市内中心部・近隣</p>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          <ScrollReveal delay={0.4}>
+            <p className="text-center text-sm text-haicha mt-12">
+              ※ その他の近隣エリアも柔軟に対応いたします。お気軽にご相談ください。
+            </p>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Flow - Full-width photo background like Top page CTA */}
+      <section className="relative py-36 md:py-48 overflow-hidden">
         <Image
           src="/images/catering/event.jpg"
           alt=""
@@ -265,10 +342,13 @@ export default function CateringPage() {
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-black/75" />
+        <div className="absolute inset-0 bg-black/70" />
         <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-white mb-6">
+            <p className="text-sm tracking-[0.3em] text-white/60 text-center mb-4">
+              FLOW
+            </p>
+            <h2 className="font-serif text-3xl md:text-4xl text-center text-white mb-6">
               ご依頼の流れ
             </h2>
             <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
@@ -298,10 +378,10 @@ export default function CateringPage() {
       <section className="py-32 md:py-44 overflow-hidden">
         <div className="max-w-3xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               よくある質問
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
 
           <div className="space-y-5">
@@ -319,15 +399,17 @@ export default function CateringPage() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA - Top page style */}
       <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
-        <div className="max-w-2xl mx-auto px-4 text-center">
+        <div className="max-w-4xl mx-auto px-4 text-center">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-konsumi mb-6">
+            <p className="text-sm tracking-[0.3em] text-haicha mb-4">
+              CONTACT
+            </p>
+            <h2 className="font-serif text-3xl md:text-4xl text-konsumi mb-8">
               お問い合わせ・ご依頼
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-10" />
-            <p className="text-haicha leading-loose mb-12">
+            <p className="text-haicha text-lg leading-loose mb-10">
               イベントの規模やご要望に合わせてご提案いたします。
               <br />
               まずはお気軽にお問い合わせください。
@@ -336,7 +418,7 @@ export default function CateringPage() {
           <ScrollReveal delay={0.2}>
             <Link
               href="/contact"
-              className="inline-block bg-gold hover:bg-gold-dark text-white px-12 py-4 rounded text-lg font-medium transition-colors"
+              className="inline-block bg-gold hover:bg-gold-dark text-white px-10 py-4 rounded text-lg font-medium transition-colors"
             >
               お問い合わせする
             </Link>
