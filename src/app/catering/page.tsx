@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/PageHero";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "ケータリング・出張珈琲",
@@ -33,6 +34,7 @@ export default function CateringPage() {
         title="CATERING"
         subtitle="イベント・企業向け 出張珈琲"
         description="三十日珈琲の焙煎士が、あなたのイベントに伺います。"
+        image="/images/catering/event.jpg"
       />
 
       {/* Service Overview */}

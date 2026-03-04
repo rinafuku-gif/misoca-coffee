@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/PageHero";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "焙煎体験・見学予約",
@@ -43,26 +44,29 @@ export default function ExperiencePage() {
         title="EXPERIENCE"
         subtitle="焙煎体験・見学"
         description="築300年の古民家で、自分だけのコーヒーを焙煎する。"
+        image="/images/experience/roasting.jpg"
       />
 
       {/* Flow */}
-      <section className="py-16 md:py-24">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-12">
-            ── 体験の流れ（約90分） ──
-          </h2>
+          <ScrollReveal>
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-4">
+              体験の流れ（約90分）
+            </h2>
+            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+          </ScrollReveal>
           <div className="grid md:grid-cols-3 gap-6">
-            {steps.map((step) => (
-              <div
-                key={step.num}
-                className="bg-white p-6 rounded-lg text-center shadow-sm"
-              >
-                <p className="text-2xl mb-2">{step.num}</p>
-                <h3 className="font-serif font-bold text-konsumi mb-2">
-                  {step.title}
-                </h3>
-                <p className="text-sm text-haicha">{step.text}</p>
-              </div>
+            {steps.map((step, i) => (
+              <ScrollReveal key={step.num} direction="up" delay={i * 0.1}>
+                <div className="bg-white p-6 rounded-lg text-center shadow-sm">
+                  <p className="text-2xl mb-2">{step.num}</p>
+                  <h3 className="font-serif font-bold text-konsumi mb-2">
+                    {step.title}
+                  </h3>
+                  <p className="text-sm text-haicha">{step.text}</p>
+                </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>

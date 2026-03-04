@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { PageHero } from "@/components/PageHero";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "ブランドストーリー",
@@ -13,75 +15,126 @@ export default function AboutPage() {
       <PageHero
         title="ABOUT"
         subtitle="三十日珈琲のこと"
+        image="/images/about/kominka.jpg"
       />
 
       {/* Brand Name Origin */}
-      <section className="py-16 md:py-24">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-3xl mx-auto px-4">
-          <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-8">
-            ── 「三十日」の由来 ──
-          </h2>
-          <div className="text-center text-haicha leading-loose">
-            <p>コーヒー豆の鮮度は、焙煎から約30日で落ちていきます。</p>
-            <p>そして「三十日（みそか）」は、月の最後の日。</p>
-            <p className="mt-6">30日に一度、会いに来てほしい。</p>
-            <p>焙煎したての一杯と一緒に、</p>
-            <p>この場所で過ごす時間を届けたい。</p>
-            <p className="mt-6">
-              そんな想いを込めて「三十日珈琲」と名付けました。
-            </p>
-          </div>
+          <ScrollReveal>
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-4">
+              「三十日」の由来
+            </h2>
+            <div className="w-16 h-px bg-gold mx-auto mb-12" />
+          </ScrollReveal>
+          <ScrollReveal delay={0.2}>
+            <div className="text-center text-haicha text-lg leading-loose">
+              <p>コーヒー豆の鮮度は、焙煎から約30日で落ちていきます。</p>
+              <p>そして「三十日（みそか）」は、月の最後の日。</p>
+              <p className="mt-8">30日に一度、会いに来てほしい。</p>
+              <p>焙煎したての一杯と一緒に、</p>
+              <p>この場所で過ごす時間を届けたい。</p>
+              <p className="mt-8 font-serif text-konsumi">
+                そんな想いを込めて「三十日珈琲」と名付けました。
+              </p>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* Founders Story */}
-      <section className="bg-tsuchikabe py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-12">
-            ── 2人の出会い ──
-          </h2>
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
-            <div className="bg-white aspect-[3/4] rounded-lg flex items-center justify-center text-haicha text-sm">
-              後藤さん ポートレート写真
-            </div>
-            <div className="bg-white aspect-[3/4] rounded-lg flex items-center justify-center text-haicha text-sm">
-              稲福さん ポートレート写真
-            </div>
+      <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4">
+          <ScrollReveal>
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-4">
+              2人の出会い
+            </h2>
+            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+          </ScrollReveal>
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            <ScrollReveal direction="left">
+              <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-xl">
+                <Image
+                  src="/images/about/founder-1.jpg"
+                  alt="後藤さん"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal direction="right">
+              <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-xl">
+                <Image
+                  src="/images/about/founder-2.jpg"
+                  alt="稲福さん"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+            </ScrollReveal>
           </div>
-          <p className="text-center text-haicha leading-relaxed">
-            ※実際のインタビュー・コンセプトブックの内容をもとに、2人の出会い、
-            コーヒーへの想い、なぜ上野原を選んだか、ADDressとの関わりなどの
-            リアルストーリーを掲載予定。
-          </p>
+          <ScrollReveal>
+            <p className="text-center text-haicha leading-relaxed max-w-2xl mx-auto">
+              ※実際のインタビュー・コンセプトブックの内容をもとに、2人の出会い、
+              コーヒーへの想い、なぜ上野原を選んだか、ADDressとの関わりなどの
+              リアルストーリーを掲載予定。
+            </p>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* The House */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-8">
-            ── 築300年の古民家 ──
-          </h2>
-          <div className="aspect-video bg-tsuchikabe rounded-lg flex items-center justify-center text-haicha text-sm mb-8">
-            古民家の内部写真（梁・柱・自然光）
-          </div>
-          <div className="text-center text-haicha leading-loose">
-            <p>山梨県上野原市。東京から約1時間の里山に、</p>
-            <p>築300年を超える古民家があります。</p>
-            <p className="mt-4">かつて地域の人々が集った場所を、</p>
-            <p>コーヒーを通じて「みんなの焙煎所」として再生。</p>
-            <p>古い梁の下で、焙煎機の音と香りが広がります。</p>
-          </div>
+      <section className="py-24 md:py-32 overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4">
+          <ScrollReveal>
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-4">
+              築300年の古民家
+            </h2>
+            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+          </ScrollReveal>
+          <ScrollReveal direction="up">
+            <div className="relative aspect-video rounded-lg overflow-hidden shadow-xl mb-12">
+              <Image
+                src="/images/about/house-interior.jpg"
+                alt="古民家の内部（梁・柱・自然光）"
+                fill
+                className="object-cover"
+                sizes="100vw"
+              />
+            </div>
+          </ScrollReveal>
+          <ScrollReveal delay={0.2}>
+            <div className="text-center text-haicha text-lg leading-loose max-w-2xl mx-auto">
+              <p>山梨県上野原市。東京から約1時間の里山に、</p>
+              <p>築300年を超える古民家があります。</p>
+              <p className="mt-6">かつて地域の人々が集った場所を、</p>
+              <p>コーヒーを通じて「みんなの焙煎所」として再生。</p>
+              <p>古い梁の下で、焙煎機の音と香りが広がります。</p>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* Values */}
-      <section className="bg-tsuchikabe py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-12">
-            ── 3つの約束 ──
-          </h2>
-          <div className="space-y-10">
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <Image
+          src="/images/about/kominka.jpg"
+          alt=""
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-black/70" />
+        <div className="relative z-10 max-w-4xl mx-auto px-4">
+          <ScrollReveal>
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-white mb-4">
+              3つの約束
+            </h2>
+            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+          </ScrollReveal>
+          <div className="space-y-12">
             {[
               {
                 num: "01",
@@ -98,13 +151,20 @@ export default function AboutPage() {
                 title: "地域とのつながり",
                 text: "上野原の農家さんや職人さんとの協業。コーヒーを起点に、地域の魅力を内外に発信していきます。",
               },
-            ].map((value) => (
-              <div key={value.num} className="max-w-2xl mx-auto">
-                <p className="text-gold font-bold text-lg mb-1">
-                  {value.num}. {value.title}
-                </p>
-                <p className="text-haicha leading-relaxed">{value.text}</p>
-              </div>
+            ].map((value, i) => (
+              <ScrollReveal
+                key={value.num}
+                direction={i % 2 === 0 ? "left" : "right"}
+              >
+                <div className="max-w-2xl mx-auto">
+                  <p className="text-gold font-bold text-xl mb-2">
+                    {value.num}. {value.title}
+                  </p>
+                  <p className="text-white/80 leading-relaxed text-lg">
+                    {value.text}
+                  </p>
+                </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
