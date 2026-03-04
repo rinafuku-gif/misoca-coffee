@@ -57,17 +57,17 @@ export default function CommunityPage() {
 
       {/* Member Registration */}
       <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
-        <div className="max-w-2xl mx-auto px-4 text-center">
+        <div className="max-w-2xl mx-auto px-4 md:px-8 text-center">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-konsumi mb-4">
+            <h2 className="font-serif text-2xl md:text-3xl text-konsumi mb-6">
               焙煎所メンバー登録
             </h2>
             <p className="text-sm text-haicha mb-8">無料</p>
-            <div className="w-16 h-px bg-gold mx-auto mb-12" />
+            <div className="w-16 h-px bg-gold mx-auto mb-16" />
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
-            <div className="bg-white p-8 rounded-lg shadow-sm">
-              <ul className="text-sm text-haicha space-y-3 text-left mb-8">
+            <div className="bg-white p-10 rounded-lg shadow-sm">
+              <ul className="text-sm text-haicha space-y-4 text-left mb-12">
                 <li className="flex items-center gap-3">
                   <span className="w-4 h-px bg-gold flex-shrink-0" />
                   限定ブログ（焙煎レシピ・産地情報）が読める

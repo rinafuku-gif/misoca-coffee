@@ -20,18 +20,18 @@ export default function AccessPage() {
       />
 
       {/* Map */}
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4">
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <div className="aspect-video bg-tsuchikabe rounded-lg flex items-center justify-center text-haicha text-sm mb-16">
+            <div className="aspect-video bg-tsuchikabe rounded-lg flex items-center justify-center text-haicha text-sm mb-20 md:mb-24">
               Google Maps 埋め込み（準備中）
             </div>
           </ScrollReveal>
 
           {/* Access Info */}
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-10">
             <ScrollReveal direction="left">
-              <div className="bg-white p-8 rounded-lg shadow-sm">
+              <div className="bg-white p-10 rounded-lg shadow-sm">
                 <p className="text-sm tracking-[0.3em] text-gold mb-4">TRAIN</p>
                 <h3 className="font-serif text-lg font-bold text-konsumi mb-4">
                   電車でお越しの方
@@ -50,7 +50,7 @@ export default function AccessPage() {
               </div>
             </ScrollReveal>
             <ScrollReveal direction="right">
-              <div className="bg-white p-8 rounded-lg shadow-sm">
+              <div className="bg-white p-10 rounded-lg shadow-sm">
                 <p className="text-sm tracking-[0.3em] text-gold mb-4">CAR</p>
                 <h3 className="font-serif text-lg font-bold text-konsumi mb-4">
                   お車でお越しの方
@@ -70,7 +70,7 @@ export default function AccessPage() {
       </section>
 
       {/* Basic Info */}
-      <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">
+      <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
         <div className="max-w-2xl mx-auto px-4">
           <ScrollReveal>
             <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-4">
@@ -79,7 +79,7 @@ export default function AccessPage() {
             <div className="w-16 h-px bg-gold mx-auto mb-12" />
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
-            <div className="bg-white p-8 rounded-lg shadow-sm">
+            <div className="bg-white p-10 rounded-lg shadow-sm">
               <dl className="space-y-4 text-sm">
                 <div className="flex">
                   <dt className="w-24 text-haicha flex-shrink-0">施設名</dt>
