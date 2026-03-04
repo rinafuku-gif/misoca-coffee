@@ -36,7 +36,7 @@ export default function AccessPage() {
                 <h3 className="font-serif text-lg font-bold text-konsumi mb-4">
                   電車でお越しの方
                 </h3>
-                <ul className="text-sm text-haicha space-y-3">
+                <ul className="text-sm text-haicha space-y-4">
                   <li className="flex items-center gap-3">
                     <span className="w-4 h-px bg-gold" />JR中央本線「上野原」駅 下車
                   </li>
@@ -55,7 +55,7 @@ export default function AccessPage() {
                 <h3 className="font-serif text-lg font-bold text-konsumi mb-4">
                   お車でお越しの方
                 </h3>
-                <ul className="text-sm text-haicha space-y-3">
+                <ul className="text-sm text-haicha space-y-4">
                   <li className="flex items-center gap-3">
                     <span className="w-4 h-px bg-gold" />中央自動車道「上野原IC」から約10分
                   </li>
@@ -71,12 +71,12 @@ export default function AccessPage() {
 
       {/* Basic Info */}
       <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
-        <div className="max-w-2xl mx-auto px-4">
+        <div className="max-w-2xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-4">
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
               施設情報
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-12" />
+            <div className="w-16 h-px bg-gold mx-auto mb-16" />
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
             <div className="bg-white p-10 rounded-lg shadow-sm">

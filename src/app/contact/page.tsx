@@ -17,8 +17,8 @@ export default function ContactPage() {
         image="/images/about/kominka.jpg"
       />
 
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-2xl mx-auto px-4">
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-2xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <form className="space-y-6">
               <div>

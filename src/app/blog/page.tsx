@@ -37,8 +37,8 @@ export default function BlogPage() {
         image="/images/hero/hero-4.jpg"
       />
 
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4">
+      <section className="py-32 md:py-44 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 md:px-8">
           {/* Categories */}
           <ScrollReveal>
             <div className="flex flex-wrap gap-2 mb-12 justify-center">
@@ -58,14 +58,14 @@ export default function BlogPage() {
           </ScrollReveal>
 
           {/* Posts */}
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-10">
             {posts.map((post, i) => (
               <ScrollReveal key={post.title} direction="up" delay={i * 0.1}>
                 <article className="group bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer">
                   <div className="aspect-[16/9] bg-tsuchikabe relative overflow-hidden">
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
                   </div>
-                  <div className="p-6">
+                  <div className="p-8">
                     <span className="text-xs border border-karekusa/30 text-karekusa px-2 py-1 rounded">
                       {post.category}
                     </span>
