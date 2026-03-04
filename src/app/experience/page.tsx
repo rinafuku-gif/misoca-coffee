@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { PageHero } from "@/components/PageHero";
 import { ScrollReveal } from "@/components/ScrollReveal";
 
@@ -11,27 +12,27 @@ export const metadata: Metadata = {
 
 const steps = [
   {
-    num: "①",
+    num: "01",
     title: "古民家へようこそ",
     text: "焙煎士がお迎え。まずはウェルカムコーヒーでひと息。",
   },
   {
-    num: "②",
+    num: "02",
     title: "生豆を選ぶ",
     text: "産地の異なる生豆からお好みを選んでいただきます。",
   },
   {
-    num: "③",
+    num: "03",
     title: "焙煎する",
     text: "手回し焙煎機で自分の手で焙煎。焙煎士がマンツーマンでサポートします。",
   },
   {
-    num: "④",
+    num: "04",
     title: "テイスティング",
     text: "自分で焙煎した豆をその場でドリップ。味わいの違いをじっくり楽しみます。",
   },
   {
-    num: "⑤",
+    num: "05",
     title: "お持ち帰り",
     text: "焙煎した豆（約200g）はお土産に。ご自宅でも焙煎所の味を楽しめます。",
   },
@@ -49,22 +50,31 @@ export default function ExperiencePage() {
 
       {/* Flow */}
       <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4">
+        <div className="max-w-5xl mx-auto px-4">
           <ScrollReveal>
             <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-4">
-              体験の流れ（約90分）
+              体験の流れ
             </h2>
+            <p className="text-center text-haicha mb-2">約90分</p>
             <div className="w-16 h-px bg-gold mx-auto mb-16" />
           </ScrollReveal>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="space-y-0">
             {steps.map((step, i) => (
-              <ScrollReveal key={step.num} direction="up" delay={i * 0.1}>
-                <div className="bg-white p-6 rounded-lg text-center shadow-sm">
-                  <p className="text-2xl mb-2">{step.num}</p>
-                  <h3 className="font-serif font-bold text-konsumi mb-2">
-                    {step.title}
-                  </h3>
-                  <p className="text-sm text-haicha">{step.text}</p>
+              <ScrollReveal
+                key={step.num}
+                direction={i % 2 === 0 ? "left" : "right"}
+                delay={i * 0.08}
+              >
+                <div className="flex items-start gap-8 py-8 border-b border-usuzumi last:border-b-0">
+                  <span className="text-3xl font-serif text-gold/40 font-bold flex-shrink-0 w-12">
+                    {step.num}
+                  </span>
+                  <div>
+                    <h3 className="font-serif text-lg font-bold text-konsumi mb-2">
+                      {step.title}
+                    </h3>
+                    <p className="text-haicha leading-relaxed">{step.text}</p>
+                  </div>
                 </div>
               </ScrollReveal>
             ))}
@@ -73,62 +83,100 @@ export default function ExperiencePage() {
       </section>
 
       {/* Plans */}
-      <section className="bg-tsuchikabe py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-12">
-            ── プラン・料金 ──
-          </h2>
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <Image
+          src="/images/experience/interior.jpg"
+          alt=""
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-black/70" />
+        <div className="relative z-10 max-w-4xl mx-auto px-4">
+          <ScrollReveal>
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-white mb-4">
+              プラン・料金
+            </h2>
+            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+          </ScrollReveal>
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white p-8 rounded-lg text-center shadow-sm">
-              <p className="text-3xl mb-2">☕</p>
-              <h3 className="font-serif text-xl font-bold text-konsumi mb-2">
-                焙煎体験コース
-              </h3>
-              <p className="text-2xl font-bold text-gold mb-4">¥3,500〜/人</p>
-              <p className="text-xs text-haicha mb-4">（税込）</p>
-              <ul className="text-sm text-haicha space-y-2 text-left">
-                <li>✓ 所要約90分</li>
-                <li>✓ 焙煎指導</li>
-                <li>✓ テイスティング</li>
-                <li>✓ 豆お持ち帰り（約200g）</li>
-                <li>✓ 少人数制（最大4名）</li>
-              </ul>
-            </div>
-            <div className="bg-white p-8 rounded-lg text-center shadow-sm">
-              <p className="text-3xl mb-2">👀</p>
-              <h3 className="font-serif text-xl font-bold text-konsumi mb-2">
-                見学コース
-              </h3>
-              <p className="text-2xl font-bold text-gold mb-4">¥1,000/人</p>
-              <p className="text-xs text-haicha mb-4">（税込）</p>
-              <ul className="text-sm text-haicha space-y-2 text-left">
-                <li>✓ 所要約45分</li>
-                <li>✓ 焙煎所見学</li>
-                <li>✓ コーヒー1杯</li>
-                <li>✓ 焙煎士とのトーク</li>
-              </ul>
-            </div>
+            <ScrollReveal direction="left">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 p-8 rounded-lg text-center">
+                <p className="text-sm tracking-[0.3em] text-white/50 mb-3">ROASTING</p>
+                <h3 className="font-serif text-xl font-bold text-white mb-4">
+                  焙煎体験コース
+                </h3>
+                <p className="text-3xl font-bold text-gold mb-2">¥3,500〜</p>
+                <p className="text-xs text-white/50 mb-6">（税込 / 1名）</p>
+                <ul className="text-sm text-white/70 space-y-3 text-left">
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold" />所要約90分
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold" />焙煎指導
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold" />テイスティング
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold" />豆お持ち帰り（約200g）
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold" />少人数制（最大4名）
+                  </li>
+                </ul>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal direction="right">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 p-8 rounded-lg text-center">
+                <p className="text-sm tracking-[0.3em] text-white/50 mb-3">TOUR</p>
+                <h3 className="font-serif text-xl font-bold text-white mb-4">
+                  見学コース
+                </h3>
+                <p className="text-3xl font-bold text-gold mb-2">¥1,000</p>
+                <p className="text-xs text-white/50 mb-6">（税込 / 1名）</p>
+                <ul className="text-sm text-white/70 space-y-3 text-left">
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold" />所要約45分
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold" />焙煎所見学
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold" />コーヒー1杯
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold" />焙煎士とのトーク
+                  </li>
+                </ul>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
       {/* Reservation CTA */}
-      <section className="py-16 md:py-24">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-2xl mx-auto px-4 text-center">
-          <h2 className="font-serif text-2xl md:text-3xl text-konsumi mb-4">
-            ── ご予約 ──
-          </h2>
-          <p className="text-haicha mb-8">
-            完全予約制・少人数制です。
-            <br />
-            予約フォームは準備中です。お問い合わせからご連絡ください。
-          </p>
-          <Link
-            href="/contact"
-            className="inline-block bg-gold hover:bg-gold-dark text-white px-8 py-4 rounded font-medium transition-colors"
-          >
-            お問い合わせから予約する
-          </Link>
+          <ScrollReveal>
+            <h2 className="font-serif text-2xl md:text-3xl text-konsumi mb-4">
+              ご予約
+            </h2>
+            <div className="w-16 h-px bg-gold mx-auto mb-8" />
+            <p className="text-haicha mb-8 leading-relaxed">
+              完全予約制・少人数制です。
+              <br />
+              予約フォームは準備中です。お問い合わせからご連絡ください。
+            </p>
+          </ScrollReveal>
+          <ScrollReveal delay={0.2}>
+            <Link
+              href="/contact"
+              className="inline-block bg-gold hover:bg-gold-dark text-white px-10 py-4 rounded text-lg font-medium transition-colors"
+            >
+              お問い合わせから予約する
+            </Link>
+          </ScrollReveal>
         </div>
       </section>
     </>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/PageHero";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "お問い合わせ",
@@ -13,72 +14,75 @@ export default function ContactPage() {
         title="CONTACT"
         subtitle="お問い合わせ"
         description="ご質問・ご相談はお気軽にどうぞ。2営業日以内にご返信いたします。"
+        image="/images/about/kominka.jpg"
       />
 
-      <section className="py-16 md:py-24">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-2xl mx-auto px-4">
-          <form className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-sumi mb-2">
-                お問い合わせ種別 <span className="text-error">*</span>
-              </label>
-              <select className="w-full border border-usuzumi rounded px-4 py-3 text-sm focus:border-karekusa focus:outline-none">
-                <option>選択してください</option>
-                <option>焙煎体験・見学について</option>
-                <option>ケータリングについて</option>
-                <option>商品について</option>
-                <option>定期便について</option>
-                <option>その他</option>
-              </select>
-            </div>
+          <ScrollReveal>
+            <form className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-sumi mb-2">
+                  お問い合わせ種別 <span className="text-error">*</span>
+                </label>
+                <select className="w-full border border-usuzumi rounded px-4 py-3 text-sm focus:border-gold focus:outline-none transition-colors">
+                  <option>選択してください</option>
+                  <option>焙煎体験・見学について</option>
+                  <option>ケータリングについて</option>
+                  <option>商品について</option>
+                  <option>定期便について</option>
+                  <option>その他</option>
+                </select>
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-sumi mb-2">
-                お名前 <span className="text-error">*</span>
-              </label>
-              <input
-                type="text"
-                className="w-full border border-usuzumi rounded px-4 py-3 text-sm focus:border-karekusa focus:outline-none"
-              />
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-sumi mb-2">
+                  お名前 <span className="text-error">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="w-full border border-usuzumi rounded px-4 py-3 text-sm focus:border-gold focus:outline-none transition-colors"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-sumi mb-2">
-                メールアドレス <span className="text-error">*</span>
-              </label>
-              <input
-                type="email"
-                className="w-full border border-usuzumi rounded px-4 py-3 text-sm focus:border-karekusa focus:outline-none"
-              />
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-sumi mb-2">
+                  メールアドレス <span className="text-error">*</span>
+                </label>
+                <input
+                  type="email"
+                  className="w-full border border-usuzumi rounded px-4 py-3 text-sm focus:border-gold focus:outline-none transition-colors"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-sumi mb-2">
-                電話番号
-              </label>
-              <input
-                type="tel"
-                className="w-full border border-usuzumi rounded px-4 py-3 text-sm focus:border-karekusa focus:outline-none"
-              />
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-sumi mb-2">
+                  電話番号
+                </label>
+                <input
+                  type="tel"
+                  className="w-full border border-usuzumi rounded px-4 py-3 text-sm focus:border-gold focus:outline-none transition-colors"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-sumi mb-2">
-                お問い合わせ内容 <span className="text-error">*</span>
-              </label>
-              <textarea
-                rows={6}
-                className="w-full border border-usuzumi rounded px-4 py-3 text-sm focus:border-karekusa focus:outline-none resize-y"
-              />
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-sumi mb-2">
+                  お問い合わせ内容 <span className="text-error">*</span>
+                </label>
+                <textarea
+                  rows={6}
+                  className="w-full border border-usuzumi rounded px-4 py-3 text-sm focus:border-gold focus:outline-none resize-y transition-colors"
+                />
+              </div>
 
-            <button
-              type="submit"
-              className="w-full bg-karekusa hover:bg-karekusa-dark text-white py-4 rounded font-medium transition-colors"
-            >
-              送信する
-            </button>
-          </form>
+              <button
+                type="submit"
+                className="w-full bg-gold hover:bg-gold-dark text-white py-4 rounded font-medium transition-colors"
+              >
+                送信する
+              </button>
+            </form>
+          </ScrollReveal>
         </div>
       </section>
     </>

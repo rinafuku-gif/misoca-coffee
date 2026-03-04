@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/PageHero";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -70,29 +71,32 @@ export default function FaqPage() {
     <>
       <PageHero title="FAQ" subtitle="よくある質問" />
 
-      <section className="py-16 md:py-24">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-3xl mx-auto px-4">
-          {faqCategories.map((category) => (
-            <div key={category.title} className="mb-12">
-              <h2 className="font-serif text-xl font-bold text-konsumi mb-6">
-                {category.title}
-              </h2>
-              <div className="space-y-4">
-                {category.items.map((item) => (
-                  <details
-                    key={item.q}
-                    className="bg-white p-6 rounded-lg shadow-sm"
-                  >
-                    <summary className="font-medium text-sumi cursor-pointer">
-                      {item.q}
-                    </summary>
-                    <p className="mt-3 text-sm text-haicha leading-relaxed">
-                      {item.a}
-                    </p>
-                  </details>
-                ))}
+          {faqCategories.map((category, ci) => (
+            <ScrollReveal key={category.title} delay={ci * 0.1}>
+              <div className="mb-12 last:mb-0">
+                <h2 className="font-serif text-xl font-bold text-konsumi mb-2">
+                  {category.title}
+                </h2>
+                <div className="w-8 h-px bg-gold mb-6" />
+                <div className="space-y-4">
+                  {category.items.map((item) => (
+                    <details
+                      key={item.q}
+                      className="bg-white p-6 rounded-lg shadow-sm"
+                    >
+                      <summary className="font-medium text-sumi cursor-pointer">
+                        {item.q}
+                      </summary>
+                      <p className="mt-3 text-sm text-haicha leading-relaxed">
+                        {item.a}
+                      </p>
+                    </details>
+                  ))}
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>

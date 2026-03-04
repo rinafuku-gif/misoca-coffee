@@ -7,22 +7,22 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 
 const features = [
   {
-    icon: "🏠",
     title: "古民家で過ごす",
     description: "築300年の古民家で里山の時間を楽しむ。",
     image: "/images/about/kominka.jpg",
+    label: "01",
   },
   {
-    icon: "🔥",
     title: "自分だけの焙煎体験",
     description: "生豆を選び、自分の手で焙煎する。世界に一つのコーヒーを。",
     image: "/images/experience/roasting.jpg",
+    label: "02",
   },
   {
-    icon: "🤝",
     title: "人とつながる",
     description: "ADDressと連携したコミュニティで、コーヒー好きと出会う。",
     image: "/images/community/people.jpg",
+    label: "03",
   },
 ];
 
@@ -90,7 +90,9 @@ export default function Home() {
                   delay={0.2}
                   className="w-full md:w-2/5"
                 >
-                  <span className="text-5xl mb-4 block">{feature.icon}</span>
+                  <span className="text-sm tracking-[0.3em] text-gold font-medium mb-6 block">
+                    {feature.label}
+                  </span>
                   <h3 className="font-serif text-2xl md:text-3xl font-bold text-konsumi mb-4">
                     {feature.title}
                   </h3>
@@ -130,9 +132,9 @@ export default function Home() {
           </ScrollReveal>
           <ScrollReveal delay={0.3}>
             <div className="flex flex-col sm:flex-row gap-6 justify-center text-sm text-white/70 mb-10">
-              <span>✓ 所要時間: 約90分</span>
-              <span>✓ 焙煎した豆はお持ち帰り</span>
-              <span>✓ 少人数制・完全予約制</span>
+              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />所要時間: 約90分</span>
+              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />焙煎した豆はお持ち帰り</span>
+              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />少人数制・完全予約制</span>
             </div>
             <Link
               href="/experience"
@@ -224,9 +226,9 @@ export default function Home() {
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
             <div className="flex flex-col sm:flex-row gap-6 justify-center text-sm text-white/60 mb-10">
-              <span>✓ 焙煎から3日以内に発送</span>
-              <span>✓ 焙煎所からの近況レター同封</span>
-              <span>✓ いつでもスキップ・解約OK</span>
+              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />焙煎から3日以内に発送</span>
+              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />焙煎所からの近況レター同封</span>
+              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />いつでもスキップ・解約OK</span>
             </div>
             <p className="text-2xl font-bold mb-8">
               月額 ¥2,980〜
