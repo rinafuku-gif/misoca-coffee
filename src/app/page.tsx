@@ -217,13 +217,13 @@ export default function Home() {
                 CATERING
               </p>
               <h2 className="font-serif text-3xl md:text-4xl font-bold text-konsumi mb-8">
-                イベント・企業向け
+                ポットひとつで、
                 <br />
-                出張珈琲
+                そこがカフェになる。
               </h2>
               <p className="text-haicha text-lg leading-loose mb-10">
-                お客様のイベントに焙煎士が伺い、
-                その場で淹れたてのコーヒーをご提供します。
+                プロが焙煎したスペシャルティコーヒーを
+                保温ポットでお届け。準備も片付けも不要です。
               </p>
               <Link
                 href="/catering"
