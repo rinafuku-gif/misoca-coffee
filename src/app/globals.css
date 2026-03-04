@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Primary Colors */
+  --color-karekusa: #5F5E4A;
+  --color-karekusa-dark: #4A4B3A;
+  --color-ainezu: #A0A1B5;
+  --color-konsumi: #4A4B5F;
+  --color-gold: #C8973E;
+  --color-gold-dark: #B5862F;
+
+  /* Background Colors */
+  --color-kominka-white: #F7F6F1;
+  --color-tsuchikabe: #EDE8DF;
+
+  /* Text Colors */
+  --color-sumi: #2A2A2A;
+  --color-haicha: #7A7569;
+  --color-usuzumi: #D5D1C9;
+
+  /* Utility Colors */
+  --color-error: #D9534F;
+  --color-success: #5CB85C;
+
+  /* Fonts */
+  --font-sans: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  --font-serif: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+}
+
+body {
+  background: var(--color-kominka-white);
+  color: var(--color-sumi);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-serif);
+}
