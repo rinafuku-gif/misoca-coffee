@@ -7,21 +7,24 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 
 const features = [
   {
-    title: "古民家で過ごす",
-    description: "築300年の古民家で里山の時間を楽しむ。",
-    image: "/images/about/kominka.jpg",
+    title: "築300年の古民家で焙煎体験",
+    description:
+      "生豆を選び、自分の手で焙煎する。五感で味わう、世界に一つだけのコーヒー体験。",
+    image: "/images/experience/roasting.jpg",
     label: "01",
   },
   {
-    title: "自分だけの焙煎体験",
-    description: "生豆を選び、自分の手で焙煎する。世界に一つのコーヒーを。",
-    image: "/images/experience/roasting.jpg",
+    title: "焙煎したての豆をお届け",
+    description:
+      "体験で出会った豆を、ご自宅でも。焙煎3日以内のスペシャルティコーヒーをオンラインでお届けします。",
+    image: "/images/menu/ethiopia.jpg",
     label: "02",
   },
   {
-    title: "人とつながる",
-    description: "ADDressと連携したコミュニティで、コーヒー好きと出会う。",
-    image: "/images/community/people.jpg",
+    title: "里山のコーヒースタンド",
+    description:
+      "上野原の日常に溶け込むコーヒースタンド。焙煎したてのハンドドリップを、ふらっと一杯。",
+    image: "/images/about/kominka.jpg",
     label: "03",
   },
 ];
@@ -122,7 +125,7 @@ export default function Home() {
               EXPERIENCE
             </p>
             <h2 className="font-serif text-3xl md:text-5xl font-bold mb-8">
-              焙煎体験・見学のご予約
+              焙煎体験のご予約
             </h2>
             <p className="text-lg text-white/80 mb-10 leading-loose">
               生豆の選別から焙煎、ドリップまで。
@@ -132,9 +135,9 @@ export default function Home() {
           </ScrollReveal>
           <ScrollReveal delay={0.3}>
             <div className="flex flex-col sm:flex-row gap-6 justify-center text-sm text-white/70 mb-10">
-              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />所要時間: 約90分</span>
-              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />焙煎した豆はお持ち帰り</span>
-              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />少人数制・完全予約制</span>
+              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />¥4,400/人（直予約）</span>
+              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />所要約90分・完全予約制</span>
+              <span className="flex items-center gap-2"><span className="w-4 h-px bg-white/40" />焙煎豆お持ち帰り</span>
             </div>
             <Link
               href="/experience"
@@ -150,9 +153,15 @@ export default function Home() {
       <section className="py-32 md:py-44 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
+            <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
+              ONLINE SHOP
+            </p>
             <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
-              今月のおすすめ
+              焙煎したてをお届け
             </h2>
+            <p className="text-haicha text-center leading-loose mb-4">
+              体験で出会った豆を、ご自宅でも。焙煎3日以内の新鮮な豆をお届けします。
+            </p>
             <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
           </ScrollReveal>
 
@@ -190,7 +199,7 @@ export default function Home() {
                 href="/menu"
                 className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-10 py-4 rounded font-medium transition-all duration-300"
               >
-                すべてのメニューを見る
+                オンラインショップへ
               </Link>
             </div>
           </ScrollReveal>
@@ -230,6 +239,44 @@ export default function Home() {
                 className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-8 py-3 rounded font-medium transition-all duration-300"
               >
                 詳しく見る →
+              </Link>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* Coffee Stand */}
+      <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="flex flex-col md:flex-row-reverse gap-10 md:gap-20 items-center">
+            <ScrollReveal direction="right" className="w-full md:w-1/2">
+              <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-xl">
+                <Image
+                  src="/images/about/kominka.jpg"
+                  alt="コーヒースタンド"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-700"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal direction="left" delay={0.2} className="w-full md:w-1/2">
+              <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
+                COFFEE STAND
+              </p>
+              <h2 className="font-serif text-3xl md:text-4xl font-bold text-konsumi mb-8">
+                里山のコーヒースタンド
+              </h2>
+              <p className="text-haicha text-lg leading-loose mb-10">
+                焙煎したてのスペシャルティコーヒーを
+                ハンドドリップで一杯ずつ。上野原の日常に
+                溶け込む、ふらっと立ち寄れる場所です。
+              </p>
+              <Link
+                href="/stand"
+                className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-8 py-3 rounded font-medium transition-all duration-300"
+              >
+                営業情報を見る →
               </Link>
             </ScrollReveal>
           </div>

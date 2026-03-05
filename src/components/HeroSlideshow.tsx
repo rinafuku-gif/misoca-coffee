@@ -62,9 +62,9 @@ export function HeroSlideshow() {
             transition={{ duration: 1, delay: 0.3 }}
             className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6"
           >
-            古くて新しい、
+            コーヒーから始まる。
             <br />
-            みんなの焙煎所。
+            もうひとつの日常。
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -72,9 +72,9 @@ export function HeroSlideshow() {
             transition={{ duration: 1, delay: 0.6 }}
             className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed"
           >
-            東京から約1時間。築300年の古民家で、
+            一杯の先に、体験がある。場所がある。人がいる。
             <br className="hidden md:block" />
-            自分だけのコーヒーを焙煎する体験。
+            築300年の古民家から届ける、焙煎体験とスペシャルティコーヒー。
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

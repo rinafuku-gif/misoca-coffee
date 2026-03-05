@@ -102,51 +102,54 @@ export default function ExperiencePage() {
           <div className="grid md:grid-cols-2 gap-10">
             <ScrollReveal direction="left">
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 p-10 rounded-lg text-center">
-                <p className="text-sm tracking-[0.3em] text-white/50 mb-3">ROASTING</p>
+                <p className="text-sm tracking-[0.3em] text-white/50 mb-3">PERSONAL</p>
                 <h3 className="font-serif text-xl font-bold text-white mb-4">
-                  焙煎体験コース
+                  焙煎体験（直予約）
                 </h3>
-                <p className="text-3xl font-bold text-gold mb-2">¥3,500〜</p>
+                <p className="text-3xl font-bold text-gold mb-2">¥4,400</p>
                 <p className="text-xs text-white/50 mb-6">（税込 / 1名）</p>
                 <ul className="text-sm text-white/70 space-y-4 text-left">
                   <li className="flex items-center gap-3">
                     <span className="w-4 h-px bg-gold" />所要約90分
                   </li>
                   <li className="flex items-center gap-3">
-                    <span className="w-4 h-px bg-gold" />焙煎指導
+                    <span className="w-4 h-px bg-gold" />マンツーマン焙煎指導
                   </li>
                   <li className="flex items-center gap-3">
                     <span className="w-4 h-px bg-gold" />テイスティング
                   </li>
                   <li className="flex items-center gap-3">
-                    <span className="w-4 h-px bg-gold" />豆お持ち帰り（約200g）
+                    <span className="w-4 h-px bg-gold" />焙煎豆お持ち帰り（約200g）
                   </li>
                   <li className="flex items-center gap-3">
-                    <span className="w-4 h-px bg-gold" />少人数制（最大4名）
+                    <span className="w-4 h-px bg-gold" />完全予約制・少人数制
                   </li>
                 </ul>
               </div>
             </ScrollReveal>
             <ScrollReveal direction="right">
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 p-10 rounded-lg text-center">
-                <p className="text-sm tracking-[0.3em] text-white/50 mb-3">TOUR</p>
+                <p className="text-sm tracking-[0.3em] text-white/50 mb-3">GROUP</p>
                 <h3 className="font-serif text-xl font-bold text-white mb-4">
-                  見学コース
+                  グループ焙煎体験
                 </h3>
-                <p className="text-3xl font-bold text-gold mb-2">¥1,000</p>
+                <p className="text-3xl font-bold text-gold mb-2">¥3,300</p>
                 <p className="text-xs text-white/50 mb-6">（税込 / 1名）</p>
                 <ul className="text-sm text-white/70 space-y-4 text-left">
                   <li className="flex items-center gap-3">
-                    <span className="w-4 h-px bg-gold" />所要約45分
+                    <span className="w-4 h-px bg-gold" />所要約90分
                   </li>
                   <li className="flex items-center gap-3">
-                    <span className="w-4 h-px bg-gold" />焙煎所見学
+                    <span className="w-4 h-px bg-gold" />グループでの焙煎体験
                   </li>
                   <li className="flex items-center gap-3">
-                    <span className="w-4 h-px bg-gold" />コーヒー1杯
+                    <span className="w-4 h-px bg-gold" />テイスティング
                   </li>
                   <li className="flex items-center gap-3">
-                    <span className="w-4 h-px bg-gold" />焙煎士とのトーク
+                    <span className="w-4 h-px bg-gold" />焙煎豆お持ち帰り
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold" />団体・イベント向け
                   </li>
                 </ul>
               </div>
