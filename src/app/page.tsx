@@ -196,7 +196,7 @@ export default function Home() {
           <ScrollReveal delay={0.4}>
             <div className="text-center mt-16">
               <Link
-                href="/menu"
+                href="/shop"
                 className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-10 py-4 rounded font-medium transition-all duration-300"
               >
                 オンラインショップへ

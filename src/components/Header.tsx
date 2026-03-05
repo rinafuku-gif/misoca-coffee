@@ -7,23 +7,24 @@ const navGroups = [
   {
     label: "体験する",
     items: [
-      { href: "/experience", label: "焙煎体験・見学予約" },
+      { href: "/experience", label: "焙煎体験予約" },
+      { href: "/catering", label: "コーヒーケータリング" },
       { href: "/mobile-roasting", label: "出張焙煎体験" },
-      { href: "/catering", label: "ケータリング" },
-    ],
-  },
-  {
-    label: "知る",
-    items: [
-      { href: "/about", label: "ブランドストーリー" },
-      { href: "/blog", label: "ブログ" },
-      { href: "/access", label: "アクセス" },
     ],
   },
   {
     label: "コーヒーを買う",
     items: [
-      { href: "/menu", label: "メニュー" },
+      { href: "/shop", label: "オンラインショップ" },
+      { href: "/stand", label: "コーヒースタンド" },
+    ],
+  },
+  {
+    label: "知る",
+    items: [
+      { href: "/about", label: "三十日珈琲について" },
+      { href: "/blog", label: "ジャーナル" },
+      { href: "/access", label: "アクセス" },
     ],
   },
   {

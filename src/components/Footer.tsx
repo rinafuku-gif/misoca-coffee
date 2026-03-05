@@ -4,24 +4,25 @@ const footerLinks = [
   {
     title: "体験する",
     links: [
-      { href: "/experience", label: "焙煎体験・見学予約" },
+      { href: "/experience", label: "焙煎体験予約" },
+      { href: "/catering", label: "コーヒーケータリング" },
       { href: "/mobile-roasting", label: "出張焙煎体験" },
-      { href: "/catering", label: "ケータリング依頼" },
-    ],
-  },
-  {
-    title: "知る",
-    links: [
-      { href: "/about", label: "ブランドストーリー" },
-      { href: "/blog", label: "ブログ" },
-      { href: "/access", label: "アクセス" },
-      { href: "/faq", label: "FAQ" },
     ],
   },
   {
     title: "コーヒーを買う",
     links: [
-      { href: "/menu", label: "メニュー" },
+      { href: "/shop", label: "オンラインショップ" },
+      { href: "/stand", label: "コーヒースタンド" },
+    ],
+  },
+  {
+    title: "知る",
+    links: [
+      { href: "/about", label: "三十日珈琲について" },
+      { href: "/blog", label: "ジャーナル" },
+      { href: "/access", label: "アクセス" },
+      { href: "/faq", label: "FAQ" },
     ],
   },
   {
