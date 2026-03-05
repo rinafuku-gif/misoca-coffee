@@ -9,23 +9,26 @@ const features = [
   {
     title: "築300年の古民家で焙煎体験",
     description:
-      "生豆を選び、自分の手で焙煎する。五感で味わう、世界に一つだけのコーヒー体験。",
+      "生豆を選び、自分の手で焙煎する。五感で味わう、世界に一つだけのコーヒー体験。東京から約1時間、完全予約制。",
     image: "/images/experience/roasting.jpg",
     label: "01",
+    href: "/experience",
   },
   {
-    title: "焙煎したての豆をお届け",
+    title: "コーヒーケータリング",
     description:
-      "体験で出会った豆を、ご自宅でも。焙煎3日以内のスペシャルティコーヒーをオンラインでお届けします。",
-    image: "/images/menu/ethiopia.jpg",
+      "ポットひとつで、そこがカフェになる。プロが焙煎したスペシャルティコーヒーを保温ポットでお届け。準備も片付けも不要。",
+    image: "/images/catering/event.jpg",
     label: "02",
+    href: "/catering",
   },
   {
-    title: "里山のコーヒースタンド",
+    title: "出張焙煎体験",
     description:
-      "上野原の日常に溶け込むコーヒースタンド。焙煎したてのハンドドリップを、ふらっと一杯。",
-    image: "/images/about/kominka.jpg",
+      "焙煎所の体験を、あなたの場所へ。企業研修、ワークショップ、地域イベントに焙煎士が伺います。",
+    image: "/images/experience/roasting.jpg",
     label: "03",
+    href: "/mobile-roasting",
   },
 ];
 
@@ -33,19 +36,19 @@ const pickupMenus = [
   {
     name: "エチオピア イルガチェフェ",
     description: "フローラルな香りと柑橘系の明るい酸味",
-    price: "¥1,580",
+    price: "¥1,200",
     image: "/images/menu/ethiopia.jpg",
   },
   {
     name: "グアテマラ アンティグア",
     description: "チョコレートのようなコクと甘み",
-    price: "¥1,480",
+    price: "¥1,100",
     image: "/images/menu/guatemala.jpg",
   },
   {
     name: "ブラジル セラード",
-    description: "ナッツの甘みとクリーンな味",
-    price: "¥1,380",
+    description: "ナッツの甘みとクリーンな後味",
+    price: "¥1,000",
     image: "/images/menu/brazil.jpg",
   },
 ];
@@ -56,7 +59,7 @@ export default function Home() {
       {/* Hero Slideshow */}
       <HeroSlideshow />
 
-      {/* Features Section - Photo-centric with slide-in animations */}
+      {/* Features Section - 3 pillars: 焙煎体験 / ケータリング / 出張焙煎 */}
       <section className="py-32 md:py-44 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
@@ -99,9 +102,15 @@ export default function Home() {
                   <h3 className="font-serif text-2xl md:text-3xl font-bold text-konsumi mb-6">
                     {feature.title}
                   </h3>
-                  <p className="text-haicha text-lg leading-loose">
+                  <p className="text-haicha text-lg leading-loose mb-8">
                     {feature.description}
                   </p>
+                  <Link
+                    href={feature.href}
+                    className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-8 py-3 rounded font-medium transition-all duration-300"
+                  >
+                    詳しく見る →
+                  </Link>
                 </ScrollReveal>
               </div>
             ))}
@@ -149,7 +158,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pickup Menu - Photo cards with hover effects */}
+      {/* Online Shop - Photo cards */}
       <section className="py-32 md:py-44 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
@@ -187,6 +196,7 @@ export default function Home() {
                   </p>
                   <p className="font-bold text-karekusa text-lg">
                     {item.price}
+                    <span className="text-sm font-normal text-haicha ml-1">/ 100g</span>
                   </p>
                 </div>
               </ScrollReveal>
@@ -203,83 +213,6 @@ export default function Home() {
               </Link>
             </div>
           </ScrollReveal>
-        </div>
-      </section>
-
-      {/* Catering - Photo split layout */}
-      <section className="py-32 md:py-44 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="flex flex-col md:flex-row gap-10 md:gap-20 items-center">
-            <ScrollReveal direction="left" className="w-full md:w-1/2">
-              <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-xl">
-                <Image
-                  src="/images/catering/event.jpg"
-                  alt="ケータリング風景"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
-            </ScrollReveal>
-            <ScrollReveal direction="right" delay={0.2} className="w-full md:w-1/2">
-              <p className="text-sm tracking-[0.3em] text-haicha mb-4">
-                CATERING
-              </p>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-konsumi mb-8">
-                ポットひとつで、
-                <br />
-                そこがカフェになる。
-              </h2>
-              <p className="text-haicha text-lg leading-loose mb-10">
-                プロが焙煎したスペシャルティコーヒーを
-                保温ポットでお届け。準備も片付けも不要です。
-              </p>
-              <Link
-                href="/catering"
-                className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-8 py-3 rounded font-medium transition-all duration-300"
-              >
-                詳しく見る →
-              </Link>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
-
-      {/* Coffee Stand */}
-      <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="flex flex-col md:flex-row-reverse gap-10 md:gap-20 items-center">
-            <ScrollReveal direction="right" className="w-full md:w-1/2">
-              <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-xl">
-                <Image
-                  src="/images/about/kominka.jpg"
-                  alt="コーヒースタンド"
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-700"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
-            </ScrollReveal>
-            <ScrollReveal direction="left" delay={0.2} className="w-full md:w-1/2">
-              <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
-                COFFEE STAND
-              </p>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-konsumi mb-8">
-                里山のコーヒースタンド
-              </h2>
-              <p className="text-haicha text-lg leading-loose mb-10">
-                焙煎したてのスペシャルティコーヒーを
-                ハンドドリップで一杯ずつ。上野原の日常に
-                溶け込む、ふらっと立ち寄れる場所です。
-              </p>
-              <Link
-                href="/stand"
-                className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-8 py-3 rounded font-medium transition-all duration-300"
-              >
-                営業情報を見る →
-              </Link>
-            </ScrollReveal>
-          </div>
         </div>
       </section>
 
