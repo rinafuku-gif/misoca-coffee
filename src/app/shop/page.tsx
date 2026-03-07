@@ -187,7 +187,7 @@ export default function ShopPage() {
       </section>
 
       {/* Bean Lineup */}
-      <section className="py-32 md:py-44 overflow-hidden">
+      <section className="py-20 md:py-28 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
@@ -199,7 +199,7 @@ export default function ShopPage() {
             <p className="text-haicha text-center leading-loose mb-4">
               焙煎体験でも使用しているスペシャルティコーヒーを、ご自宅でお楽しみいただけます。
             </p>
-            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
+            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
           </ScrollReveal>
 
           {loading ? (
@@ -272,7 +272,7 @@ export default function ShopPage() {
       </section>
 
       {/* Drip Bags */}
-      <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
+      <section className="bg-tsuchikabe py-20 md:py-28 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row gap-10 md:gap-20 items-center">
             <ScrollReveal direction="left" className="w-full md:w-1/2">
@@ -319,13 +319,13 @@ export default function ShopPage() {
       </section>
 
       {/* Shipping Info */}
-      <section className="py-32 md:py-44 overflow-hidden">
+      <section className="py-20 md:py-28 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               配送について
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
+            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
           </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-10">
@@ -379,7 +379,7 @@ export default function ShopPage() {
       </section>
 
       {/* Experience Bridge (replaced subscription teaser) */}
-      <section className="relative py-36 md:py-48 overflow-hidden">
+      <section className="relative py-24 md:py-32 overflow-hidden">
         <Image
           src="/images/experience/roasting.jpg"
           alt=""

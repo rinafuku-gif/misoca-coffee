@@ -89,7 +89,7 @@ export function HeroSlideshow() {
               焙煎体験を予約する
             </Link>
             <Link
-              href="/menu"
+              href="/shop"
               className="inline-block border-2 border-white text-white hover:bg-white hover:text-konsumi px-10 py-4 rounded text-lg font-medium transition-colors"
             >
               コーヒー豆を購入する

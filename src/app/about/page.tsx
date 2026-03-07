@@ -20,7 +20,7 @@ export default function AboutPage() {
       />
 
       {/* Brand Concept */}
-      <section className="py-32 md:py-44 overflow-hidden">
+      <section className="py-20 md:py-28 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
           <ScrollReveal>
             <p className="text-sm tracking-[0.3em] text-gold font-medium mb-8">
@@ -47,7 +47,7 @@ export default function AboutPage() {
       </section>
 
       {/* Brand Name Origin */}
-      <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
+      <section className="bg-tsuchikabe py-20 md:py-28 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row gap-10 md:gap-20 items-center">
             <ScrollReveal direction="left" className="w-full md:w-1/2">
@@ -83,7 +83,7 @@ export default function AboutPage() {
       </section>
 
       {/* The Place - Key differentiator */}
-      <section className="py-32 md:py-44 overflow-hidden">
+      <section className="py-20 md:py-28 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
@@ -92,7 +92,7 @@ export default function AboutPage() {
             <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               築300年の古民家
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
+            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
           </ScrollReveal>
           <ScrollReveal direction="up">
             <div className="relative aspect-video rounded-lg overflow-hidden shadow-xl mb-16">
@@ -127,7 +127,7 @@ export default function AboutPage() {
       </section>
 
       {/* Founders */}
-      <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
+      <section className="bg-tsuchikabe py-20 md:py-28 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
@@ -136,7 +136,7 @@ export default function AboutPage() {
             <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               2人の出会い
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
+            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
           </ScrollReveal>
           <div className="grid md:grid-cols-2 gap-10 mb-16">
             <ScrollReveal direction="left">
@@ -174,7 +174,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="relative py-36 md:py-48 overflow-hidden">
+      <section className="relative py-24 md:py-32 overflow-hidden">
         <Image
           src="/images/about/kominka.jpg"
           alt=""
@@ -191,7 +191,7 @@ export default function AboutPage() {
             <h2 className="font-serif text-3xl md:text-4xl text-center text-white mb-6">
               3つの約束
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
+            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
           </ScrollReveal>
           <div className="grid md:grid-cols-3 gap-10 md:gap-12">
             {[
@@ -228,7 +228,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-32 md:py-44 overflow-hidden">
+      <section className="py-20 md:py-28 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <ScrollReveal>
             <h2 className="font-serif text-3xl md:text-4xl text-konsumi mb-8">

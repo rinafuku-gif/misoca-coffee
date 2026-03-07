@@ -60,16 +60,16 @@ export default function Home() {
       <HeroSlideshow />
 
       {/* Features Section - 3 pillars: 焙煎体験 / ケータリング / 出張焙煎 */}
-      <section className="py-32 md:py-44 overflow-hidden">
+      <section className="py-20 md:py-28 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               三十日珈琲でできること
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
+            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
           </ScrollReveal>
 
-          <div className="space-y-32 md:space-y-44">
+          <div className="space-y-24 md:space-y-32">
             {features.map((feature, i) => (
               <div
                 key={feature.title}
@@ -119,7 +119,7 @@ export default function Home() {
       </section>
 
       {/* Experience CTA - Full-width photo background */}
-      <section className="relative py-36 md:py-48 overflow-hidden">
+      <section className="relative py-24 md:py-32 overflow-hidden">
         <Image
           src="/images/experience/interior.jpg"
           alt="古民家の内部"
@@ -159,7 +159,7 @@ export default function Home() {
       </section>
 
       {/* Online Shop - Photo cards */}
-      <section className="py-32 md:py-44 overflow-hidden">
+      <section className="py-20 md:py-28 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
@@ -171,7 +171,7 @@ export default function Home() {
             <p className="text-haicha text-center leading-loose mb-4">
               体験で出会った豆を、ご自宅でも。焙煎3日以内の新鮮な豆をお届けします。
             </p>
-            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
+            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
           </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-10 md:gap-12">
@@ -217,13 +217,13 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-32 md:py-44 bg-tsuchikabe overflow-hidden">
+      <section className="py-20 md:py-28 bg-tsuchikabe overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               訪れた方の声
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
+            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
           </ScrollReveal>
 
           <div className="space-y-10">
@@ -251,44 +251,27 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Instagram Section */}
-      <section className="py-32 md:py-44 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
+      {/* Instagram CTA */}
+      <section className="py-20 md:py-28 overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
           <ScrollReveal>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+            <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
+              INSTAGRAM
+            </p>
+            <h2 className="font-serif text-3xl md:text-4xl text-konsumi mb-6">
               @misoca_coffee
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
-          </ScrollReveal>
-
-          <ScrollReveal delay={0.2}>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="relative aspect-square bg-tsuchikabe rounded overflow-hidden group cursor-pointer"
-                >
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
-                    <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm">
-                      →
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal delay={0.4}>
-            <div className="text-center mt-14">
-              <a
-                href="https://instagram.com/misoca_coffee"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-8 py-3 rounded font-medium transition-all duration-300"
-              >
-                Instagramをフォローする
-              </a>
-            </div>
+            <p className="text-haicha leading-loose mb-10">
+              焙煎の様子や季節の風景、新しい豆の入荷情報をお届けしています。
+            </p>
+            <a
+              href="https://instagram.com/misoca_coffee"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-8 py-3 rounded font-medium transition-all duration-300"
+            >
+              Instagramをフォローする
+            </a>
           </ScrollReveal>
         </div>
       </section>

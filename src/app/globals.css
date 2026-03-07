@@ -23,8 +23,8 @@
   --color-success: #5CB85C;
 
   /* Fonts */
-  --font-sans: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-  --font-serif: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-sans: var(--font-noto-sans, "Noto Sans JP"), "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  --font-serif: var(--font-noto-serif, "Noto Serif JP"), "Hiragino Mincho ProN", "Yu Mincho", serif;
 }
 
 body {

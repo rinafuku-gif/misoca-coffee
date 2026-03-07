@@ -63,7 +63,7 @@ export default function ExperiencePage() {
       </section>
 
       {/* Plans & Pricing - Top priority section */}
-      <section className="py-32 md:py-44 overflow-hidden">
+      <section className="py-20 md:py-28 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
@@ -72,7 +72,7 @@ export default function ExperiencePage() {
             <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               プラン・料金
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
+            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
           </ScrollReveal>
 
           <div className="grid md:grid-cols-2 gap-10 md:gap-12 max-w-4xl mx-auto">
@@ -160,7 +160,7 @@ export default function ExperiencePage() {
       </section>
 
       {/* Experience Flow - alternating layout like Top page */}
-      <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
+      <section className="bg-tsuchikabe py-20 md:py-28 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
@@ -170,7 +170,7 @@ export default function ExperiencePage() {
               体験の流れ
             </h2>
             <p className="text-center text-haicha mb-2">所要約90分</p>
-            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
+            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
           </ScrollReveal>
 
           <div className="space-y-24 md:space-y-32">
@@ -217,7 +217,7 @@ export default function ExperiencePage() {
       </section>
 
       {/* Access Info */}
-      <section className="py-32 md:py-44 overflow-hidden">
+      <section className="py-20 md:py-28 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
@@ -226,7 +226,7 @@ export default function ExperiencePage() {
             <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
               アクセス
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
+            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
           </ScrollReveal>
 
           <div className="grid md:grid-cols-2 gap-10 md:gap-16 max-w-4xl mx-auto">
@@ -273,7 +273,7 @@ export default function ExperiencePage() {
       </section>
 
       {/* Reservation CTA */}
-      <section className="relative py-36 md:py-48 overflow-hidden">
+      <section className="relative py-24 md:py-32 overflow-hidden">
         <Image
           src="/images/experience/interior.jpg"
           alt=""
@@ -313,7 +313,7 @@ export default function ExperiencePage() {
       </section>
 
       {/* After Experience - EC Bridge */}
-      <section className="py-32 md:py-44 overflow-hidden">
+      <section className="py-20 md:py-28 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row gap-10 md:gap-20 items-center">
             <ScrollReveal direction="left" className="w-full md:w-1/2">

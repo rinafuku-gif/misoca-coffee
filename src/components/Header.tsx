@@ -70,6 +70,14 @@ export function Header() {
           ))}
         </nav>
 
+        {/* Desktop CTA */}
+        <Link
+          href="/experience"
+          className="hidden lg:inline-block bg-gold hover:bg-gold-dark text-white px-6 py-2 rounded text-sm font-medium transition-colors"
+        >
+          焙煎体験を予約する
+        </Link>
+
         {/* Mobile Toggle */}
         <button
           className="lg:hidden p-2 text-sumi"
