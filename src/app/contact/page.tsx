@@ -22,12 +22,23 @@ export default function ContactPage() {
 
     setStatus("sending");
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY,
+          subject: `【三十日珈琲】${form.type}：${form.name}様よりお問い合わせ`,
+          from_name: "三十日珈琲 お問い合わせフォーム",
+          "お問い合わせ種別": form.type,
+          "お名前": form.name,
+          "メールアドレス": form.email,
+          "電話番号": form.phone || "未入力",
+          "お問い合わせ内容": form.message,
+          replyto: form.email,
+        }),
       });
-      if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
         setStatus("sent");
         setForm({ type: "", name: "", email: "", phone: "", message: "" });
       } else {
