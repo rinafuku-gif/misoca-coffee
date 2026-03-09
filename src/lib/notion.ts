@@ -16,6 +16,12 @@ export interface Product {
   unit: string;
   image: string;
   inStock: boolean;
+  process: string;
+  variety: string;
+  region: string;
+  farm: string;
+  altitude: string;
+  description: string;
 }
 
 export async function getProducts(): Promise<Product[]> {
@@ -26,9 +32,9 @@ export async function getProducts(): Promise<Product[]> {
   const response = await notion.dataSources.query({
     data_source_id: databaseId,
     filter: {
-      property: "公開",
-      checkbox: {
-        equals: true,
+      property: "EC販売ステータス",
+      status: {
+        equals: "販売中",
       },
     },
     sorts: [
@@ -42,16 +48,25 @@ export async function getProducts(): Promise<Product[]> {
   return response.results.map((page) => {
     const props = (page as Record<string, unknown>)["properties"] as Record<string, Record<string, unknown>>;
 
+    // 焙煎度合 is multi_select - join values
+    const roastLevels = getMultiSelect(props["焙煎度合"]);
+
     return {
       id: (page as Record<string, unknown>)["id"] as string,
       name: getTitle(props["名前"]),
-      origin: getRichText(props["産地"]),
-      roast: getSelect(props["焙煎度"]),
+      origin: getSelect(props["エリア"]),
+      roast: roastLevels,
       flavor: getRichText(props["フレーバー"]),
-      price: getNumber(props["価格"]),
-      unit: getRichText(props["単位"]) || "100g",
-      image: getFile(props["画像"]) || "/images/menu/ethiopia.jpg",
-      inStock: getCheckbox(props["在庫あり"]),
+      price: getNumber(props["100g豆売売価"]),
+      unit: "100g",
+      image: getFile(props["画像"]) || "/images/menu/default-bean.jpg",
+      inStock: true, // Already filtered by EC販売ステータス = 販売中
+      process: getSelect(props["生産処理"]),
+      variety: getMultiSelect(props["品種"]),
+      region: getRichText(props["地域"]),
+      farm: getRichText(props["農園・WS"]),
+      altitude: getRichText(props["標高"]),
+      description: getRichText(props["コメント"]) || getRichText(props["テキスト"]),
     };
   });
 }
@@ -74,14 +89,15 @@ function getSelect(prop: Record<string, unknown> | undefined): string {
   return select?.name || "";
 }
 
+function getMultiSelect(prop: Record<string, unknown> | undefined): string {
+  if (!prop || prop["type"] !== "multi_select") return "";
+  const options = prop["multi_select"] as Array<{ name: string }>;
+  return options?.map((o) => o.name).join("・") || "";
+}
+
 function getNumber(prop: Record<string, unknown> | undefined): number {
   if (!prop || prop["type"] !== "number") return 0;
   return (prop["number"] as number) || 0;
-}
-
-function getCheckbox(prop: Record<string, unknown> | undefined): boolean {
-  if (!prop || prop["type"] !== "checkbox") return true;
-  return prop["checkbox"] as boolean;
 }
 
 function getFile(prop: Record<string, unknown> | undefined): string {

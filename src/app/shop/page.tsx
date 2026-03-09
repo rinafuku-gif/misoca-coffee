@@ -23,68 +23,53 @@ const fallbackProducts: Product[] = [
   {
     id: "1",
     name: "エチオピア イルガチェフェ",
-    origin: "エチオピア",
+    origin: "エチオピア🇪🇹",
     roast: "浅煎り",
     flavor: "フローラルな香りと柑橘系の明るい酸味",
     price: 1200,
     unit: "100g",
     image: "/images/menu/ethiopia.jpg",
     inStock: true,
+    process: "Washed",
+    variety: "",
+    region: "イルガチェフェ",
+    farm: "",
+    altitude: "1,800-2,200m",
+    description: "",
   },
   {
     id: "2",
     name: "グアテマラ アンティグア",
-    origin: "グアテマラ",
+    origin: "グアテマラ🇬🇹",
     roast: "中煎り",
     flavor: "チョコレートのようなコクと甘み",
     price: 1100,
     unit: "100g",
     image: "/images/menu/guatemala.jpg",
     inStock: true,
+    process: "Washed",
+    variety: "",
+    region: "アンティグア",
+    farm: "",
+    altitude: "1,500-1,700m",
+    description: "",
   },
   {
     id: "3",
     name: "ブラジル セラード",
-    origin: "ブラジル",
+    origin: "ブラジル🇧🇷",
     roast: "中深煎り",
     flavor: "ナッツの甘みとクリーンな後味",
     price: 1000,
     unit: "100g",
     image: "/images/menu/brazil.jpg",
     inStock: true,
-  },
-  {
-    id: "4",
-    name: "コロンビア ウィラ",
-    origin: "コロンビア",
-    roast: "中煎り",
-    flavor: "キャラメルのような甘みとバランスの良い酸味",
-    price: 1100,
-    unit: "100g",
-    image: "/images/menu/guatemala.jpg",
-    inStock: true,
-  },
-  {
-    id: "5",
-    name: "ケニア AA",
-    origin: "ケニア",
-    roast: "中煎り",
-    flavor: "ベリーのような果実感と力強いボディ",
-    price: 1400,
-    unit: "100g",
-    image: "/images/menu/ethiopia.jpg",
-    inStock: true,
-  },
-  {
-    id: "6",
-    name: "インドネシア マンデリン",
-    origin: "インドネシア",
-    roast: "深煎り",
-    flavor: "どっしりとしたボディとスパイシーな余韻",
-    price: 1200,
-    unit: "100g",
-    image: "/images/menu/brazil.jpg",
-    inStock: true,
+    process: "Natural",
+    variety: "",
+    region: "セラード",
+    farm: "",
+    altitude: "1,000-1,200m",
+    description: "",
   },
 ];
 
@@ -205,9 +190,9 @@ export default function ShopPage() {
     Boolean
   );
 
-  // Filter products
+  // Filter products (roast is multi_select joined by "・", origin may have emoji flags)
   const filteredProducts = products.filter((product) => {
-    if (roastFilter !== "全て" && product.roast !== roastFilter) return false;
+    if (roastFilter !== "全て" && !product.roast.includes(roastFilter)) return false;
     if (originFilter && product.origin !== originFilter) return false;
     return true;
   });
@@ -406,9 +391,25 @@ export default function ShopPage() {
                           {product.name}
                         </h3>
 
-                        <p className="text-sm text-haicha mb-5 leading-relaxed line-clamp-2">
-                          {product.flavor}
-                        </p>
+                        {product.flavor && (
+                          <p className="text-sm text-haicha mb-3 leading-relaxed line-clamp-2">
+                            {product.flavor}
+                          </p>
+                        )}
+
+                        {/* Detail Tags */}
+                        <div className="flex flex-wrap gap-1.5 mb-4">
+                          {product.process && (
+                            <span className="text-[11px] text-haicha bg-tsuchikabe/60 px-2 py-0.5 rounded">
+                              {product.process}
+                            </span>
+                          )}
+                          {product.variety && (
+                            <span className="text-[11px] text-haicha bg-tsuchikabe/60 px-2 py-0.5 rounded">
+                              {product.variety}
+                            </span>
+                          )}
+                        </div>
 
                         <div className="flex items-end justify-between">
                           <p className="font-bold text-karekusa text-xl">
