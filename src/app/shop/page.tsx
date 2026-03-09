@@ -255,7 +255,7 @@ export default function ShopPage() {
             <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
               COFFEE BEANS
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
               コーヒー豆
             </h2>
             <p className="text-haicha text-center leading-loose mb-4">
@@ -507,7 +507,7 @@ export default function ShopPage() {
               <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
                 DRIP BAG
               </p>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-konsumi mb-8">
+              <h2 className="font-serif text-2xl md:text-3xl font-bold text-konsumi mb-8">
                 ドリップバッグ
               </h2>
               <p className="text-haicha text-lg leading-loose mb-6">
@@ -535,7 +535,7 @@ export default function ShopPage() {
       <section className="py-20 md:py-28 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
               配送について
             </h2>
             <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
@@ -606,7 +606,7 @@ export default function ShopPage() {
             <p className="text-sm tracking-[0.3em] text-white/60 mb-4">
               EXPERIENCE
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-white mb-8">
+            <h2 className="font-serif text-2xl md:text-3xl text-white mb-8">
               この豆を、自分で焙煎してみませんか？
             </h2>
             <p className="text-lg text-white/80 leading-loose mb-10">

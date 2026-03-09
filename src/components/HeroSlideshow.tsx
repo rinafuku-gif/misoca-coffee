@@ -85,7 +85,7 @@ export function HeroSlideshow() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.3] mb-8"
+              className="font-serif text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.4] mb-10"
             >
               <span className="block">コーヒーと暮らす。</span>
               <span className="block mt-2 md:mt-3">古くて新しい、みんなの焙煎所。</span>
@@ -95,7 +95,7 @@ export function HeroSlideshow() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="mb-12"
+              className="mb-14"
             >
               <p className="text-base md:text-lg text-white/80 leading-relaxed tracking-wide">
                 築300年の古民家で、自分だけのコーヒーを焙煎する。

@@ -123,7 +123,7 @@ export default function Home() {
       <HeroSlideshow />
 
       {/* ─── 2. Brand Story Strip ─── */}
-      <section className="py-16 md:py-20">
+      <section className="py-24 md:py-32">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <ScrollReveal>
             <div className="flex items-center justify-center gap-6 md:gap-8 mb-8">
@@ -133,9 +133,9 @@ export default function Home() {
               </span>
               <span className="w-12 md:w-20 h-px bg-gold" />
             </div>
-            <p className="font-serif text-xl md:text-2xl lg:text-3xl text-konsumi leading-relaxed tracking-wide">
+            <p className="font-serif text-lg md:text-xl lg:text-2xl text-konsumi leading-loose tracking-wider">
               コーヒーと暮らす。
-              <br className="md:hidden" />
+              <br />
               古くて新しい、みんなの焙煎所。
             </p>
           </ScrollReveal>
@@ -143,19 +143,19 @@ export default function Home() {
       </section>
 
       {/* ─── 3. Three Pillars Section ─── */}
-      <section className="py-20 md:py-32 overflow-hidden">
+      <section className="py-28 md:py-40 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-xs tracking-[0.4em] text-gold font-medium text-center mb-4 uppercase">
               What We Offer
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-8">
               三十日珈琲でできること
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
+            <div className="w-12 h-px bg-gold mx-auto mb-20 md:mb-28" />
           </ScrollReveal>
 
-          <div className="space-y-28 md:space-y-36">
+          <div className="space-y-32 md:space-y-44">
             {features.map((feature, i) => (
               <div
                 key={feature.title}
@@ -263,19 +263,19 @@ export default function Home() {
       </section>
 
       {/* ─── 5. Online Shop Preview ─── */}
-      <section className="py-24 md:py-32 overflow-hidden">
+      <section className="py-28 md:py-40 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-xs tracking-[0.4em] text-gold font-medium text-center mb-4 uppercase">
               Online Shop
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
               焙煎したてをお届け
             </h2>
-            <p className="text-haicha text-center leading-loose mb-4 max-w-lg mx-auto">
+            <p className="text-haicha text-center leading-loose mb-6 max-w-lg mx-auto text-sm">
               体験で出会った豆を、ご自宅でも。焙煎3日以内の新鮮な豆をお届けします。
             </p>
-            <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
+            <div className="w-12 h-px bg-gold mx-auto mb-20 md:mb-28" />
           </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-10 md:gap-14">
@@ -324,44 +324,37 @@ export default function Home() {
       </section>
 
       {/* ─── 6. Photo Gallery Strip ─── */}
-      <section className="py-8 md:py-12 overflow-hidden">
-        <ScrollReveal>
-          <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 px-4 scrollbar-hide snap-x snap-mandatory">
+      <section className="py-16 md:py-24 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
             {galleryImages.map((src, i) => (
-              <motion.div
-                key={src}
-                className="relative flex-shrink-0 w-[280px] md:w-[360px] lg:w-[420px] snap-center"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.7, delay: i * 0.1 }}
-              >
-                <div className="relative aspect-[3/4] md:aspect-[4/5] rounded-sm overflow-hidden">
+              <ScrollReveal key={src} direction="up" delay={i * 0.08}>
+                <div className="relative aspect-[4/5] rounded-sm overflow-hidden">
                   <Image
                     src={src}
                     alt=""
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-1000 ease-out"
-                    sizes="(max-width: 768px) 280px, (max-width: 1024px) 360px, 420px"
+                    sizes="(max-width: 768px) 50vw, 33vw"
                   />
                 </div>
-              </motion.div>
+              </ScrollReveal>
             ))}
           </div>
-        </ScrollReveal>
+        </div>
       </section>
 
       {/* ─── 7. Testimonials ─── */}
-      <section className="py-24 md:py-32 bg-tsuchikabe overflow-hidden">
+      <section className="py-28 md:py-40 bg-tsuchikabe overflow-hidden">
         <div className="max-w-5xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-xs tracking-[0.4em] text-gold font-medium text-center mb-4 uppercase">
               Voices
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-8">
               訪れた方の声
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
+            <div className="w-12 h-px bg-gold mx-auto mb-16 md:mb-24" />
           </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-8 md:gap-10">
@@ -391,13 +384,13 @@ export default function Home() {
       </section>
 
       {/* ─── 8. Instagram CTA ─── */}
-      <section className="py-24 md:py-32 overflow-hidden">
+      <section className="py-28 md:py-40 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
           <ScrollReveal>
             <p className="text-xs tracking-[0.4em] text-gold font-medium mb-6 uppercase">
               Follow Us
             </p>
-            <h2 className="font-display text-3xl md:text-4xl text-konsumi mb-6 tracking-wide">
+            <h2 className="font-display text-2xl md:text-3xl text-konsumi mb-6 tracking-wide">
               @misoca_coffee
             </h2>
             <p className="text-haicha leading-loose mb-12 max-w-md mx-auto">
