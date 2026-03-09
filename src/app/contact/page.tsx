@@ -282,9 +282,9 @@ export default function ContactPage() {
                       ADDRESS
                     </p>
                     <p className="text-sm text-konsumi leading-loose">
-                      〒409-0112
+                      〒409-0115
                       <br />
-                      山梨県上野原市上野原
+                      山梨県上野原市松留939
                     </p>
                   </div>
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
+import { sendOrderNotification } from "@/lib/mail";
 import type Stripe from "stripe";
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -31,14 +32,49 @@ export async function POST(request: NextRequest) {
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
+
+      // Parse items from metadata
+      let items: { name: string; qty: number }[] = [];
+      try {
+        items = JSON.parse(session.metadata?.items || "[]");
+      } catch {
+        // ignore
+      }
+
+      const sessionAny = session as unknown as Record<string, unknown>;
+      const shipping = (sessionAny["shipping_details"] || null) as {
+        address?: {
+          line1: string | null;
+          line2: string | null;
+          city: string | null;
+          state: string | null;
+          postal_code: string | null;
+          country: string | null;
+        };
+        phone?: string | null;
+      } | null;
+
+      // Send email notification
+      try {
+        await sendOrderNotification({
+          sessionId: session.id,
+          customerEmail: session.customer_details?.email || null,
+          customerName: session.customer_details?.name || null,
+          phone: session.customer_details?.phone || shipping?.phone || null,
+          address: shipping?.address || null,
+          amountTotal: session.amount_total || 0,
+          items,
+        });
+        console.log("Order notification email sent");
+      } catch (emailError) {
+        console.error("Failed to send order notification:", emailError);
+      }
+
       console.log("Payment succeeded:", {
         sessionId: session.id,
         customerEmail: session.customer_details?.email,
         amountTotal: session.amount_total,
-        metadata: session.metadata,
       });
-      // TODO: 注文データをNotionや管理DBに保存
-      // TODO: 確認メール送信
       break;
     }
 

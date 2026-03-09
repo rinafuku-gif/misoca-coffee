@@ -15,8 +15,8 @@ export default function TokushohoPage() {
             <dl className="space-y-4 text-sm">
               {[
                 ["販売業者", "三十日珈琲"],
-                ["所在地", "〒409-0112 山梨県上野原市上野原"],
-                ["メールアドレス", "info@misoca-coffee.jp"],
+                ["所在地", "〒409-0115 山梨県上野原市松留939"],
+                ["メールアドレス", "misocacoffee@gmail.com"],
                 ["販売価格", "各商品ページに記載"],
                 ["送料", "全国一律 ¥370（¥5,000以上で送料無料）"],
                 ["お支払い方法", "クレジットカード（Stripe）"],

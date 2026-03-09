@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP, Noto_Serif_JP, Playfair_Display } from "next/font/google";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { SiteShell } from "@/components/SiteShell";
 import "./globals.css";
 
 const notoSans = Noto_Sans_JP({
@@ -42,9 +41,7 @@ export default function RootLayout({
   return (
     <html lang="ja" className={`${notoSans.variable} ${notoSerif.variable} ${playfair.variable}`} suppressHydrationWarning>
       <body className="antialiased">
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <SiteShell>{children}</SiteShell>
       </body>
     </html>
   );

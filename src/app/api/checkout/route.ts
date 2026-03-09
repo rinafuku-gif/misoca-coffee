@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         price_data: {
           currency: "jpy",
           product_data: {
-            name: "送料（ネコポス）",
+            name: "送料",
           },
           unit_amount: shippingCost,
         },
@@ -68,6 +68,9 @@ export async function POST(request: NextRequest) {
       cancel_url: `${baseUrl}/shop`,
       shipping_address_collection: {
         allowed_countries: ["JP"],
+      },
+      phone_number_collection: {
+        enabled: true,
       },
       metadata: {
         items: JSON.stringify(

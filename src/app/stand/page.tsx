@@ -159,7 +159,7 @@ export default function StandPage() {
               </p>
               <div className="w-16 h-px bg-gold mx-auto mb-8" />
               <p className="text-sm text-haicha leading-loose">
-                〒409-0112 山梨県上野原市上野原
+                〒409-0115 山梨県上野原市松留939
               </p>
             </div>
           </ScrollReveal>

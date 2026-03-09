@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -119,21 +120,41 @@ export function Header() {
       >
         <div className="max-w-7xl mx-auto px-6 md:px-8 h-20 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex flex-col items-start group">
-            <span
-              className={`font-serif text-xl font-bold tracking-wide transition-colors duration-500 ${
-                scrolled ? "text-konsumi" : "text-white"
+          <Link href="/" className="flex items-center gap-3 group">
+            <Image
+              src="/images/logo-circle-green.jpg"
+              alt="三十日珈琲 ロゴ"
+              width={44}
+              height={44}
+              className={`rounded-full transition-opacity duration-500 ${
+                scrolled ? "opacity-100" : "opacity-0"
               }`}
-            >
-              三十日珈琲
-            </span>
-            <span
-              className={`font-[family-name:var(--font-display)] text-[10px] tracking-[0.25em] uppercase transition-colors duration-500 ${
-                scrolled ? "text-haicha" : "text-white/70"
+            />
+            <Image
+              src="/images/logo-circle-white.jpg"
+              alt="三十日珈琲 ロゴ"
+              width={44}
+              height={44}
+              className={`rounded-full absolute transition-opacity duration-500 ${
+                scrolled ? "opacity-0" : "opacity-100"
               }`}
-            >
-              Shared Roasting
-            </span>
+            />
+            <div className="flex flex-col">
+              <span
+                className={`font-serif text-lg font-bold tracking-wide transition-colors duration-500 ${
+                  scrolled ? "text-konsumi" : "text-white"
+                }`}
+              >
+                三十日珈琲
+              </span>
+              <span
+                className={`font-[family-name:var(--font-display)] text-[9px] tracking-[0.25em] uppercase transition-colors duration-500 ${
+                  scrolled ? "text-haicha" : "text-white/70"
+                }`}
+              >
+                Shared Roasting
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Nav */}
@@ -369,9 +390,9 @@ export function Header() {
               {/* Drawer Footer */}
               <div className="px-6 py-6 border-t border-usuzumi/20">
                 <p className="text-xs text-haicha leading-relaxed">
-                  〒409-0112 山梨県上野原市上野原
+                  〒409-0115 山梨県上野原市松留939
                 </p>
-                <p className="text-xs text-haicha mt-1">info@misoca-coffee.jp</p>
+                <p className="text-xs text-haicha mt-1">misocacoffee@gmail.com</p>
               </div>
             </motion.nav>
           </>

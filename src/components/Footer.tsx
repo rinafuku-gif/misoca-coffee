@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const footerLinks = [
   {
@@ -50,24 +51,33 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
           {/* Brand Column */}
           <div className="lg:col-span-3">
-            <div className="mb-6">
-              <p className="font-serif text-2xl font-bold tracking-wide">三十日珈琲</p>
-              <p className="font-[family-name:var(--font-display)] text-[11px] tracking-[0.25em] text-ainezu uppercase mt-1">
-                Shared Roasting
-              </p>
+            <div className="mb-6 flex items-center gap-3">
+              <Image
+                src="/images/logo-circle-white.jpg"
+                alt="三十日珈琲 ロゴ"
+                width={48}
+                height={48}
+                className="rounded-full"
+              />
+              <div>
+                <p className="font-serif text-2xl font-bold tracking-wide">三十日珈琲</p>
+                <p className="font-[family-name:var(--font-display)] text-[11px] tracking-[0.25em] text-ainezu uppercase mt-0.5">
+                  Shared Roasting
+                </p>
+              </div>
             </div>
             <div className="space-y-2 text-sm text-ainezu leading-relaxed">
               <p>
-                〒409-0112
+                〒409-0115
                 <br />
-                山梨県上野原市上野原
+                山梨県上野原市松留939
               </p>
               <p>
                 <a
-                  href="mailto:info@misoca-coffee.jp"
+                  href="mailto:misocacoffee@gmail.com"
                   className="hover:text-white transition-colors duration-300"
                 >
-                  info@misoca-coffee.jp
+                  misocacoffee@gmail.com
                 </a>
               </p>
             </div>
