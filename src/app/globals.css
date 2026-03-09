@@ -25,6 +25,45 @@
   /* Fonts */
   --font-sans: var(--font-noto-sans, "Noto Sans JP"), "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
   --font-serif: var(--font-noto-serif, "Noto Serif JP"), "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-display: var(--font-playfair, "Playfair Display"), serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background-color: var(--color-gold);
+  color: #fff;
+}
+
+::-moz-selection {
+  background-color: var(--color-gold);
+  color: #fff;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-kominka-white);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-karekusa);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-konsumi);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-karekusa) var(--color-kominka-white);
 }
 
 body {

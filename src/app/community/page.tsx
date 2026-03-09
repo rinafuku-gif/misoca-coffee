@@ -1,96 +1,188 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import Link from "next/link";
 import { PageHero } from "@/components/PageHero";
 import { ScrollReveal } from "@/components/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "コミュニティ",
   description:
-    "三十日珈琲は、ADDress（多拠点生活サービス）から生まれたコミュニティ型の焙煎所です。",
+    "三十日珈琲のコミュニティ。コーヒーを通じてつながる人と場所。焙煎体験、イベント、地域交流を通じた新しいつながりの形。",
 };
+
+const connections = [
+  {
+    num: "01",
+    title: "焙煎体験でつながる",
+    text: "一緒に豆を焙煎し、テイスティングする時間は、自然と会話が生まれる時間。初対面の方同士が、コーヒーを通じて友人になることも珍しくありません。",
+  },
+  {
+    num: "02",
+    title: "地域でつながる",
+    text: "上野原の農家さんや職人さんとの協業、地域イベントへの出店。コーヒーを起点に、まちの魅力を内外に発信しています。",
+  },
+  {
+    num: "03",
+    title: "オンラインでつながる",
+    text: "Instagramでの情報発信、オンラインショップを通じたやりとり。遠くにいても三十日珈琲とつながれる仕組みをつくっています。",
+  },
+];
 
 export default function CommunityPage() {
   return (
     <>
       <PageHero
         title="COMMUNITY"
-        subtitle="コーヒーでつながる"
-        description="三十日珈琲は、ADDress（多拠点生活サービス）から生まれたコミュニティ型の焙煎所です。"
-        image="/images/community/people.jpg"
+        subtitle="コミュニティ"
+        description="コーヒーでつながる、人と場所。"
       />
 
-      {/* ADDress Partnership */}
-      <section className="py-32 md:py-44 overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4 md:px-8">
+      {/* Concept */}
+      <section className="py-20 md:py-28 overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
-              ADDressとの連携
+            <p className="text-sm tracking-[0.3em] text-gold font-medium mb-8">
+              CONCEPT
+            </p>
+            <h2 className="font-serif text-3xl md:text-5xl text-konsumi mb-8 leading-tight">
+              コーヒーでつながる
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-20 md:mb-24" />
+            <div className="w-16 h-px bg-gold mx-auto mb-12" />
           </ScrollReveal>
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <ScrollReveal delay={0.2}>
+            <p className="text-haicha text-lg leading-loose max-w-2xl mx-auto mb-6">
+              三十日珈琲は、コーヒーを「飲む場所」であると同時に、
+              「人と出会う場所」でありたいと考えています。
+            </p>
+            <p className="text-haicha text-lg leading-loose max-w-2xl mx-auto">
+              焙煎体験に訪れる人、コーヒースタンドで立ち寄る人、
+              オンラインで豆を注文する人。さまざまな形で三十日珈琲と関わるすべての人が、
+              ゆるやかにつながるコミュニティを育てています。
+            </p>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Three Connections */}
+      <section className="bg-tsuchikabe py-20 md:py-28 overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 md:px-8">
+          <ScrollReveal>
+            <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
+              CONNECTIONS
+            </p>
+            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+              3つのつながり
+            </h2>
+            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
+          </ScrollReveal>
+
+          <div className="space-y-10">
+            {connections.map((item, i) => (
+              <ScrollReveal
+                key={item.num}
+                direction={i % 2 === 0 ? "left" : "right"}
+                delay={i * 0.1}
+              >
+                <div className="bg-white p-8 md:p-12 rounded-lg shadow-sm">
+                  <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start">
+                    <span className="text-3xl font-serif text-gold/40 font-bold flex-shrink-0">
+                      {item.num}
+                    </span>
+                    <div>
+                      <h3 className="font-serif text-xl font-bold text-konsumi mb-4">
+                        {item.title}
+                      </h3>
+                      <p className="text-haicha text-lg leading-loose">
+                        {item.text}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Instagram & Events */}
+      <section className="py-20 md:py-28 overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 md:px-8">
+          <div className="grid md:grid-cols-2 gap-10 md:gap-16">
             <ScrollReveal direction="left">
-              <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-xl">
-                <Image
-                  src="/images/community/people.jpg"
-                  alt="ADDress拠点での写真"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
+              <div className="bg-tsuchikabe p-10 rounded-lg h-full">
+                <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
+                  INSTAGRAM
+                </p>
+                <h3 className="font-serif text-xl font-bold text-konsumi mb-6">
+                  日々の発信
+                </h3>
+                <p className="text-haicha leading-loose mb-8">
+                  焙煎の様子、季節の風景、新しい豆の入荷情報。
+                  三十日珈琲の日常をInstagramでお届けしています。
+                </p>
+                <a
+                  href="https://instagram.com/misoca_coffee"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-6 py-3 rounded font-medium transition-all duration-300 text-sm"
+                >
+                  @misoca_coffee
+                </a>
               </div>
             </ScrollReveal>
-            <ScrollReveal direction="right" delay={0.2}>
-              <div className="text-haicha text-lg leading-loose space-y-4">
-                <p>
-                  多拠点生活の中で出会った2人の創業者が、
-                  「旅するようにコーヒーと出会う場所」を作りたいと始めた焙煎所です。
+
+            <ScrollReveal direction="right" delay={0.15}>
+              <div className="bg-tsuchikabe p-10 rounded-lg h-full">
+                <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
+                  EVENTS
                 </p>
-                <p>
-                  ADDress会員の方は滞在中にお気軽にお立ち寄りください。
+                <h3 className="font-serif text-xl font-bold text-konsumi mb-6">
+                  イベント
+                </h3>
+                <p className="text-haicha leading-loose mb-8">
+                  地域のマルシェやお祭りへの出店、
+                  ワークショップの開催など、
+                  さまざまなイベントに参加しています。
+                  最新情報はInstagramをご確認ください。
                 </p>
+                <Link
+                  href="/stand"
+                  className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-6 py-3 rounded font-medium transition-all duration-300 text-sm"
+                >
+                  コーヒースタンドへ
+                </Link>
               </div>
             </ScrollReveal>
           </div>
         </div>
       </section>
 
-      {/* Member Registration */}
-      <section className="bg-tsuchikabe py-32 md:py-44 overflow-hidden">
-        <div className="max-w-2xl mx-auto px-4 md:px-8 text-center">
+      {/* CTA */}
+      <section className="bg-tsuchikabe py-20 md:py-28 overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 text-center">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-konsumi mb-6">
-              焙煎所メンバー登録
+            <h2 className="font-serif text-3xl md:text-4xl text-konsumi mb-8">
+              三十日珈琲とつながる
             </h2>
-            <p className="text-sm text-haicha mb-8">無料</p>
-            <div className="w-16 h-px bg-gold mx-auto mb-16" />
+            <p className="text-haicha text-lg leading-loose mb-10">
+              焙煎体験でお会いしましょう。
+              <br />
+              コーヒーを通じた新しいつながりが、ここから始まります。
+            </p>
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
-            <div className="bg-white p-10 rounded-lg shadow-sm">
-              <ul className="text-sm text-haicha space-y-4 text-left mb-12">
-                <li className="flex items-center gap-3">
-                  <span className="w-4 h-px bg-gold flex-shrink-0" />
-                  限定ブログ（焙煎レシピ・産地情報）が読める
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="w-4 h-px bg-gold flex-shrink-0" />
-                  焙煎体験の優先予約
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="w-4 h-px bg-gold flex-shrink-0" />
-                  来訪スタンプカード（特典あり）
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="w-4 h-px bg-gold flex-shrink-0" />
-                  メンバー限定イベントのご案内
-                </li>
-              </ul>
-              <button className="w-full bg-gold hover:bg-gold-dark text-white py-3 rounded font-medium transition-colors">
-                無料メンバー登録する
-              </button>
-              <p className="text-xs text-haicha mt-3">
-                ※ メンバー登録機能は準備中です
-              </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/experience"
+                className="inline-block bg-gold hover:bg-gold-dark text-white px-10 py-4 rounded text-lg font-medium transition-colors"
+              >
+                焙煎体験を予約する
+              </Link>
+              <Link
+                href="/contact"
+                className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-10 py-4 rounded text-lg font-medium transition-all duration-300"
+              >
+                お問い合わせ
+              </Link>
             </div>
           </ScrollReveal>
         </div>

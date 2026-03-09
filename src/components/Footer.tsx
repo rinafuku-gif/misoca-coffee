@@ -43,29 +43,48 @@ const legalLinks = [
 export function Footer() {
   return (
     <footer className="bg-konsumi text-white">
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
-          {/* Brand */}
-          <div className="lg:col-span-1">
-            <p className="font-serif text-xl font-bold mb-3">三十日珈琲</p>
-            <p className="text-sm text-ainezu leading-relaxed">
-              〒409-0112
-              <br />
-              山梨県上野原市上野原
-            </p>
-            <p className="text-sm text-ainezu mt-2">info@misoca-coffee.jp</p>
+      {/* Subtle top divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-6 md:px-8 py-20 md:py-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
+          {/* Brand Column */}
+          <div className="lg:col-span-3">
+            <div className="mb-6">
+              <p className="font-serif text-2xl font-bold tracking-wide">三十日珈琲</p>
+              <p className="font-[family-name:var(--font-display)] text-[11px] tracking-[0.25em] text-ainezu uppercase mt-1">
+                Shared Roasting
+              </p>
+            </div>
+            <div className="space-y-2 text-sm text-ainezu leading-relaxed">
+              <p>
+                〒409-0112
+                <br />
+                山梨県上野原市上野原
+              </p>
+              <p>
+                <a
+                  href="mailto:info@misoca-coffee.jp"
+                  className="hover:text-white transition-colors duration-300"
+                >
+                  info@misoca-coffee.jp
+                </a>
+              </p>
+            </div>
           </div>
 
           {/* Nav Groups */}
           {footerLinks.map((group) => (
-            <div key={group.title}>
-              <p className="font-medium text-sm mb-3">{group.title}</p>
-              <ul className="space-y-2">
+            <div key={group.title} className="lg:col-span-2">
+              <p className="text-xs font-medium tracking-[0.15em] uppercase text-white/50 mb-4">
+                {group.title}
+              </p>
+              <ul className="space-y-2.5">
                 {group.links.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-ainezu hover:text-white transition-colors"
+                      className="text-sm text-ainezu hover:text-white transition-colors duration-300"
                     >
                       {link.label}
                     </Link>
@@ -74,24 +93,73 @@ export function Footer() {
               </ul>
             </div>
           ))}
+
+          {/* Right Column - Social & Newsletter */}
+          <div className="lg:col-span-1 hidden lg:block" />
+        </div>
+
+        {/* Social & Newsletter Row */}
+        <div className="mt-16 pt-8 border-t border-white/10">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            {/* Instagram */}
+            <div className="flex items-center gap-4">
+              <a
+                href="https://www.instagram.com/misoca_coffee/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-sm text-ainezu hover:text-white transition-colors duration-300 group"
+              >
+                <svg
+                  className="w-5 h-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5" />
+                  <circle cx="12" cy="12" r="5" />
+                  <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+                </svg>
+                <span className="tracking-wide">@misoca_coffee</span>
+              </a>
+            </div>
+
+            {/* Newsletter placeholder */}
+            <p className="text-xs text-ainezu/60 tracking-wide">
+              ニュースレター配信準備中
+            </p>
+          </div>
+        </div>
+
+        {/* Divider pattern */}
+        <div className="mt-10 flex items-center gap-4">
+          <div className="flex-1 h-px bg-white/10" />
+          <div className="flex gap-1.5">
+            <div className="w-1 h-1 rounded-full bg-gold/40" />
+            <div className="w-1 h-1 rounded-full bg-gold/25" />
+            <div className="w-1 h-1 rounded-full bg-gold/15" />
+          </div>
+          <div className="flex-1 h-px bg-white/10" />
         </div>
 
         {/* Legal & Copyright */}
-        <div className="mt-14 pt-8 border-t border-white/20">
+        <div className="mt-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-6">
               {legalLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-xs text-ainezu hover:text-white transition-colors"
+                  className="text-xs text-ainezu/60 hover:text-ainezu transition-colors duration-300"
                 >
                   {link.label}
                 </Link>
               ))}
             </div>
-            <p className="text-xs text-ainezu">
-              © 2026 三十日珈琲 All rights reserved.
+            <p className="text-xs text-ainezu/50 tracking-wide">
+              &copy; 2026 三十日珈琲 All rights reserved.
             </p>
           </div>
         </div>
