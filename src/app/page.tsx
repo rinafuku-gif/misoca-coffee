@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { HeroSlideshow } from "@/components/HeroSlideshow";
 import { ScrollReveal } from "@/components/ScrollReveal";
 
@@ -39,7 +39,7 @@ const features = [
   },
 ];
 
-const pickupMenus = [
+const fallbackPickupMenus = [
   {
     name: "エチオピア イルガチェフェ",
     description: "フローラルな香りと柑橘系の明るい酸味",
@@ -90,6 +90,26 @@ const testimonials = [
 /* ──────────────────── Component ──────────────────── */
 
 export default function Home() {
+  const [pickupMenus, setPickupMenus] = useState(fallbackPickupMenus);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setPickupMenus(
+            data.slice(0, 3).map((p: { name: string; flavor: string; price: number; image: string }) => ({
+              name: p.name,
+              description: p.flavor || "",
+              price: `¥${p.price.toLocaleString()}`,
+              image: p.image || "/images/menu/ethiopia.jpg",
+            }))
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const ctaParallaxRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ctaParallaxRef,
