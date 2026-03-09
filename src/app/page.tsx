@@ -134,9 +134,9 @@ export default function Home() {
               <span className="w-12 md:w-20 h-px bg-gold" />
             </div>
             <p className="font-serif text-xl md:text-2xl lg:text-3xl text-konsumi leading-relaxed tracking-wide">
-              一杯の先に、体験がある。
+              コーヒーと暮らす。
               <br className="md:hidden" />
-              場所がある。人がいる。
+              古くて新しい、みんなの焙煎所。
             </p>
           </ScrollReveal>
         </div>

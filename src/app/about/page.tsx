@@ -7,7 +7,7 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 export const metadata: Metadata = {
   title: "三十日珈琲について",
   description:
-    "三十日珈琲のストーリー。築300年の古民家を拠点に、コーヒーを入口とした「暮らしの体験」を届ける焙煎所。上野原の風景と人が織りなす、もうひとつの日常。",
+    "三十日珈琲のストーリー。築300年の古民家を拠点に、コーヒーを入口とした「暮らしの体験」を届ける焙煎所。コーヒーと暮らす。古くて新しい、みんなの焙煎所。",
 };
 
 export default function AboutPage() {
@@ -29,9 +29,9 @@ export default function AboutPage() {
                   BRAND STORY
                 </p>
                 <h2 className="font-serif text-3xl md:text-5xl text-konsumi mb-8 leading-tight">
-                  コーヒーから始まる。
+                  コーヒーと暮らす。
                   <br />
-                  もうひとつの日常。
+                  古くて新しい、みんなの焙煎所。
                 </h2>
                 <div className="w-16 h-px bg-gold mb-10 mx-auto md:mx-0" />
                 <p className="text-haicha text-lg leading-loose mb-6">

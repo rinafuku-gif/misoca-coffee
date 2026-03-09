@@ -26,7 +26,7 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "三十日珈琲 Shared Roasting | コーヒーから始まる、もうひとつの日常",
+    default: "三十日珈琲 Shared Roasting | コーヒーと暮らす。古くて新しい、みんなの焙煎所",
     template: "%s | 三十日珈琲",
   },
   description:

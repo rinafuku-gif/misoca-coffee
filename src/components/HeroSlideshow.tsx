@@ -87,8 +87,8 @@ export function HeroSlideshow() {
               transition={{ duration: 1.2, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.3] mb-8"
             >
-              <span className="block">コーヒーから始まる。</span>
-              <span className="block mt-2 md:mt-3">もうひとつの日常。</span>
+              <span className="block">コーヒーと暮らす。</span>
+              <span className="block mt-2 md:mt-3">古くて新しい、みんなの焙煎所。</span>
             </motion.h1>
 
             <motion.div
