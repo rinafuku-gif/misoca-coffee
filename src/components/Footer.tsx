@@ -29,8 +29,8 @@ const footerLinks = [
     title: "つながる",
     links: [
       { href: "/community", label: "コミュニティ" },
-      { href: "/contact", label: "お問い合わせ" },
       { href: "https://luma.com/misoca_coffee", label: "イベント情報" },
+      { href: "/contact", label: "お問い合わせ" },
     ],
   },
 ];
@@ -51,13 +51,20 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
           {/* Brand Column */}
           <div className="lg:col-span-3">
-            <div className="mb-8">
+            <div className="mb-6 flex items-center gap-3">
               <Image
                 src="/images/logo-circle-white.jpg"
-                alt="三十日珈琲"
-                width={80}
-                height={80}
+                alt="三十日珈琲 ロゴ"
+                width={48}
+                height={48}
+                className="rounded-full"
               />
+              <div>
+                <p className="font-serif text-2xl font-bold tracking-wide">三十日珈琲</p>
+                <p className="font-[family-name:var(--font-display)] text-[11px] tracking-[0.25em] text-ainezu uppercase mt-0.5">
+                  Shared Roasting
+                </p>
+              </div>
             </div>
             <div className="space-y-2 text-sm text-ainezu leading-relaxed">
               <p>
@@ -140,12 +147,12 @@ export function Footer() {
               </a>
             </div>
 
-            {/* Prairie Cards */}
+            {/* Newsletter placeholder */}
             <a
               href="https://my.prairie.cards/u/misocacoffee"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-ainezu/60 hover:text-ainezu transition-colors duration-300 tracking-wide"
+              className="text-xs text-ainezu/60 hover:text-ainezu tracking-wide transition-colors duration-300"
             >
               リンクまとめ（Prairie Cards）
             </a>

@@ -50,13 +50,13 @@ const fallbackPickupMenus = [
     name: "ブラジル サントアントニオ プレミアムショコラ",
     description: "チョコレートのようなコクと甘み",
     price: "¥800",
-    image: "/images/menu/brazil.jpg",
+    image: "/images/menu/guatemala.jpg",
   },
   {
     name: "Peru El Diamante (W)",
     description: "クリーンな酸味とナッツの余韻",
     price: "¥900",
-    image: "/images/menu/guatemala.jpg",
+    image: "/images/menu/brazil.jpg",
   },
 ];
 
@@ -245,7 +245,7 @@ export default function Home() {
               </span>
               <span className="flex items-center justify-center gap-3">
                 <span className="w-5 h-px bg-gold/60" />
-                約90分・完全貸切
+                約90分
               </span>
               <span className="flex items-center justify-center gap-3">
                 <span className="w-5 h-px bg-gold/60" />

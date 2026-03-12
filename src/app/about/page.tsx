@@ -212,7 +212,7 @@ export default function AboutPage() {
 
       {/* Media */}
       <section className="py-20 md:py-28 overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4 md:px-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
               MEDIA
@@ -224,19 +224,19 @@ export default function AboutPage() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.1}>
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-3xl mx-auto">
               <a
-                href="https://note.com/3hara4tei/n/n478307397bf0"
+                href="https://note.com/misocacoffee/n/n8e21668e7775"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group block bg-white p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
+                className="block bg-white p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
               >
-                <p className="text-xs text-gold mb-2 tracking-wide">note</p>
-                <h3 className="font-serif text-lg text-konsumi group-hover:text-gold transition-colors mb-3">
-                  マナビバ インタビューVol.2 三十日珈琲さん
+                <p className="text-xs text-gold font-medium tracking-wide mb-2">note</p>
+                <h3 className="font-serif text-lg text-konsumi mb-2">
+                  三十日珈琲のストーリー
                 </h3>
                 <p className="text-sm text-haicha leading-relaxed">
-                  見晴亭が毎月開催する講座「マナビバ」の講師インタビュー。コーヒーがつないだ人と場所のストーリー。
+                  三十日珈琲が生まれるまでの物語をnoteで公開しています。
                 </p>
               </a>
             </div>

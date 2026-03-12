@@ -120,25 +120,41 @@ export function Header() {
       >
         <div className="max-w-7xl mx-auto px-6 md:px-8 h-20 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="relative flex items-center group">
+          <Link href="/" className="flex items-center gap-3 group">
             <Image
               src="/images/logo-circle-green.jpg"
-              alt="三十日珈琲"
-              width={56}
-              height={56}
-              className={`transition-opacity duration-500 ${
+              alt="三十日珈琲 ロゴ"
+              width={44}
+              height={44}
+              className={`rounded-full transition-opacity duration-500 ${
                 scrolled ? "opacity-100" : "opacity-0"
               }`}
             />
             <Image
               src="/images/logo-circle-white.jpg"
-              alt="三十日珈琲"
-              width={56}
-              height={56}
-              className={`absolute left-0 transition-opacity duration-500 ${
+              alt="三十日珈琲 ロゴ"
+              width={44}
+              height={44}
+              className={`rounded-full absolute transition-opacity duration-500 ${
                 scrolled ? "opacity-0" : "opacity-100"
               }`}
             />
+            <div className="flex flex-col">
+              <span
+                className={`font-serif text-lg font-bold tracking-wide transition-colors duration-500 ${
+                  scrolled ? "text-konsumi" : "text-white"
+                }`}
+              >
+                三十日珈琲
+              </span>
+              <span
+                className={`font-[family-name:var(--font-display)] text-[9px] tracking-[0.25em] uppercase transition-colors duration-500 ${
+                  scrolled ? "text-haicha" : "text-white/70"
+                }`}
+              >
+                Shared Roasting
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Nav */}
@@ -292,12 +308,12 @@ export function Header() {
             >
               {/* Drawer Header */}
               <div className="flex items-center justify-between px-6 h-20 border-b border-usuzumi/30">
-                <Image
-                  src="/images/logo-circle-green.jpg"
-                  alt="三十日珈琲"
-                  width={48}
-                  height={48}
-                />
+                <div className="flex flex-col">
+                  <span className="font-serif text-lg font-bold text-konsumi">三十日珈琲</span>
+                  <span className="font-[family-name:var(--font-display)] text-[9px] tracking-[0.25em] text-haicha uppercase">
+                    Shared Roasting
+                  </span>
+                </div>
                 <button
                   onClick={() => setMobileOpen(false)}
                   aria-label="メニューを閉じる"

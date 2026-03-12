@@ -34,12 +34,12 @@ export function ExperienceClientSections() {
               Reservation
             </p>
             <h2 className="font-serif text-3xl md:text-4xl text-white mb-8">
-              ご予約
+              ご予約・お問い合わせ
             </h2>
             <p className="text-white/70 leading-loose mb-12 max-w-xl mx-auto">
-              完全予約制・貸切の焙煎体験です。
+              完全予約制・少人数制です。
               <br />
-              ご希望の日程をお選びいただければ、折り返しご連絡いたします。
+              日程・人数をお知らせいただければ、折り返しご連絡いたします。
             </p>
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
@@ -49,10 +49,10 @@ export function ExperienceClientSections() {
               rel="noopener noreferrer"
               className="inline-block bg-gold hover:bg-gold-dark text-white px-12 py-4 rounded-sm text-sm tracking-widest font-medium transition-colors duration-300"
             >
-              焙煎体験を予約する
+              予約・お問い合わせ
             </a>
             <p className="text-xs text-white/40 mt-8 tracking-wide">
-              Instagram DM・お電話でもご予約いただけます
+              Instagram DM・LINE・お電話でもご予約いただけます
             </p>
           </ScrollReveal>
         </div>
