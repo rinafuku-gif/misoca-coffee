@@ -57,6 +57,52 @@ export const metadata: Metadata = {
   },
 };
 
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://misoca-coffee.vercel.app/#business",
+      name: "三十日珈琲",
+      alternateName: "Misoca Coffee Shared Roasting",
+      description:
+        "山梨県上野原市、築300年の古民家で焙煎体験。スペシャルティコーヒーの焙煎所。",
+      url: "https://misoca-coffee.vercel.app",
+      image: "https://misoca-coffee.vercel.app/images/hero/hero-interior-atmosphere.jpg",
+      email: "misocacoffee@gmail.com",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "松留939",
+        addressLocality: "上野原市",
+        addressRegion: "山梨県",
+        postalCode: "409-0115",
+        addressCountry: "JP",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: 35.6306,
+        longitude: 139.1106,
+      },
+      sameAs: [
+        "https://www.instagram.com/misoca_coffee/",
+        "https://luma.com/misoca_coffee",
+        "https://my.prairie.cards/u/misocacoffee",
+      ],
+      priceRange: "¥800〜¥8,800",
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://misoca-coffee.vercel.app/#website",
+      url: "https://misoca-coffee.vercel.app",
+      name: "三十日珈琲",
+      publisher: { "@id": "https://misoca-coffee.vercel.app/#business" },
+      inLanguage: "ja",
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -64,6 +110,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className={`${notoSans.variable} ${notoSerif.variable} ${playfair.variable}`} suppressHydrationWarning>
+      <head>
+        {GA_ID && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`,
+              }}
+            />
+          </>
+        )}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="antialiased">
         <SiteShell>{children}</SiteShell>
       </body>

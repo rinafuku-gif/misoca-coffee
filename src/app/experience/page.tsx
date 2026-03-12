@@ -11,6 +11,24 @@ export const metadata: Metadata = {
     "築300年の古民家で、自分だけのコーヒーを焙煎する体験。生豆の選別から焙煎、ドリップまで約90分。公式サイトからの直予約が最もお得です。",
 };
 
+const experienceJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "三十日珈琲 焙煎体験",
+  description:
+    "築300年の古民家で、Aillio Bullet R1 V2を使って自分だけのコーヒーを焙煎する体験。約90分、完全貸切。",
+  url: "https://misoca-coffee.vercel.app/experience",
+  brand: { "@type": "Brand", name: "三十日珈琲" },
+  offers: {
+    "@type": "Offer",
+    price: "8800",
+    priceCurrency: "JPY",
+    description: "1組（2名まで）・完全貸切・約90分",
+    url: "https://docs.google.com/forms/d/e/1FAIpQLSddXQX_VthNqn6GmfG_Nf_tidQgW_9q_oJtIeBMvPAGoTwCvQ/viewform",
+    availability: "https://schema.org/InStock",
+  },
+};
+
 const steps = [
   {
     num: "01",
@@ -54,6 +72,11 @@ const galleryImages = [
 export default function ExperiencePage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(experienceJsonLd) }}
+      />
+
       {/* ─── 1. Page Hero ─── */}
       <PageHero
         title="EXPERIENCE"
