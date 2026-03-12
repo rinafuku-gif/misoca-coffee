@@ -41,22 +41,22 @@ const features = [
 
 const fallbackPickupMenus = [
   {
-    name: "エチオピア イルガチェフェ",
-    description: "フローラルな香りと柑橘系の明るい酸味",
-    price: "¥1,680",
+    name: "Ethiopia Aricha (N)",
+    description: "フルーティーな甘みとベリーのような香り",
+    price: "¥900",
     image: "/images/menu/ethiopia.jpg",
   },
   {
-    name: "グアテマラ アンティグア",
+    name: "ブラジル サントアントニオ プレミアムショコラ",
     description: "チョコレートのようなコクと甘み",
-    price: "¥1,480",
-    image: "/images/menu/guatemala.jpg",
+    price: "¥800",
+    image: "/images/menu/brazil.jpg",
   },
   {
-    name: "ブラジル セラード",
-    description: "ナッツの甘みとクリーンな後味",
-    price: "¥1,380",
-    image: "/images/menu/brazil.jpg",
+    name: "Peru El Diamante (W)",
+    description: "クリーンな酸味とナッツの余韻",
+    price: "¥900",
+    image: "/images/menu/guatemala.jpg",
   },
 ];
 
@@ -72,7 +72,7 @@ const galleryImages = [
 const testimonials = [
   {
     quote:
-      "東京から1時間で、まるで別世界。古民家で自分で焙煎したコーヒーは格別でした。",
+      "都心から少し足を伸ばすだけで、まるで別世界。古民家で自分で焙煎したコーヒーは格別でした。",
     author: "東京都 M.S.さん (30代)",
   },
   {

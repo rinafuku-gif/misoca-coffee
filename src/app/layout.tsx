@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     template: "%s | 三十日珈琲",
   },
   description:
-    "山梨県上野原市、築300年の古民家で焙煎体験。コーヒーを入口に、暮らしの体験を届ける。東京から約1時間、自分だけのコーヒーを焙煎する特別な時間。",
+    "山梨県上野原市、築300年の古民家で焙煎体験。コーヒーを入口に、暮らしの体験を届ける。都心から少し足を伸ばして、自分だけのコーヒーを焙煎する特別な時間。",
   metadataBase: new URL("https://misoca-coffee.vercel.app"),
   openGraph: {
     type: "website",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     siteName: "三十日珈琲 Shared Roasting",
     title: "三十日珈琲 | コーヒーと暮らす。古くて新しい、みんなの焙煎所",
     description:
-      "山梨県上野原市、築300年の古民家で焙煎体験。東京から約1時間、自分だけのコーヒーを焙煎する特別な時間。",
+      "山梨県上野原市、築300年の古民家で焙煎体験。都心から少し足を伸ばして、自分だけのコーヒーを焙煎する特別な時間。",
     images: [
       {
         url: "/images/hero/hero-interior-atmosphere.jpg",
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "三十日珈琲 | コーヒーと暮らす。古くて新しい、みんなの焙煎所",
     description:
-      "山梨県上野原市、築300年の古民家で焙煎体験。東京から約1時間、自分だけのコーヒーを焙煎する特別な時間。",
+      "山梨県上野原市、築300年の古民家で焙煎体験。都心から少し足を伸ばして、自分だけのコーヒーを焙煎する特別な時間。",
     images: ["/images/hero/hero-interior-atmosphere.jpg"],
   },
 };

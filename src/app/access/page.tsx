@@ -15,7 +15,7 @@ export default function AccessPage() {
       <PageHero
         title="ACCESS"
         subtitle="アクセス"
-        description="東京から約1時間。里山の古民家へ。"
+        description="都心から少し足を伸ばして。里山の古民家へ。"
         image="/images/about/exterior-window.jpg"
       />
 
@@ -176,7 +176,7 @@ export default function AccessPage() {
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
             <p className="text-center text-haicha text-lg leading-loose mt-10 max-w-2xl mx-auto">
-              東京から約1時間。都会の喧騒を離れ、
+              都心から少し足を伸ばすだけ。都会の喧騒を離れ、
               里山の自然のなかでゆっくりとした時間をお過ごしください。
             </p>
           </ScrollReveal>

@@ -79,7 +79,7 @@ export default function AboutPage() {
           <ScrollReveal delay={0.1}>
             <div className="max-w-3xl mx-auto text-center mb-16">
               <p className="text-haicha text-lg leading-loose mb-6">
-                山梨県上野原市。東京から約1時間の里山に、
+                山梨県上野原市。都心から少し足を伸ばした里山に、
                 築300年を超える古民家があります。
               </p>
               <p className="text-haicha text-lg leading-loose">
@@ -206,6 +206,40 @@ export default function AboutPage() {
               <br />
               この風景のなかで飲むコーヒーは、どこよりも特別です。
             </p>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Media */}
+      <section className="py-20 md:py-28 overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 md:px-8">
+          <ScrollReveal>
+            <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
+              MEDIA
+            </p>
+            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+              メディア掲載
+            </h2>
+            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.1}>
+            <div className="max-w-2xl mx-auto">
+              <a
+                href="https://note.com/3hara4tei/n/n478307397bf0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block bg-white p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
+              >
+                <p className="text-xs text-gold mb-2 tracking-wide">note</p>
+                <h3 className="font-serif text-lg text-konsumi group-hover:text-gold transition-colors mb-3">
+                  マナビバ インタビューVol.2 三十日珈琲さん
+                </h3>
+                <p className="text-sm text-haicha leading-relaxed">
+                  見晴亭が毎月開催する講座「マナビバ」の講師インタビュー。コーヒーがつないだ人と場所のストーリー。
+                </p>
+              </a>
+            </div>
           </ScrollReveal>
         </div>
       </section>

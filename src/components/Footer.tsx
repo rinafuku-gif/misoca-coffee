@@ -21,9 +21,8 @@ const footerLinks = [
     title: "知る",
     links: [
       { href: "/about", label: "三十日珈琲について" },
-      { href: "/blog", label: "ジャーナル" },
       { href: "/access", label: "アクセス" },
-      { href: "/faq", label: "FAQ" },
+      { href: "/faq", label: "よくある質問" },
     ],
   },
   {
@@ -31,6 +30,7 @@ const footerLinks = [
     links: [
       { href: "/community", label: "コミュニティ" },
       { href: "/contact", label: "お問い合わせ" },
+      { href: "https://luma.com/misoca_coffee", label: "イベント情報" },
     ],
   },
 ];
@@ -92,12 +92,23 @@ export function Footer() {
               <ul className="space-y-2.5">
                 {group.links.map((link) => (
                   <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-ainezu hover:text-white transition-colors duration-300"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.href.startsWith("http") ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-ainezu hover:text-white transition-colors duration-300"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className="text-sm text-ainezu hover:text-white transition-colors duration-300"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

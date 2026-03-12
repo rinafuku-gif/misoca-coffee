@@ -27,7 +27,7 @@ const steps = [
   {
     num: "03",
     title: "焙煎する",
-    text: "手回し焙煎機で自分の手で焙煎。焙煎士がマンツーマンでサポートします。",
+    text: "Aillio Bullet R1 V2で自分の手で焙煎。焙煎士がマンツーマンでサポートします。",
     image: "/images/experience/roasting-couple.jpg",
   },
   {
@@ -39,7 +39,7 @@ const steps = [
   {
     num: "05",
     title: "お持ち帰り",
-    text: "焙煎した豆（約200g）はお土産に。ご自宅でも焙煎所の味をお楽しみいただけます。",
+    text: "焙煎した豆（300〜500g）はお土産に。ご自宅でも焙煎所の味をお楽しみいただけます。",
     image: "/images/experience/couple-beans.jpg",
   },
 ];
@@ -120,7 +120,7 @@ export default function ExperiencePage() {
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    焙煎豆お持ち帰り（約200g）
+                    焙煎豆お持ち帰り（300〜500g）
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
@@ -311,7 +311,7 @@ export default function ExperiencePage() {
                   </li>
                   <li className="flex items-start gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0 mt-3" />
-                    新宿から約50分（特急利用）
+                    新宿から約60〜80分
                   </li>
                   <li className="flex items-start gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0 mt-3" />
