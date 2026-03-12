@@ -230,8 +230,10 @@ export function Header() {
           </nav>
 
           {/* Desktop CTA */}
-          <Link
-            href="/experience"
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSddXQX_VthNqn6GmfG_Nf_tidQgW_9q_oJtIeBMvPAGoTwCvQ/viewform"
+            target="_blank"
+            rel="noopener noreferrer"
             className={`hidden lg:inline-block px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 ${
               scrolled
                 ? "bg-gold hover:bg-gold-dark text-white"
@@ -239,7 +241,7 @@ export function Header() {
             }`}
           >
             焙煎体験を予約する
-          </Link>
+          </a>
 
           {/* Mobile Toggle - Hamburger morphing to X */}
           <button
@@ -332,13 +334,15 @@ export function Header() {
                   initial="closed"
                   animate="open"
                 >
-                  <Link
-                    href="/experience"
+                  <a
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSddXQX_VthNqn6GmfG_Nf_tidQgW_9q_oJtIeBMvPAGoTwCvQ/viewform"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="block w-full text-center bg-gold hover:bg-gold-dark text-white py-3.5 text-sm font-medium tracking-wide transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
                     焙煎体験を予約する
-                  </Link>
+                  </a>
                 </motion.div>
 
                 {/* Nav Items */}

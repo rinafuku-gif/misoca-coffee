@@ -43,19 +43,19 @@ const fallbackPickupMenus = [
   {
     name: "エチオピア イルガチェフェ",
     description: "フローラルな香りと柑橘系の明るい酸味",
-    price: "¥1,200",
+    price: "¥1,680",
     image: "/images/menu/ethiopia.jpg",
   },
   {
     name: "グアテマラ アンティグア",
     description: "チョコレートのようなコクと甘み",
-    price: "¥1,100",
+    price: "¥1,480",
     image: "/images/menu/guatemala.jpg",
   },
   {
     name: "ブラジル セラード",
     description: "ナッツの甘みとクリーンな後味",
-    price: "¥1,000",
+    price: "¥1,380",
     image: "/images/menu/brazil.jpg",
   },
 ];
@@ -241,23 +241,25 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-8 justify-center text-sm text-white/60 mb-12">
               <span className="flex items-center justify-center gap-3">
                 <span className="w-5 h-px bg-gold/60" />
-                ¥4,400/人（直予約）
+                ¥8,800/組（2名まで）
               </span>
               <span className="flex items-center justify-center gap-3">
                 <span className="w-5 h-px bg-gold/60" />
-                約90分
+                約90分・完全貸切
               </span>
               <span className="flex items-center justify-center gap-3">
                 <span className="w-5 h-px bg-gold/60" />
                 焙煎豆お持ち帰り
               </span>
             </div>
-            <Link
-              href="/experience"
+            <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLSddXQX_VthNqn6GmfG_Nf_tidQgW_9q_oJtIeBMvPAGoTwCvQ/viewform"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-block bg-gold hover:bg-gold-dark text-white px-12 py-4 rounded-sm text-sm tracking-widest font-medium transition-colors duration-300"
             >
               焙煎体験を予約する
-            </Link>
+            </a>
           </ScrollReveal>
         </div>
       </section>

@@ -136,10 +136,15 @@ export function Footer() {
               </a>
             </div>
 
-            {/* Newsletter placeholder */}
-            <p className="text-xs text-ainezu/60 tracking-wide">
-              ニュースレター配信準備中
-            </p>
+            {/* Prairie Cards */}
+            <a
+              href="https://my.prairie.cards/u/misocacoffee"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-ainezu/60 hover:text-ainezu transition-colors duration-300 tracking-wide"
+            >
+              リンクまとめ（Prairie Cards）
+            </a>
           </div>
         </div>
 

@@ -66,8 +66,7 @@ export default function ExperiencePage() {
       <section className="bg-konsumi py-5 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <p className="text-white/90 text-xs md:text-sm tracking-[0.15em]">
-            公式サイトからの直予約が最もお得です ／ OTAサイト経由より
-            <span className="text-gold font-medium"> 最大60%OFF</span>
+            焙煎士がマンツーマンでお迎えする、完全貸切の体験です
           </p>
         </div>
       </section>
@@ -84,39 +83,36 @@ export default function ExperiencePage() {
             </h2>
             <div className="w-16 h-px bg-gold mx-auto mb-8" />
             <p className="text-center text-sm text-haicha mb-16 md:mb-20">
-              OTAサイトより
-              <span className="text-gold font-medium text-base mx-1">
-                最大60%OFF
-              </span>
-              ── 公式サイト限定価格
+              完全予約制・少人数制 ── 築300年の古民家でお待ちしています
             </p>
           </ScrollReveal>
 
           <div className="grid md:grid-cols-2 gap-10 md:gap-14 max-w-4xl mx-auto">
-            {/* Personal Plan */}
+            {/* Private Plan */}
             <ScrollReveal direction="left">
               <div className="bg-white rounded-sm p-10 md:p-12 text-center shadow-sm h-full ring-1 ring-gold/40 relative">
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-[10px] tracking-[0.2em] px-4 py-1.5 rounded-full uppercase">
-                  Best Value
+                  Private
                 </span>
                 <p className="text-[10px] tracking-[0.5em] text-gold font-medium mb-3 mt-2 uppercase">
-                  Personal
+                  Roasting Experience
                 </p>
                 <h3 className="font-serif text-xl text-konsumi mb-6">
-                  焙煎体験（直予約）
+                  焙煎体験（貸切）
                 </h3>
                 <p className="text-4xl md:text-5xl font-bold text-gold mb-1 font-display">
-                  ¥4,400
+                  ¥8,800
                 </p>
-                <p className="text-xs text-haicha mb-10">（税込 / 1名）</p>
+                <p className="text-xs text-haicha mb-2">（税込 / 1組）</p>
+                <p className="text-xs text-gold/80 mb-10">2名までの料金 ── おひとりでも同料金</p>
                 <ul className="text-sm text-haicha space-y-5 text-left mb-12">
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    所要約90分
+                    所要約90分・完全貸切
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    マンツーマン焙煎指導
+                    焙煎士がマンツーマンで指導
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
@@ -128,15 +124,17 @@ export default function ExperiencePage() {
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    完全予約制・少人数制
+                    お連れ様2名まで追加料金なし
                   </li>
                 </ul>
-                <Link
-                  href="/contact"
+                <a
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSddXQX_VthNqn6GmfG_Nf_tidQgW_9q_oJtIeBMvPAGoTwCvQ/viewform"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-block bg-gold hover:bg-gold-dark text-white px-8 py-4 rounded-sm text-sm tracking-widest font-medium transition-colors duration-300 w-full"
                 >
                   このプランを予約する
-                </Link>
+                </a>
               </div>
             </ScrollReveal>
 
@@ -152,7 +150,8 @@ export default function ExperiencePage() {
                 <p className="text-4xl md:text-5xl font-bold text-gold mb-1 font-display">
                   ¥3,300
                 </p>
-                <p className="text-xs text-haicha mb-10">（税込 / 1名）</p>
+                <p className="text-xs text-haicha mb-2">（税込 / 1名）</p>
+                <p className="text-xs text-gold/80 mb-10">開催日に1名から参加OK</p>
                 <ul className="text-sm text-haicha space-y-5 text-left mb-12">
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
@@ -160,7 +159,7 @@ export default function ExperiencePage() {
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    グループでの焙煎体験
+                    他の参加者と一緒に焙煎体験
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
@@ -172,14 +171,14 @@ export default function ExperiencePage() {
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    団体・イベント向け
+                    開催日はInstagramでお知らせ
                   </li>
                 </ul>
                 <Link
                   href="/contact"
                   className="inline-block border border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-8 py-4 rounded-sm text-sm tracking-widest font-medium transition-all duration-300 w-full"
                 >
-                  このプランを予約する
+                  開催日を問い合わせる
                 </Link>
               </div>
             </ScrollReveal>
@@ -187,9 +186,9 @@ export default function ExperiencePage() {
 
           <ScrollReveal delay={0.3}>
             <p className="text-center text-xs text-haicha mt-14 leading-relaxed">
-              ※ SOW Experience・anatae経由は¥11,000/組（2名まで）。
+              ※ 3名以上でのご参加はお問い合わせください。
               <br className="md:hidden" />
-              公式サイトからの直予約が最もお得です。
+              ご希望の日程・人数に合わせてご案内いたします。
             </p>
           </ScrollReveal>
         </div>

@@ -111,12 +111,14 @@ export function HeroSlideshow() {
               transition={{ duration: 1, delay: 1.0, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="flex flex-col sm:flex-row items-start gap-4"
             >
-              <Link
-                href="/experience"
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSddXQX_VthNqn6GmfG_Nf_tidQgW_9q_oJtIeBMvPAGoTwCvQ/viewform"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-block bg-gold hover:bg-gold-dark text-white px-10 py-4 text-sm font-medium tracking-wide transition-all duration-300 hover:translate-y-[-1px] hover:shadow-lg"
               >
                 焙煎体験を予約する
-              </Link>
+              </a>
               <Link
                 href="/shop"
                 className="inline-block border border-white/40 text-white hover:bg-white hover:text-konsumi px-10 py-4 text-sm font-medium tracking-wide transition-all duration-300"
