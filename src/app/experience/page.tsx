@@ -52,7 +52,7 @@ const steps = [
     num: "04",
     title: "テイスティング",
     text: "自分で焙煎した豆をその場でドリップ。味わいの違いをじっくり楽しみます。",
-    image: "/images/experience/cupping.jpg",
+    image: "/images/experience/coffee-meter.jpg",
   },
   {
     num: "05",
@@ -63,8 +63,8 @@ const steps = [
 ];
 
 const galleryImages = [
-  "/images/experience/couple-smile.jpg",
-  "/images/experience/young-couple.jpg",
+  "/images/experience/roaster-top.jpg",
+  "/images/experience/interior.jpg",
   "/images/experience/roaster-machine.jpg",
   "/images/experience/coffee-meter.jpg",
 ];

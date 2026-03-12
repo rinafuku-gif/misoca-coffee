@@ -116,7 +116,7 @@ export default function MobileRoastingPage() {
             <ScrollReveal direction="left" className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-xl">
                 <Image
-                  src="/images/experience/young-couple.jpg"
+                  src="/images/experience/roasting.jpg"
                   alt="出張焙煎体験の様子"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-700"

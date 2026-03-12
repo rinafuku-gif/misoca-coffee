@@ -32,7 +32,7 @@ const features = [
     title: "出張焙煎体験",
     description:
       "焙煎所の体験を、あなたの場所へ。企業研修、ワークショップ、地域イベントに焙煎士が伺います。",
-    image: "/images/experience/young-couple.jpg",
+    image: "/images/experience/roasting.jpg",
     label: "03",
     href: "/mobile-roasting",
     cta: "出張焙煎を見る",
@@ -63,7 +63,7 @@ const fallbackPickupMenus = [
 const galleryImages = [
   "/images/experience/bean-selection.jpg",
   "/images/about/signboard.jpg",
-  "/images/experience/cupping.jpg",
+  "/images/experience/coffee-meter.jpg",
   "/images/stand/stand-1.jpg",
   "/images/about/interior-shelf.jpg",
   "/images/experience/roaster-machine.jpg",
