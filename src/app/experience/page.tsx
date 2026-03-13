@@ -173,12 +173,14 @@ export default function ExperiencePage() {
                     団体・イベント向け
                   </li>
                 </ul>
-                <Link
-                  href="/contact"
+                <a
+                  href="https://lin.ee/ihDBxM8"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-block border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white px-8 py-4 text-xs tracking-[0.2em] transition-all duration-500 w-full"
                 >
-                  このプランを予約する
-                </Link>
+                  日程を確認する
+                </a>
               </div>
             </ScrollReveal>
           </div>

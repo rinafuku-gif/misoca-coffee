@@ -37,7 +37,7 @@ const navItems: NavItem[] = [
     ],
   },
   { href: "/access", label: "アクセス" },
-  { href: "/contact", label: "お問い合わせ" },
+  { href: "https://lin.ee/ihDBxM8", label: "LINE" },
 ];
 
 const sidebarVariants = {
@@ -183,6 +183,24 @@ export function Header() {
                       }`}
                     />
                   </button>
+                ) : item.href.startsWith("http") ? (
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`relative px-4 py-2 text-sm tracking-wide transition-colors duration-300 group inline-block ${
+                      scrolled
+                        ? "text-sumi hover:text-karekusa"
+                        : "text-white/90 hover:text-white"
+                    }`}
+                  >
+                    {item.label}
+                    <span
+                      className={`absolute bottom-0 left-4 right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
+                        scrolled ? "bg-karekusa" : "bg-white"
+                      }`}
+                    />
+                  </a>
                 ) : (
                   <Link
                     href={item.href}
@@ -371,6 +389,16 @@ export function Header() {
                             ))}
                           </div>
                         </div>
+                      ) : item.href.startsWith("http") ? (
+                        <a
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block py-3 text-sm font-medium text-konsumi tracking-wide border-b border-usuzumi/20"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          {item.label}
+                        </a>
                       ) : (
                         <Link
                           href={item.href}

@@ -28,9 +28,10 @@ const footerLinks = [
   {
     title: "つながる",
     links: [
+      { href: "https://lin.ee/ihDBxM8", label: "LINE公式アカウント" },
       { href: "/community", label: "コミュニティ" },
       { href: "https://luma.com/misoca_coffee", label: "イベント情報" },
-      { href: "/contact", label: "お問い合わせ" },
+      { href: "/contact", label: "お問い合わせフォーム" },
     ],
   },
 ];
