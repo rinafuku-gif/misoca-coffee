@@ -66,7 +66,7 @@ export default function FaqPage() {
         <div className="max-w-3xl mx-auto px-4 md:px-8">
           {faqCategories.map((category, ci) => (
             <ScrollReveal key={category.title} delay={ci * 0.1}>
-              <div className="mb-16 last:mb-0">
+              <div className="mb-24 last:mb-0">
                 <h2 className="font-serif text-lg md:text-xl text-konsumi tracking-wider font-light mb-3">
                   {category.title}
                 </h2>
