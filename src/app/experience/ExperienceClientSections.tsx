@@ -43,12 +43,14 @@ export function ExperienceClientSections() {
             </p>
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
-            <Link
-              href="/contact"
+            <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLSddXQX_VthNqn6GmfG_Nf_tidQgW_9q_oJtIeBMvPAGoTwCvQ/viewform"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-block bg-gold hover:bg-gold-dark text-white px-12 py-4 rounded-sm text-sm tracking-widest font-medium transition-colors duration-300"
             >
               予約・お問い合わせ
-            </Link>
+            </a>
             <p className="text-xs text-white/40 mt-8 tracking-wide">
               Instagram DM・LINE・お電話でもご予約いただけます
             </p>
