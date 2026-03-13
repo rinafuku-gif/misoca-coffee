@@ -49,7 +49,7 @@ export function PageHero({ title, subtitle, description, image }: PageHeroProps)
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           className="font-[family-name:var(--font-display)] text-xs md:text-sm tracking-[0.35em] uppercase text-white/50 mb-6"
         >
           {title}
@@ -59,15 +59,15 @@ export function PageHero({ title, subtitle, description, image }: PageHeroProps)
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
+          transition={{ duration: 1.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="w-12 h-px bg-gold mx-auto mb-8"
         />
 
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="font-serif text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-[1.3]"
+          transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="font-serif text-2xl md:text-4xl lg:text-5xl font-light text-white tracking-wider mb-8 leading-[1.5]"
         >
           {subtitle}
         </motion.h1>
@@ -76,7 +76,7 @@ export function PageHero({ title, subtitle, description, image }: PageHeroProps)
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 1.2, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className="text-white/65 leading-loose max-w-2xl mx-auto text-base md:text-lg tracking-wide"
           >
             {description}

@@ -139,18 +139,18 @@ export default function Home() {
 
           {/* Story Block 1 - left image, right text */}
           <div className="flex flex-col md:flex-row gap-12 md:gap-20 items-center mb-28 md:mb-36">
-            <ScrollReveal direction="left" className="w-full md:w-3/5">
+            <ScrollReveal direction="left" className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
-                  src="/images/about/kominka.jpg"
+                  src="/images/about/exterior-window.jpg"
                   alt="築300年の古民家 母屋全景"
                   fill
                   className="object-cover hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
-                  sizes="(max-width: 768px) 100vw, 60vw"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
             </ScrollReveal>
-            <ScrollReveal direction="right" delay={0.2} className="w-full md:w-2/5">
+            <ScrollReveal direction="right" delay={0.2} className="w-full md:w-1/2">
               <h3 className="font-serif text-lg md:text-xl text-konsumi tracking-wider font-light mb-6">
                 築300年の古民家から
               </h3>
@@ -166,18 +166,18 @@ export default function Home() {
 
           {/* Story Block 2 - right image, left text */}
           <div className="flex flex-col md:flex-row-reverse gap-12 md:gap-20 items-center">
-            <ScrollReveal direction="right" className="w-full md:w-3/5">
+            <ScrollReveal direction="right" className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
-                  src="/images/about/signboard.jpg"
+                  src="/images/about/open-sign.jpg"
                   alt="三十日珈琲の看板"
                   fill
                   className="object-cover hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
-                  sizes="(max-width: 768px) 100vw, 60vw"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
             </ScrollReveal>
-            <ScrollReveal direction="left" delay={0.2} className="w-full md:w-2/5">
+            <ScrollReveal direction="left" delay={0.2} className="w-full md:w-1/2">
               <h3 className="font-serif text-lg md:text-xl text-konsumi tracking-wider font-light mb-6">
                 ただの焙煎所ではなく
               </h3>
@@ -242,7 +242,7 @@ export default function Home() {
               >
                 <ScrollReveal
                   direction={i % 2 === 0 ? "left" : "right"}
-                  className="w-full md:w-3/5"
+                  className="w-full md:w-1/2"
                 >
                   <Link href={service.href} className="block group">
                     <div className="relative aspect-[3/2] overflow-hidden">
@@ -259,7 +259,7 @@ export default function Home() {
                 <ScrollReveal
                   direction={i % 2 === 0 ? "right" : "left"}
                   delay={0.2}
-                  className="w-full md:w-2/5"
+                  className="w-full md:w-1/2"
                 >
                   <h3 className="font-serif text-xl md:text-2xl text-konsumi mb-8 tracking-wider font-light">
                     {service.title}

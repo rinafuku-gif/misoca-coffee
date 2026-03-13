@@ -121,24 +121,26 @@ export function Header() {
         <div className="max-w-7xl mx-auto px-6 md:px-8 h-20 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <Image
-              src="/images/logo-circle-green.jpg"
-              alt="三十日珈琲 ロゴ"
-              width={44}
-              height={44}
-              className={`rounded-full transition-opacity duration-500 ${
-                scrolled ? "opacity-100" : "opacity-0"
-              }`}
-            />
-            <Image
-              src="/images/logo-circle-white.jpg"
-              alt="三十日珈琲 ロゴ"
-              width={44}
-              height={44}
-              className={`rounded-full absolute transition-opacity duration-500 ${
-                scrolled ? "opacity-0" : "opacity-100"
-              }`}
-            />
+            <div className="relative w-11 h-11 rounded-full overflow-hidden flex-shrink-0">
+              <Image
+                src="/images/logo-circle-green.jpg"
+                alt="三十日珈琲 ロゴ"
+                width={44}
+                height={44}
+                className={`scale-[1.35] transition-opacity duration-500 ${
+                  scrolled ? "opacity-100" : "opacity-0"
+                }`}
+              />
+              <Image
+                src="/images/logo-circle-white.jpg"
+                alt="三十日珈琲 ロゴ"
+                width={44}
+                height={44}
+                className={`scale-[1.6] absolute top-0 left-0 transition-opacity duration-500 ${
+                  scrolled ? "opacity-0" : "opacity-100"
+                }`}
+              />
+            </div>
             <div className="flex flex-col">
               <span
                 className={`font-serif text-lg font-bold tracking-wide transition-colors duration-500 ${
@@ -232,11 +234,7 @@ export function Header() {
           {/* Desktop CTA */}
           <Link
             href="/experience"
-            className={`hidden lg:inline-block px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 ${
-              scrolled
-                ? "bg-gold hover:bg-gold-dark text-white"
-                : "bg-white/10 backdrop-blur-sm border border-white/30 text-white hover:bg-white hover:text-konsumi"
-            }`}
+            className="hidden lg:inline-block px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-gold/90 hover:bg-gold text-white"
           >
             焙煎体験を予約する
           </Link>
