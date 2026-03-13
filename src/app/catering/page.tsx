@@ -84,7 +84,7 @@ export default function CateringPage() {
         title="CATERING"
         subtitle="コーヒーケータリング"
         description="ポットひとつで、そこがカフェになる。"
-        image="/images/experience/roasting.jpg"
+        image="/images/catering/hand-drip.jpg"
       />
 
       {/* Concept */}

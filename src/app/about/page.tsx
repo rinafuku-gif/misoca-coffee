@@ -51,8 +51,8 @@ export default function AboutPage() {
             <ScrollReveal direction="right" delay={0.2} className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] rounded-sm overflow-hidden">
                 <Image
-                  src="/images/about/signboard.jpg"
-                  alt="三十日珈琲の看板"
+                  src="/images/about/house-garden.jpg"
+                  alt="古民家の庭"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-1000 ease-out"
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -94,8 +94,8 @@ export default function AboutPage() {
             <ScrollReveal direction="left">
               <div className="relative aspect-[4/3] rounded-sm overflow-hidden">
                 <Image
-                  src="/images/about/exterior-window.jpg"
-                  alt="古民家の外観"
+                  src="/images/about/kominka-interior-1.jpg"
+                  alt="古民家の内観"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-1000 ease-out"
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -105,7 +105,7 @@ export default function AboutPage() {
             <ScrollReveal direction="right" delay={0.15}>
               <div className="relative aspect-[4/3] rounded-sm overflow-hidden">
                 <Image
-                  src="/images/about/interior-shelf.jpg"
+                  src="/images/about/kominka-interior-2.jpg"
                   alt="古民家の内装"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-1000 ease-out"
@@ -132,7 +132,7 @@ export default function AboutPage() {
             <ScrollReveal direction="right" className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] rounded-sm overflow-hidden">
                 <Image
-                  src="/images/experience/interior.jpg"
+                  src="/images/about/founders.jpg"
                   alt="三十日珈琲のメンバー"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-1000 ease-out"

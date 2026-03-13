@@ -11,9 +11,10 @@ interface Slide {
 }
 
 const slides: Slide[] = [
-  { src: "/images/hero/hero-beans-pour.jpg", alt: "生豆を焙煎機に注ぐ" },
+  { src: "/images/hero/hero-roaster-machine.jpg", alt: "焙煎機" },
   { src: "/images/hero/hero-interior-atmosphere.jpg", alt: "古民家の情緒ある空間" },
   { src: "/images/hero/hero-roasting-output.jpg", alt: "焙煎豆の出来上がり" },
+  { src: "/images/hero/hero-group-watching.jpg", alt: "焙煎体験の様子" },
   { src: "/images/about/scenery-1.jpg", alt: "上野原の風景" },
   { src: "/images/about/scenery-2.jpg", alt: "焙煎所のある里山" },
 ];

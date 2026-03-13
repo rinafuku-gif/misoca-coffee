@@ -12,7 +12,7 @@ const services = [
   {
     title: "焙煎体験",
     text: "生豆を選び、自分の手で焙煎する。\n築300年の古民家で、五感を開く時間。",
-    image: "/images/experience/bean-selection.jpg",
+    image: "/images/experience/bean-sorting.jpg",
     href: "/experience",
     cta: "体験を詳しく見る",
   },
@@ -142,7 +142,7 @@ export default function Home() {
             <ScrollReveal direction="left" className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
-                  src="/images/about/exterior-window.jpg"
+                  src="/images/about/house-exterior.jpg"
                   alt="築300年の古民家 母屋全景"
                   fill
                   className="object-cover hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"

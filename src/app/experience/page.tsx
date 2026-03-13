@@ -34,21 +34,23 @@ const steps = [
     num: "04",
     title: "テイスティング",
     text: "自分で焙煎した豆をその場でドリップ。味わいの違いをじっくり楽しみます。",
-    image: "/images/experience/cupping.jpg",
+    image: "/images/experience/tasting.jpg",
   },
   {
     num: "05",
     title: "お持ち帰り",
     text: "焙煎した豆（約200g）はお土産に。ご自宅でも焙煎所の味をお楽しみいただけます。",
-    image: "/images/experience/roasting.jpg",
+    image: "/images/experience/takeaway-bags.jpg",
   },
 ];
 
 const galleryImages = [
-  "/images/experience/interior.jpg",
-  "/images/experience/roaster-top.jpg",
-  "/images/experience/roaster-machine.jpg",
-  "/images/experience/coffee-meter.jpg",
+  "/images/experience/gallery-1.jpg",
+  "/images/experience/gallery-2.jpg",
+  "/images/experience/gallery-3.jpg",
+  "/images/experience/gallery-4.jpg",
+  "/images/experience/gallery-5.jpg",
+  "/images/experience/gallery-6.jpg",
 ];
 
 export default function ExperiencePage() {
@@ -265,7 +267,7 @@ export default function ExperiencePage() {
             <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
           </ScrollReveal>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
             {galleryImages.map((src, i) => (
               <ScrollReveal key={src} direction="up" delay={i * 0.1}>
                 <div className="relative aspect-[3/4] rounded-sm overflow-hidden shadow-lg group">

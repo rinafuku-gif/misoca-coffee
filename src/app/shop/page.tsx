@@ -235,7 +235,7 @@ export default function ShopPage() {
         title="ONLINE SHOP"
         subtitle="焙煎したてをお届け"
         description="焙煎3日以内のスペシャルティコーヒーを、ご自宅へ。"
-        image="/images/experience/roasting-hands.jpg"
+        image="/images/experience/coffee-beans-close.jpg"
       />
 
       {/* Freshness Promise */}

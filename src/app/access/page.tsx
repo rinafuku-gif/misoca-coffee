@@ -16,7 +16,7 @@ export default function AccessPage() {
         title="ACCESS"
         subtitle="アクセス"
         description="東京から約1時間。里山の古民家へ。"
-        image="/images/about/exterior-window.jpg"
+        image="/images/about/river-landscape.jpg"
       />
 
       {/* Address & Map */}
