@@ -5,6 +5,53 @@ const notion = new Client({
 });
 
 const databaseId = process.env.NOTION_DATABASE_ID!;
+const journalDbId = process.env.NOTION_JOURNAL_DB_ID || "";
+
+export interface JournalPost {
+  id: string;
+  title: string;
+  category: string;
+  status: string;
+  date: string;
+  excerpt: string;
+  coverImage: string;
+}
+
+export async function getJournalPosts(): Promise<JournalPost[]> {
+  if (!process.env.NOTION_API_KEY || !journalDbId) {
+    return [];
+  }
+
+  const response = await (notion as unknown as { dataSources: { query: (args: Record<string, unknown>) => Promise<{ results: unknown[] }> } }).dataSources.query({
+    data_source_id: journalDbId,
+    filter: {
+      property: "ステータス",
+      select: {
+        equals: "公開",
+      },
+    },
+    sorts: [
+      {
+        property: "公開日",
+        direction: "descending",
+      },
+    ],
+  });
+
+  return response.results.map((page: unknown) => {
+    const props = (page as Record<string, unknown>)["properties"] as Record<string, Record<string, unknown>>;
+
+    return {
+      id: (page as Record<string, unknown>)["id"] as string,
+      title: getTitle(props["タイトル"]),
+      category: getSelect(props["カテゴリ"]),
+      status: getSelect(props["ステータス"]),
+      date: getDate(props["公開日"]),
+      excerpt: getRichText(props["抜粋"]),
+      coverImage: getFile(props["カバー画像"]) || "",
+    };
+  });
+}
 
 export interface Product {
   id: string;
@@ -98,6 +145,12 @@ function getMultiSelect(prop: Record<string, unknown> | undefined): string {
 function getNumber(prop: Record<string, unknown> | undefined): number {
   if (!prop || prop["type"] !== "number") return 0;
   return (prop["number"] as number) || 0;
+}
+
+function getDate(prop: Record<string, unknown> | undefined): string {
+  if (!prop || prop["type"] !== "date") return "";
+  const date = prop["date"] as { start: string } | null;
+  return date?.start || "";
 }
 
 function getFile(prop: Record<string, unknown> | undefined): string {

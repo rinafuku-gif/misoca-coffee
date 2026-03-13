@@ -192,6 +192,8 @@ export default function ExperiencePage() {
               ※ SOW Experience・anatae経由は¥11,000/組（2名まで）。
               <br className="md:hidden" />
               公式サイトからの直予約が最もお得です。
+              <br />
+              ※ 3名以上の場合は追加料金がかかります。お気軽にお問い合わせください。
             </p>
           </ScrollReveal>
         </div>
