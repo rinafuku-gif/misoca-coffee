@@ -19,7 +19,7 @@ const services = [
   {
     title: "コーヒーケータリング",
     text: "スペシャルティコーヒーを、保温ポットでお届け。\nポットひとつで、そこがカフェになる。",
-    image: "/images/catering/event.jpg",
+    image: "/images/catering/hand-drip.jpg",
     href: "/catering",
     cta: "ケータリングを見る",
   },
