@@ -11,10 +11,10 @@ interface Slide {
 }
 
 const slides: Slide[] = [
-  { src: "/images/hero/hero-beans-pour.jpg", alt: "生豆を焙煎機に注ぐ" },
-  { src: "/images/hero/hero-experience-group.jpg", alt: "焙煎体験の様子" },
   { src: "/images/hero/hero-interior-atmosphere.jpg", alt: "古民家の情緒ある空間" },
+  { src: "/images/hero/hero-beans-pour.jpg", alt: "生豆を焙煎機に注ぐ" },
   { src: "/images/hero/hero-roasting-output.jpg", alt: "焙煎豆の出来上がり" },
+  { src: "/images/hero/hero-experience-group.jpg", alt: "焙煎体験の様子" },
 ];
 
 const SLIDE_DURATION = 6000;
@@ -85,7 +85,7 @@ export function HeroSlideshow() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="font-serif text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.4] mb-10"
+              className="font-serif text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-[1.4] mb-10"
             >
               <span className="block">コーヒーと暮らす。</span>
               <span className="block mt-2 md:mt-3">古くて新しい、みんなの焙煎所。</span>
@@ -113,30 +113,17 @@ export function HeroSlideshow() {
             >
               <Link
                 href="/experience"
-                className="inline-block bg-gold hover:bg-gold-dark text-white px-10 py-4 text-sm font-medium tracking-wide transition-all duration-300 hover:translate-y-[-1px] hover:shadow-lg"
+                className="inline-flex items-center gap-3 border border-white/40 text-white hover:bg-white hover:text-konsumi px-10 py-4 text-sm font-medium tracking-wide transition-all duration-300"
               >
                 焙煎体験を予約する
+                <span className="text-xs">→</span>
               </Link>
               <Link
                 href="/shop"
-                className="inline-block border border-white/40 text-white hover:bg-white hover:text-konsumi px-10 py-4 text-sm font-medium tracking-wide transition-all duration-300"
+                className="inline-flex items-center gap-3 border border-white/40 text-white hover:bg-white hover:text-konsumi px-10 py-4 text-sm font-medium tracking-wide transition-all duration-300"
               >
                 コーヒー豆を購入する
-              </Link>
-              <Link
-                href="/about"
-                className="inline-flex items-center gap-2 text-white/70 hover:text-white text-sm tracking-wide transition-colors duration-300 py-4 group"
-              >
-                三十日珈琲について
-                <svg
-                  className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path d="M3 8h10M9 4l4 4-4 4" />
-                </svg>
+                <span className="text-xs">→</span>
               </Link>
             </motion.div>
           </div>

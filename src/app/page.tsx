@@ -241,7 +241,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-8 justify-center text-sm text-white/60 mb-12">
               <span className="flex items-center justify-center gap-3">
                 <span className="w-5 h-px bg-gold/60" />
-                ¥4,400/人（直予約）
+                ¥8,800/組（2名まで・直予約）
               </span>
               <span className="flex items-center justify-center gap-3">
                 <span className="w-5 h-px bg-gold/60" />
