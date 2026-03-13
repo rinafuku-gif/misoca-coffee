@@ -46,12 +46,12 @@ const faqCategories = [
         a: "山梨県上野原市（全域）、相模原市緑区（藤野エリア周辺）、山梨県大月市（市内中心部・近隣）が基本エリアです。対応エリア内は配送料・設置費が無料です。その他の近隣エリアもご相談ください。",
       },
       {
-        q: "前日でも予約できますか？",
-        a: "はい、前日の午前中まで承ります。ただし在庫状況によりご希望に添えない場合もございますので、お早めのご予約をおすすめします。",
+        q: "何日前までに予約すれば良いですか？",
+        a: "基本的には3日前までにご予約ください。ただし、豆の在庫状況によっては直前のご注文にも対応できる場合がございますので、お急ぎの場合はお気軽にご相談ください。",
       },
       {
         q: "カップは付いていますか？",
-        a: "はい。すべてのプランに紙カップ・マドラー・シュガー・ミルクをセットでお届けします。",
+        a: "はい、人数分の紙カップをご用意いたします。シュガー・ミルク・マドラーが必要な場合は、オプション（+500円/1ポット）でお付けできます。",
       },
     ],
   },
@@ -62,27 +62,29 @@ export default function FaqPage() {
     <>
       <PageHero title="FAQ" subtitle="よくある質問" />
 
-      <section className="py-32 md:py-44 overflow-hidden">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-3xl mx-auto px-4 md:px-8">
           {faqCategories.map((category, ci) => (
             <ScrollReveal key={category.title} delay={ci * 0.1}>
-              <div className="mb-12 last:mb-0">
-                <h2 className="font-serif text-lg md:text-xl text-konsumi tracking-wider font-light mb-2">
+              <div className="mb-16 last:mb-0">
+                <h2 className="font-serif text-lg md:text-xl text-konsumi tracking-wider font-light mb-3">
                   {category.title}
                 </h2>
-                <div className="w-8 h-px bg-gold/40 mb-6" />
-                <div className="space-y-4">
+                <div className="w-8 h-px bg-gold/40 mb-8" />
+                <div className="space-y-3">
                   {category.items.map((item) => (
                     <details
                       key={item.q}
-                      className="bg-white p-8"
+                      className="bg-white rounded-sm group"
                     >
-                      <summary className="text-sm text-sumi cursor-pointer tracking-wide">
+                      <summary className="text-sm text-sumi cursor-pointer tracking-wide px-6 py-5 leading-relaxed">
                         {item.q}
                       </summary>
-                      <p className="mt-3 text-sm text-haicha leading-[2.2] tracking-wide">
-                        {item.a}
-                      </p>
+                      <div className="px-6 pb-6">
+                        <p className="text-sm text-haicha leading-[2] tracking-wide">
+                          {item.a}
+                        </p>
+                      </div>
                     </details>
                   ))}
                 </div>
