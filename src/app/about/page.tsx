@@ -132,7 +132,7 @@ export default function AboutPage() {
             <ScrollReveal direction="right" className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-xl">
                 <Image
-                  src="/images/experience/couple-smile.jpg"
+                  src="/images/experience/interior.jpg"
                   alt="三十日珈琲のメンバー"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-700"

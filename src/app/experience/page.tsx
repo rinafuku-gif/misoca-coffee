@@ -28,7 +28,7 @@ const steps = [
     num: "03",
     title: "焙煎する",
     text: "手回し焙煎機で自分の手で焙煎。焙煎士がマンツーマンでサポートします。",
-    image: "/images/experience/roasting-couple.jpg",
+    image: "/images/experience/roasting-hands.jpg",
   },
   {
     num: "04",
@@ -40,13 +40,13 @@ const steps = [
     num: "05",
     title: "お持ち帰り",
     text: "焙煎した豆（約200g）はお土産に。ご自宅でも焙煎所の味をお楽しみいただけます。",
-    image: "/images/experience/couple-beans.jpg",
+    image: "/images/experience/roasting.jpg",
   },
 ];
 
 const galleryImages = [
-  "/images/experience/couple-smile.jpg",
-  "/images/experience/young-couple.jpg",
+  "/images/experience/interior.jpg",
+  "/images/experience/roaster-top.jpg",
   "/images/experience/roaster-machine.jpg",
   "/images/experience/coffee-meter.jpg",
 ];
@@ -59,15 +59,14 @@ export default function ExperiencePage() {
         title="EXPERIENCE"
         subtitle="焙煎体験"
         description="築300年の古民家で、自分だけのコーヒーを焙煎する。"
-        image="/images/experience/roasting-couple.jpg"
+        image="/images/experience/roasting-hands.jpg"
       />
 
       {/* ─── 2. Direct Booking Banner ─── */}
       <section className="bg-konsumi py-5 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <p className="text-white/90 text-xs md:text-sm tracking-[0.15em]">
-            公式サイトからの直予約が最もお得です ／ OTAサイト経由より
-            <span className="text-gold font-medium"> 最大60%OFF</span>
+          <p className="text-white/80 text-xs md:text-sm tracking-[0.15em] font-light">
+            じゃらんやSOW Experience経由より、公式サイトからの直予約が最もお得です
           </p>
         </div>
       </section>
@@ -76,19 +75,14 @@ export default function ExperiencePage() {
       <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <p className="text-xs tracking-[0.4em] text-gold font-medium text-center mb-4 uppercase">
+            <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
               Plans &amp; Pricing
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-xl md:text-2xl text-center text-konsumi tracking-wider font-light mb-6">
               プラン・料金
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-8" />
-            <p className="text-center text-sm text-haicha mb-16 md:mb-20">
-              OTAサイトより
-              <span className="text-gold font-medium text-base mx-1">
-                最大60%OFF
-              </span>
-              ── 公式サイト限定価格
+            <p className="text-center text-sm text-haicha tracking-wide mb-16 md:mb-20">
+              じゃらん・SOW Experience経由よりお得な公式サイト限定価格
             </p>
           </ScrollReveal>
 
@@ -105,7 +99,7 @@ export default function ExperiencePage() {
                 <h3 className="font-serif text-xl text-konsumi mb-6">
                   焙煎体験（直予約）
                 </h3>
-                <p className="text-4xl md:text-5xl font-bold text-gold mb-1 font-display">
+                <p className="text-4xl md:text-5xl font-light text-gold mb-1">
                   ¥8,800
                 </p>
                 <p className="text-xs text-haicha mb-10">（税込 / 1組・2名まで）</p>
@@ -135,7 +129,7 @@ export default function ExperiencePage() {
                   href="https://docs.google.com/forms/d/e/1FAIpQLSddXQX_VthNqn6GmfG_Nf_tidQgW_9q_oJtIeBMvPAGoTwCvQ/viewform"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block bg-gold hover:bg-gold-dark text-white px-8 py-4 rounded-sm text-sm tracking-widest font-medium transition-colors duration-300 w-full"
+                  className="inline-block bg-gold/90 hover:bg-gold text-white px-8 py-4 text-xs tracking-[0.2em] transition-all duration-500 w-full"
                 >
                   このプランを予約する
                 </a>
@@ -151,7 +145,7 @@ export default function ExperiencePage() {
                 <h3 className="font-serif text-xl text-konsumi mb-6">
                   グループ焙煎体験
                 </h3>
-                <p className="text-4xl md:text-5xl font-bold text-gold mb-1 font-display">
+                <p className="text-4xl md:text-5xl font-light text-gold mb-1">
                   ¥3,300
                 </p>
                 <p className="text-xs text-haicha mb-10">（税込 / 1名）</p>
@@ -179,7 +173,7 @@ export default function ExperiencePage() {
                 </ul>
                 <Link
                   href="/contact"
-                  className="inline-block border border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-8 py-4 rounded-sm text-sm tracking-widest font-medium transition-all duration-300 w-full"
+                  className="inline-block border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white px-8 py-4 text-xs tracking-[0.2em] transition-all duration-500 w-full"
                 >
                   このプランを予約する
                 </Link>
@@ -203,10 +197,10 @@ export default function ExperiencePage() {
       <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <p className="text-xs tracking-[0.4em] text-gold font-medium text-center mb-4 uppercase">
+            <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
               Flow
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-xl md:text-2xl text-center text-konsumi tracking-wider font-light mb-6">
               体験の流れ
             </h2>
             <p className="text-center text-haicha text-sm mb-2">
@@ -242,10 +236,10 @@ export default function ExperiencePage() {
                   delay={0.2}
                   className="w-full md:w-2/5"
                 >
-                  <span className="text-5xl md:text-6xl font-display text-gold/20 font-bold block mb-4 leading-none">
+                  <span className="text-5xl md:text-6xl text-gold/15 font-light block mb-4 leading-none">
                     {step.num}
                   </span>
-                  <h3 className="font-serif text-2xl md:text-3xl text-konsumi mb-5 leading-snug">
+                  <h3 className="font-serif text-lg md:text-xl text-konsumi tracking-wider font-light mb-5 leading-snug">
                     {step.title}
                   </h3>
                   <p className="text-haicha leading-loose">
@@ -262,10 +256,10 @@ export default function ExperiencePage() {
       <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <p className="text-xs tracking-[0.4em] text-gold font-medium text-center mb-4 uppercase">
+            <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
               Gallery
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-xl md:text-2xl text-center text-konsumi tracking-wider font-light mb-6">
               体験の風景
             </h2>
             <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
@@ -294,10 +288,10 @@ export default function ExperiencePage() {
       <section className="py-24 md:py-32 bg-tsuchikabe overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <p className="text-xs tracking-[0.4em] text-gold font-medium text-center mb-4 uppercase">
+            <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
               Access
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-xl md:text-2xl text-center text-konsumi tracking-wider font-light mb-6">
               アクセス
             </h2>
             <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />

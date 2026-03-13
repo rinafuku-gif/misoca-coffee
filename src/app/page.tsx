@@ -66,17 +66,17 @@ const fallbackProducts = [
   {
     name: "エチオピア イルガチェフェ",
     price: 1200,
-    image: "/images/menu/ethiopia.jpg",
+    image: "/images/experience/bean-selection.jpg",
   },
   {
     name: "グアテマラ アンティグア",
     price: 1100,
-    image: "/images/menu/guatemala.jpg",
+    image: "/images/experience/roaster-machine.jpg",
   },
   {
     name: "ブラジル セラード",
     price: 1000,
-    image: "/images/menu/brazil.jpg",
+    image: "/images/experience/coffee-meter.jpg",
   },
 ];
 
@@ -110,7 +110,7 @@ export default function Home() {
             data.slice(0, 3).map((p: { name: string; price: number; image: string }) => ({
               name: p.name,
               price: p.price,
-              image: p.image || "/images/menu/ethiopia.jpg",
+              image: p.image || "/images/experience/bean-selection.jpg",
             }))
           );
         }

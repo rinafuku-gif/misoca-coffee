@@ -52,15 +52,17 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-3">
             <div className="mb-6 flex items-center gap-3">
-              <Image
-                src="/images/logo-circle-white.jpg"
-                alt="三十日珈琲 ロゴ"
-                width={48}
-                height={48}
-                className="rounded-full"
-              />
+              <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+                <Image
+                  src="/images/logo-circle-white.jpg"
+                  alt="三十日珈琲 ロゴ"
+                  width={48}
+                  height={48}
+                  className="scale-[1.6]"
+                />
+              </div>
               <div>
-                <p className="font-serif text-2xl font-bold tracking-wide">三十日珈琲</p>
+                <p className="font-serif text-2xl tracking-wide font-light">三十日珈琲</p>
                 <p className="font-[family-name:var(--font-display)] text-[11px] tracking-[0.25em] text-ainezu uppercase mt-0.5">
                   Shared Roasting
                 </p>

@@ -104,7 +104,7 @@ export default function BlogPage() {
             <div className="grid md:grid-cols-3 gap-10">
               {filtered.map((post, i) => (
                 <ScrollReveal key={post.id} direction="up" delay={i * 0.1}>
-                  <article className="group bg-white rounded-lg overflow-hidden shadow-sm">
+                  <article className="group bg-white overflow-hidden">
                     <div className="aspect-[16/9] bg-tsuchikabe relative overflow-hidden">
                       {post.coverImage ? (
                         <Image
@@ -125,7 +125,7 @@ export default function BlogPage() {
                       <span className="text-xs border border-karekusa/30 text-karekusa px-2 py-1 rounded">
                         {post.category}
                       </span>
-                      <h3 className="font-serif font-bold text-konsumi mt-3 mb-2 leading-snug group-hover:text-gold transition-colors">
+                      <h3 className="font-serif text-base text-konsumi tracking-wider font-light mt-3 mb-2 leading-snug group-hover:text-gold/80 transition-colors duration-300">
                         {post.title}
                       </h3>
                       {post.excerpt && (
