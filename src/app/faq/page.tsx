@@ -4,7 +4,7 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "FAQ",
-  description: "三十日珈琲のよくある質問。焙煎体験、商品、定期便、ケータリングについて。",
+  description: "三十日珈琲のよくある質問。焙煎体験、商品、配送、ケータリングについて。",
 };
 
 const faqCategories = [
@@ -30,24 +30,11 @@ const faqCategories = [
     items: [
       {
         q: "送料はいくらですか？",
-        a: "全国一律 ¥370（ネコポス）です。¥5,000以上のご注文で送料無料。定期便は送料込みの価格です。",
+        a: "全国一律 ¥370です。¥5,000以上のご注文で送料無料になります。",
       },
       {
         q: "届くまでどのくらいかかりますか？",
         a: "ご注文後に焙煎し、3日以内に発送します。発送後1〜3日でお届けします。",
-      },
-    ],
-  },
-  {
-    title: "定期便について",
-    items: [
-      {
-        q: "いつでも解約できますか？",
-        a: "はい。マイページからいつでも解約できます。次回発送日の5日前までにお手続きください。",
-      },
-      {
-        q: "スキップはできますか？",
-        a: "はい。マイページから翌月のスキップが可能です。",
       },
     ],
   },
@@ -80,20 +67,20 @@ export default function FaqPage() {
           {faqCategories.map((category, ci) => (
             <ScrollReveal key={category.title} delay={ci * 0.1}>
               <div className="mb-12 last:mb-0">
-                <h2 className="font-serif text-xl font-bold text-konsumi mb-2">
+                <h2 className="font-serif text-lg md:text-xl text-konsumi tracking-wider font-light mb-2">
                   {category.title}
                 </h2>
-                <div className="w-8 h-px bg-gold mb-6" />
+                <div className="w-8 h-px bg-gold/40 mb-6" />
                 <div className="space-y-4">
                   {category.items.map((item) => (
                     <details
                       key={item.q}
-                      className="bg-white p-8 rounded-lg shadow-sm"
+                      className="bg-white p-8"
                     >
-                      <summary className="font-medium text-sumi cursor-pointer">
+                      <summary className="text-sm text-sumi cursor-pointer tracking-wide">
                         {item.q}
                       </summary>
-                      <p className="mt-3 text-sm text-haicha leading-loose">
+                      <p className="mt-3 text-sm text-haicha leading-[2.2] tracking-wide">
                         {item.a}
                       </p>
                     </details>

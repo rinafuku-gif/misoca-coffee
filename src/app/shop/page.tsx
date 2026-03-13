@@ -241,7 +241,7 @@ export default function ShopPage() {
       {/* Freshness Promise */}
       <section className="bg-konsumi py-6 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <p className="text-white/90 text-sm md:text-base tracking-wider">
+          <p className="text-white/80 text-sm md:text-base tracking-wider font-light">
             すべてスペシャルティグレード ／ 焙煎3日以内に発送 ／ 全国一律
             ¥370（¥5,000以上で送料無料）
           </p>
@@ -249,19 +249,20 @@ export default function ShopPage() {
       </section>
 
       {/* Bean Lineup */}
-      <section className="py-20 md:py-28 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
+      <section className="py-36 md:py-52 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-6 md:px-8">
           <ScrollReveal>
-            <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
-              COFFEE BEANS
-            </p>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
-              コーヒー豆
-            </h2>
-            <p className="text-haicha text-center leading-loose mb-4">
-              焙煎体験でも使用しているスペシャルティコーヒーを、ご自宅でお楽しみいただけます。
-            </p>
-            <div className="w-16 h-px bg-gold mx-auto mb-10" />
+            <div className="text-center mb-20 md:mb-28">
+              <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
+                Coffee Beans
+              </p>
+              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6">
+                コーヒー豆
+              </h2>
+              <p className="text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide">
+                焙煎体験でも使用しているスペシャルティコーヒーを、ご自宅でお楽しみいただけます。
+              </p>
+            </div>
           </ScrollReveal>
 
           {/* Roast Level Filter Tabs */}
@@ -271,20 +272,13 @@ export default function ShopPage() {
                 <button
                   key={filter}
                   onClick={() => setRoastFilter(filter)}
-                  className={`relative px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                  className={`relative px-5 py-2 text-sm tracking-wide transition-all duration-500 ${
                     roastFilter === filter
-                      ? "bg-konsumi text-white shadow-md"
-                      : "bg-white text-haicha hover:bg-tsuchikabe hover:text-konsumi border border-usuzumi/50"
+                      ? "bg-konsumi text-white"
+                      : "bg-transparent text-haicha hover:bg-tsuchikabe border border-karekusa/20"
                   }`}
                 >
                   {filter}
-                  {roastFilter === filter && (
-                    <motion.div
-                      layoutId="roastFilter"
-                      className="absolute inset-0 bg-konsumi rounded-full -z-10"
-                      transition={{ type: "spring", duration: 0.5 }}
-                    />
-                  )}
                 </button>
               ))}
             </div>
@@ -299,10 +293,10 @@ export default function ShopPage() {
                   onClick={() =>
                     setOriginFilter(originFilter === origin ? null : origin)
                   }
-                  className={`px-3 py-1 rounded text-xs transition-all duration-300 ${
+                  className={`px-3 py-1.5 text-xs tracking-wide transition-all duration-500 ${
                     originFilter === origin
-                      ? "bg-gold/20 text-gold border border-gold/40"
-                      : "bg-transparent text-haicha border border-usuzumi/30 hover:border-gold/40 hover:text-gold"
+                      ? "bg-gold/10 text-gold border border-gold/30"
+                      : "bg-transparent text-haicha border border-karekusa/20 hover:border-gold/30 hover:text-gold"
                   }`}
                 >
                   {origin}
@@ -311,7 +305,7 @@ export default function ShopPage() {
               {originFilter && (
                 <button
                   onClick={() => setOriginFilter(null)}
-                  className="px-3 py-1 rounded text-xs text-haicha hover:text-konsumi transition-colors"
+                  className="px-3 py-1.5 text-xs text-haicha hover:text-konsumi transition-colors"
                 >
                   クリア
                 </button>
@@ -342,38 +336,38 @@ export default function ShopPage() {
               </button>
             </div>
           ) : (
-            <div className="grid md:grid-cols-3 gap-10 md:gap-12">
+            <div className="grid md:grid-cols-3 gap-10 md:gap-14">
               <AnimatePresence mode="popLayout">
                 {filteredProducts.map((product, i) => (
                   <motion.div
                     key={product.id}
                     layout
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.4, delay: i * 0.05 }}
+                    transition={{ duration: 1.2, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500">
+                    <div className="group">
                       {/* Image */}
-                      <div className="relative aspect-[4/3] overflow-hidden">
+                      <div className="relative aspect-[4/5] overflow-hidden mb-6">
                         <Image
                           src={product.image}
                           alt={product.name}
                           fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                          className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
                           sizes="(max-width: 768px) 100vw, 33vw"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-700" />
 
                         {/* Roast Badge */}
-                        <span className="absolute top-4 left-4 bg-konsumi/90 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-full font-medium tracking-wide">
+                        <span className="absolute top-4 left-4 bg-konsumi/80 text-white text-[10px] px-3 py-1.5 tracking-wider">
                           {product.roast}
                         </span>
 
                         {/* SOLD OUT Overlay */}
                         {!product.inStock && (
-                          <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center">
-                            <span className="bg-white/95 text-konsumi px-6 py-2.5 rounded-full text-sm font-bold tracking-wider">
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                            <span className="text-white text-xs tracking-[0.2em]">
                               SOLD OUT
                             </span>
                           </div>
@@ -381,18 +375,18 @@ export default function ShopPage() {
                       </div>
 
                       {/* Card Body */}
-                      <div className="p-6">
+                      <div>
                         {/* Origin Tag */}
-                        <span className="inline-block text-xs text-gold bg-gold/10 px-2.5 py-0.5 rounded-full mb-3">
+                        <p className="text-[10px] tracking-[0.3em] text-karekusa uppercase mb-2">
                           {product.origin}
-                        </span>
+                        </p>
 
-                        <h3 className="font-serif text-lg font-bold text-konsumi mb-2 leading-snug">
+                        <h3 className="font-serif text-base text-konsumi mb-3 tracking-wider font-light leading-snug">
                           {product.name}
                         </h3>
 
                         {product.flavor && (
-                          <p className="text-sm text-haicha mb-3 leading-relaxed line-clamp-2">
+                          <p className="text-xs md:text-sm text-haicha mb-3 leading-[2] tracking-wide line-clamp-2">
                             {product.flavor}
                           </p>
                         )}
@@ -400,21 +394,21 @@ export default function ShopPage() {
                         {/* Detail Tags */}
                         <div className="flex flex-wrap gap-1.5 mb-4">
                           {product.process && (
-                            <span className="text-[11px] text-haicha bg-tsuchikabe/60 px-2 py-0.5 rounded">
+                            <span className="text-[10px] text-haicha/70 border border-karekusa/15 px-2 py-0.5 tracking-wide">
                               {product.process}
                             </span>
                           )}
                           {product.variety && (
-                            <span className="text-[11px] text-haicha bg-tsuchikabe/60 px-2 py-0.5 rounded">
+                            <span className="text-[10px] text-haicha/70 border border-karekusa/15 px-2 py-0.5 tracking-wide">
                               {product.variety}
                             </span>
                           )}
                         </div>
 
                         <div className="flex items-end justify-between">
-                          <p className="font-bold text-karekusa text-xl">
+                          <p className="text-karekusa text-sm tracking-wider">
                             ¥{product.price.toLocaleString()}
-                            <span className="text-xs font-normal text-haicha ml-1">
+                            <span className="text-[10px] text-haicha/50 ml-2">
                               / {product.unit}
                             </span>
                           </p>
@@ -422,11 +416,11 @@ export default function ShopPage() {
                           {product.inStock && (
                             <motion.button
                               onClick={() => addToCart(product)}
-                              whileTap={{ scale: 0.95 }}
-                              className={`relative px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${
+                              whileTap={{ scale: 0.97 }}
+                              className={`relative px-5 py-2.5 text-xs tracking-[0.1em] transition-all duration-500 ${
                                 addedFeedback === product.id
-                                  ? "bg-success text-white"
-                                  : "bg-karekusa hover:bg-konsumi text-white"
+                                  ? "bg-konsumi text-white"
+                                  : "border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white"
                               }`}
                             >
                               <AnimatePresence mode="wait">
@@ -439,7 +433,7 @@ export default function ShopPage() {
                                     className="flex items-center gap-1"
                                   >
                                     <svg
-                                      className="w-4 h-4"
+                                      className="w-3.5 h-3.5"
                                       fill="none"
                                       stroke="currentColor"
                                       viewBox="0 0 24 24"
@@ -447,7 +441,7 @@ export default function ShopPage() {
                                       <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
-                                        strokeWidth={2}
+                                        strokeWidth={1.5}
                                         d="M5 13l4 4L19 7"
                                       />
                                     </svg>
@@ -484,88 +478,47 @@ export default function ShopPage() {
         </div>
       </section>
 
-      {/* Drip Bags */}
-      <section className="bg-tsuchikabe py-20 md:py-28 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="flex flex-col md:flex-row gap-10 md:gap-20 items-center">
-            <ScrollReveal direction="left" className="w-full md:w-1/2">
-              <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-xl">
-                <Image
-                  src="/images/stand/stand-2.jpg"
-                  alt="ドリップバッグ"
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-700"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
-            </ScrollReveal>
-            <ScrollReveal
-              direction="right"
-              delay={0.2}
-              className="w-full md:w-1/2"
-            >
-              <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
-                DRIP BAG
-              </p>
-              <h2 className="font-serif text-2xl md:text-3xl font-bold text-konsumi mb-8">
-                ドリップバッグ
-              </h2>
-              <p className="text-haicha text-lg leading-loose mb-6">
-                器具がなくても手軽に楽しめるドリップバッグ。
-                贈り物やオフィスのお供にもおすすめです。
-              </p>
-              <p className="font-bold text-karekusa text-xl mb-10">
-                ¥500〜
-                <span className="text-sm font-normal text-haicha ml-1">
-                  / 1杯
-                </span>
-              </p>
-              <Link
-                href="/contact"
-                className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-8 py-3 rounded-lg font-medium transition-all duration-300"
-              >
-                購入のお問い合わせ →
-              </Link>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
-
       {/* Shipping Info */}
-      <section className="py-20 md:py-28 overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4 md:px-8">
+      <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">
+        <div className="max-w-4xl mx-auto px-6 md:px-8">
           <ScrollReveal>
-            <h2 className="font-serif text-2xl md:text-3xl text-center text-konsumi mb-6">
-              配送について
-            </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
+            <div className="text-center mb-16 md:mb-20">
+              <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
+                Shipping
+              </p>
+              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
+                配送について
+              </h2>
+            </div>
           </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-10">
             <ScrollReveal direction="up" delay={0}>
-              <div className="bg-white p-10 rounded-xl shadow-sm text-center h-full hover:shadow-md transition-shadow duration-300">
-                <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
-                  SHIPPING
+              <div className="text-center">
+                <p className="text-[10px] tracking-[0.3em] text-gold/70 uppercase mb-4">
+                  Shipping
                 </p>
-                <h3 className="font-serif text-lg font-bold text-konsumi mb-4">
+                <h3 className="font-serif text-lg text-konsumi tracking-wider font-light mb-4">
                   送料
                 </h3>
-                <p className="text-haicha leading-loose">
-                  全国一律 ¥370（ネコポス）
+                <div className="w-8 h-px bg-gold/30 mx-auto mb-6" />
+                <p className="text-sm text-haicha leading-[2.2] tracking-wide">
+                  全国一律 ¥370
                   <br />
                   ¥5,000以上で送料無料
                 </p>
               </div>
             </ScrollReveal>
             <ScrollReveal direction="up" delay={0.15}>
-              <div className="bg-white p-10 rounded-xl shadow-sm text-center h-full hover:shadow-md transition-shadow duration-300">
-                <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
-                  FRESHNESS
+              <div className="text-center">
+                <p className="text-[10px] tracking-[0.3em] text-gold/70 uppercase mb-4">
+                  Freshness
                 </p>
-                <h3 className="font-serif text-lg font-bold text-konsumi mb-4">
+                <h3 className="font-serif text-lg text-konsumi tracking-wider font-light mb-4">
                   鮮度
                 </h3>
-                <p className="text-haicha leading-loose">
+                <div className="w-8 h-px bg-gold/30 mx-auto mb-6" />
+                <p className="text-sm text-haicha leading-[2.2] tracking-wide">
                   ご注文後に焙煎
                   <br />
                   3日以内に発送します
@@ -573,14 +526,15 @@ export default function ShopPage() {
               </div>
             </ScrollReveal>
             <ScrollReveal direction="up" delay={0.3}>
-              <div className="bg-white p-10 rounded-xl shadow-sm text-center h-full hover:shadow-md transition-shadow duration-300">
-                <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
-                  DELIVERY
+              <div className="text-center">
+                <p className="text-[10px] tracking-[0.3em] text-gold/70 uppercase mb-4">
+                  Delivery
                 </p>
-                <h3 className="font-serif text-lg font-bold text-konsumi mb-4">
+                <h3 className="font-serif text-lg text-konsumi tracking-wider font-light mb-4">
                   お届け
                 </h3>
-                <p className="text-haicha leading-loose">
+                <div className="w-8 h-px bg-gold/30 mx-auto mb-6" />
+                <p className="text-sm text-haicha leading-[2.2] tracking-wide">
                   発送後1〜3日で到着
                   <br />
                   ポスト投函で受取不要
@@ -592,35 +546,30 @@ export default function ShopPage() {
       </section>
 
       {/* Experience Bridge CTA */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
+      <section className="relative h-[70vh] md:h-[80vh] overflow-hidden">
         <Image
-          src="/images/experience/roasting-couple.jpg"
-          alt=""
+          src="/images/experience/roasting-hands.jpg"
+          alt="焙煎体験"
           fill
-          className="object-cover"
+          className="object-cover scale-110"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-black/70" />
-        <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-8 text-center">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+        <div className="relative z-10 h-full max-w-6xl mx-auto px-6 md:px-8 flex items-end pb-16 md:pb-24">
           <ScrollReveal>
-            <p className="text-sm tracking-[0.3em] text-white/60 mb-4">
-              EXPERIENCE
-            </p>
-            <h2 className="font-serif text-2xl md:text-3xl text-white mb-8">
+            <p className="font-serif text-white/90 text-lg md:text-xl tracking-wider font-light leading-relaxed mb-8">
               この豆を、自分で焙煎してみませんか？
-            </h2>
-            <p className="text-lg text-white/80 leading-loose mb-10">
-              オンラインショップの豆は、焙煎体験でも使用しています。
               <br />
-              生豆から自分で焙煎する、特別な体験をどうぞ。
+              生豆から仕上げる、特別な体験をどうぞ。
             </p>
-          </ScrollReveal>
-          <ScrollReveal delay={0.2}>
             <Link
               href="/experience"
-              className="inline-block bg-gold hover:bg-gold-dark text-white px-10 py-4 rounded-lg text-lg font-medium transition-colors"
+              className="inline-flex items-center gap-3 border border-white/40 text-white/90 text-xs tracking-[0.2em] px-8 py-4 hover:bg-white/15 transition-all duration-500"
             >
               焙煎体験を予約する
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
             </Link>
           </ScrollReveal>
         </div>
@@ -687,7 +636,7 @@ export default function ShopPage() {
             >
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-usuzumi/30">
-                <h3 className="font-serif text-xl font-bold text-konsumi">
+                <h3 className="font-serif text-lg text-konsumi tracking-wider font-light">
                   カート（{cartCount}点）
                 </h3>
                 <button
@@ -789,7 +738,7 @@ export default function ShopPage() {
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-serif text-sm font-bold text-konsumi mb-0.5 truncate">
+                            <h4 className="font-serif text-sm text-konsumi tracking-wide font-light mb-0.5 truncate">
                               {item.product.name}
                             </h4>
                             <p className="text-xs text-haicha mb-1.5">
@@ -853,7 +802,7 @@ export default function ShopPage() {
                           : `¥${shipping.toLocaleString()}`}
                       </span>
                     </div>
-                    <div className="flex justify-between font-bold text-konsumi text-lg pt-3 border-t border-usuzumi/30">
+                    <div className="flex justify-between text-konsumi text-lg pt-3 border-t border-usuzumi/30">
                       <span>合計</span>
                       <span>¥{total.toLocaleString()}</span>
                     </div>
@@ -862,7 +811,7 @@ export default function ShopPage() {
                     onClick={handleCheckout}
                     disabled={checkoutLoading}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full bg-gold hover:bg-gold-dark disabled:opacity-50 text-white py-4 rounded-lg text-lg font-medium transition-colors shadow-md"
+                    className="w-full bg-gold/90 hover:bg-gold disabled:opacity-50 text-white py-4 text-sm tracking-[0.15em] transition-all duration-500"
                   >
                     {checkoutLoading ? (
                       <span className="flex items-center justify-center gap-2">
