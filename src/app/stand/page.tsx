@@ -33,6 +33,8 @@ const sceneryPhotos = [
   { month: "2026年2月", src: "/images/stand/scenery-2026-02.jpg" },
   { month: "2026年1月", src: "/images/stand/scenery-2026-01.jpg" },
   { month: "2025年12月", src: "/images/stand/scenery-2025-12.jpg" },
+  { month: "2025年11月", src: "/images/stand/scenery-2025-11.jpg" },
+  { month: "2025年10月", src: "/images/stand/scenery-2025-10.jpg" },
 ];
 
 export default function StandPage() {
@@ -259,11 +261,11 @@ export default function StandPage() {
             <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             {sceneryPhotos.map((photo, i) => (
               <ScrollReveal key={photo.month} direction="up" delay={i * 0.1}>
                 <div className="relative">
-                  <div className="relative aspect-[16/10] rounded-sm overflow-hidden">
+                  <div className="relative aspect-[3/4] rounded-sm overflow-hidden">
                     <Image
                       src={photo.src}
                       alt={`${photo.month}の朝の景色`}
