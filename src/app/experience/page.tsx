@@ -106,9 +106,9 @@ export default function ExperiencePage() {
                   焙煎体験（直予約）
                 </h3>
                 <p className="text-4xl md:text-5xl font-bold text-gold mb-1 font-display">
-                  ¥4,400
+                  ¥8,800
                 </p>
-                <p className="text-xs text-haicha mb-10">（税込 / 1名）</p>
+                <p className="text-xs text-haicha mb-10">（税込 / 1組・2名まで）</p>
                 <ul className="text-sm text-haicha space-y-5 text-left mb-12">
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
@@ -131,12 +131,14 @@ export default function ExperiencePage() {
                     完全予約制・少人数制
                   </li>
                 </ul>
-                <Link
-                  href="/contact"
+                <a
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSddXQX_VthNqn6GmfG_Nf_tidQgW_9q_oJtIeBMvPAGoTwCvQ/viewform"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-block bg-gold hover:bg-gold-dark text-white px-8 py-4 rounded-sm text-sm tracking-widest font-medium transition-colors duration-300 w-full"
                 >
                   このプランを予約する
-                </Link>
+                </a>
               </div>
             </ScrollReveal>
 
@@ -190,6 +192,8 @@ export default function ExperiencePage() {
               ※ SOW Experience・anatae経由は¥11,000/組（2名まで）。
               <br className="md:hidden" />
               公式サイトからの直予約が最もお得です。
+              <br />
+              ※ 3名以上の場合は追加料金がかかります。お気軽にお問い合わせください。
             </p>
           </ScrollReveal>
         </div>
