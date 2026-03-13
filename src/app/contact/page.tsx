@@ -49,7 +49,7 @@ export default function ContactPage() {
   };
 
   const inputClasses =
-    "w-full border border-usuzumi rounded px-4 py-3.5 text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none transition-all duration-300 bg-white";
+    "w-full border border-usuzumi/30 px-4 py-3.5 text-sm focus:border-gold focus:ring-1 focus:ring-gold focus:outline-none transition-all duration-300 bg-white";
 
   return (
     <>
@@ -59,7 +59,7 @@ export default function ContactPage() {
         description="ご質問・ご相談はお気軽にどうぞ。2営業日以内にご返信いたします。"
       />
 
-      <section className="py-20 md:py-28 overflow-hidden">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row gap-12 md:gap-20">
             {/* Form */}
@@ -90,10 +90,10 @@ export default function ContactPage() {
                           />
                         </svg>
                       </div>
-                      <h2 className="text-2xl font-serif text-konsumi mb-6">
+                      <h2 className="text-xl font-serif text-konsumi tracking-wider font-light mb-6">
                         お問い合わせありがとうございます
                       </h2>
-                      <p className="text-haicha leading-loose text-lg">
+                      <p className="text-haicha leading-loose">
                         2営業日以内にご返信いたします。
                         <br />
                         しばらくお待ちください。
@@ -108,7 +108,7 @@ export default function ContactPage() {
                       className="space-y-8"
                     >
                       <div>
-                        <label className="block text-sm font-medium text-sumi mb-2.5">
+                        <label className="block text-sm text-sumi mb-2.5">
                           お問い合わせ種別{" "}
                           <span className="text-error">*</span>
                         </label>
@@ -130,7 +130,7 @@ export default function ContactPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-sumi mb-2.5">
+                        <label className="block text-sm text-sumi mb-2.5">
                           お名前 <span className="text-error">*</span>
                         </label>
                         <input
@@ -146,7 +146,7 @@ export default function ContactPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-sumi mb-2.5">
+                        <label className="block text-sm text-sumi mb-2.5">
                           メールアドレス{" "}
                           <span className="text-error">*</span>
                         </label>
@@ -163,7 +163,7 @@ export default function ContactPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-sumi mb-2.5">
+                        <label className="block text-sm text-sumi mb-2.5">
                           電話番号{" "}
                           <span className="text-haicha text-xs">（任意）</span>
                         </label>
@@ -179,7 +179,7 @@ export default function ContactPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-sumi mb-2.5">
+                        <label className="block text-sm text-sumi mb-2.5">
                           お問い合わせ内容{" "}
                           <span className="text-error">*</span>
                         </label>
@@ -199,7 +199,7 @@ export default function ContactPage() {
                         <motion.p
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="text-error text-sm bg-error/5 border border-error/20 rounded p-4"
+                          className="text-error text-sm bg-error/5 border border-error/20 p-4"
                         >
                           送信に失敗しました。時間をおいて再度お試しいただくか、
                           misocacoffee@gmail.com まで直接ご連絡ください。
@@ -209,7 +209,7 @@ export default function ContactPage() {
                       <button
                         type="submit"
                         disabled={status === "sending"}
-                        className="w-full bg-gold hover:bg-gold-dark disabled:opacity-50 text-white py-4 rounded font-medium transition-all duration-300 text-lg"
+                        className="w-full bg-gold/90 hover:bg-gold disabled:opacity-50 text-white py-4 text-xs tracking-[0.2em] transition-all duration-500"
                       >
                         {status === "sending" ? (
                           <span className="flex items-center justify-center gap-2">
@@ -247,16 +247,16 @@ export default function ContactPage() {
             {/* Side Info */}
             <div className="w-full md:w-1/3">
               <ScrollReveal direction="right" delay={0.3}>
-                <div className="bg-tsuchikabe p-8 md:p-10 rounded-lg space-y-10">
+                <div className="bg-tsuchikabe p-8 md:p-10 rounded-sm space-y-10">
                   <div>
-                    <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
-                      INSTAGRAM
+                    <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-4 uppercase">
+                      Instagram
                     </p>
                     <a
                       href="https://instagram.com/misoca_coffee"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-konsumi hover:text-gold transition-colors font-medium"
+                      className="text-konsumi hover:text-gold transition-colors"
                     >
                       @misoca_coffee
                     </a>
@@ -266,20 +266,20 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
-                      EMAIL
+                    <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-4 uppercase">
+                      Email
                     </p>
                     <a
                       href="mailto:misocacoffee@gmail.com"
-                      className="text-konsumi hover:text-gold transition-colors font-medium text-sm break-all"
+                      className="text-konsumi hover:text-gold transition-colors text-sm break-all"
                     >
                       misocacoffee@gmail.com
                     </a>
                   </div>
 
                   <div>
-                    <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
-                      ADDRESS
+                    <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-4 uppercase">
+                      Address
                     </p>
                     <p className="text-sm text-konsumi leading-loose">
                       〒409-0115
@@ -289,8 +289,8 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
-                      RESPONSE TIME
+                    <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-4 uppercase">
+                      Response Time
                     </p>
                     <p className="text-sm text-haicha leading-relaxed">
                       2営業日以内にご返信いたします。

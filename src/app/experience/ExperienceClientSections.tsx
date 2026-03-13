@@ -33,7 +33,7 @@ export function ExperienceClientSections() {
             <p className="text-xs tracking-[0.4em] text-white/50 mb-6 uppercase">
               Reservation
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-white mb-8">
+            <h2 className="font-serif text-xl md:text-2xl text-white tracking-wider font-light mb-8">
               ご予約・お問い合わせ
             </h2>
             <p className="text-white/70 leading-loose mb-12 max-w-xl mx-auto">
@@ -47,7 +47,7 @@ export function ExperienceClientSections() {
               href="https://docs.google.com/forms/d/e/1FAIpQLSddXQX_VthNqn6GmfG_Nf_tidQgW_9q_oJtIeBMvPAGoTwCvQ/viewform"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block bg-gold hover:bg-gold-dark text-white px-12 py-4 rounded-sm text-sm tracking-widest font-medium transition-colors duration-300"
+              className="inline-block bg-gold/90 hover:bg-gold text-white px-8 py-4 text-xs tracking-[0.2em] transition-all duration-500"
             >
               予約・お問い合わせ
             </a>
@@ -77,7 +77,7 @@ export function ExperienceClientSections() {
               <p className="text-xs tracking-[0.4em] text-gold font-medium mb-6 uppercase">
                 Online Shop
               </p>
-              <h2 className="font-serif text-3xl md:text-4xl text-konsumi mb-8 leading-snug">
+              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-8 leading-[1.5]">
                 体験で出会った豆を、
                 <br />
                 ご自宅でも。

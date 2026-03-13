@@ -74,19 +74,19 @@ export default function BlogPage() {
         image="/images/hero/hero-4.jpg"
       />
 
-      <section className="py-32 md:py-44 overflow-hidden">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
           {/* Categories */}
           <ScrollReveal>
-            <div className="flex flex-wrap gap-2 mb-12 justify-center">
+            <div className="flex flex-wrap gap-2 mb-16 justify-center">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                  className={`px-4 py-2 text-xs tracking-[0.1em] transition-all duration-300 ${
                     activeCategory === cat
                       ? "bg-konsumi text-white"
-                      : "bg-white text-haicha hover:bg-tsuchikabe"
+                      : "border border-usuzumi/30 text-haicha hover:border-karekusa hover:text-karekusa"
                   }`}
                 >
                   {cat}
@@ -104,14 +104,14 @@ export default function BlogPage() {
             <div className="grid md:grid-cols-3 gap-10">
               {filtered.map((post, i) => (
                 <ScrollReveal key={post.id} direction="up" delay={i * 0.1}>
-                  <article className="group bg-white overflow-hidden">
-                    <div className="aspect-[16/9] bg-tsuchikabe relative overflow-hidden">
+                  <article className="group overflow-hidden">
+                    <div className="aspect-[16/9] bg-tsuchikabe relative overflow-hidden rounded-sm">
                       {post.coverImage ? (
                         <Image
                           src={post.coverImage}
                           alt={post.title}
                           fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-700"
+                          className="object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
                           sizes="(max-width: 768px) 100vw, 33vw"
                         />
                       ) : (
@@ -121,8 +121,8 @@ export default function BlogPage() {
                       )}
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
                     </div>
-                    <div className="p-8">
-                      <span className="text-xs border border-karekusa/30 text-karekusa px-2 py-1 rounded">
+                    <div className="pt-6">
+                      <span className="text-xs border border-karekusa/30 text-karekusa px-2 py-1">
                         {post.category}
                       </span>
                       <h3 className="font-serif text-base text-konsumi tracking-wider font-light mt-3 mb-2 leading-snug group-hover:text-gold/80 transition-colors duration-300">
@@ -133,7 +133,7 @@ export default function BlogPage() {
                           {post.excerpt}
                         </p>
                       )}
-                      <p className="text-xs text-haicha">{formatDate(post.date)}</p>
+                      <p className="text-xs text-haicha/60">{formatDate(post.date)}</p>
                     </div>
                   </article>
                 </ScrollReveal>

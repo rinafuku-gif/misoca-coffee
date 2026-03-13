@@ -55,13 +55,13 @@ export default function MobileRoastingPage() {
       />
 
       {/* Concept */}
-      <section className="py-20 md:py-28 overflow-hidden">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
           <ScrollReveal>
-            <p className="text-sm tracking-[0.3em] text-gold font-medium mb-8">
-              CONCEPT
+            <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
+              Concept
             </p>
-            <h2 className="font-serif text-3xl md:text-5xl text-konsumi mb-8 leading-tight">
+            <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6 leading-[1.5]">
               焙煎所の体験を、
               <br />
               あなたの場所へ
@@ -69,7 +69,7 @@ export default function MobileRoastingPage() {
             <div className="w-16 h-px bg-gold mx-auto mb-12" />
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
-            <p className="text-haicha text-lg leading-loose max-w-2xl mx-auto">
+            <p className="text-haicha leading-loose max-w-2xl mx-auto">
               焙煎士が焙煎機と生豆を持って、あなたの場所へ伺います。
               生豆の選別から焙煎、テイスティングまで──
               古民家で行っている焙煎体験を、そのままお届けするサービスです。
@@ -79,26 +79,26 @@ export default function MobileRoastingPage() {
       </section>
 
       {/* What We Bring */}
-      <section className="bg-tsuchikabe py-20 md:py-28 overflow-hidden">
+      <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
-              WHAT WE BRING
+            <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
+              What We Bring
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-xl md:text-2xl text-center text-konsumi tracking-wider font-light mb-6">
               お持ちするもの
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
           </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-8 md:gap-10 max-w-5xl mx-auto">
             {whatWeBring.map((item, i) => (
               <ScrollReveal key={item.title} direction="up" delay={i * 0.15}>
-                <div className="bg-white p-8 md:p-10 rounded-lg shadow-sm text-center h-full">
-                  <span className="text-2xl font-serif text-gold/40 font-bold block mb-4">
+                <div className="bg-white p-8 md:p-10 rounded-sm text-center h-full">
+                  <span className="text-2xl font-serif text-gold/15 font-light block mb-4">
                     0{i + 1}
                   </span>
-                  <h3 className="font-serif text-xl font-bold text-konsumi mb-4">
+                  <h3 className="font-serif text-lg text-konsumi tracking-wider font-light mb-4">
                     {item.title}
                   </h3>
                   <p className="text-haicha leading-loose">{item.text}</p>
@@ -110,31 +110,31 @@ export default function MobileRoastingPage() {
       </section>
 
       {/* Suitable For */}
-      <section className="py-20 md:py-28 overflow-hidden">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row gap-10 md:gap-20 items-center">
             <ScrollReveal direction="left" className="w-full md:w-1/2">
-              <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-xl">
+              <div className="relative aspect-[4/3] rounded-sm overflow-hidden">
                 <Image
                   src="/images/experience/roaster-machine.jpg"
                   alt="出張焙煎体験の様子"
                   fill
-                  className="object-cover hover:scale-105 transition-transform duration-700"
+                  className="object-cover hover:scale-105 transition-transform duration-1000 ease-out"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
             </ScrollReveal>
             <ScrollReveal direction="right" delay={0.2} className="w-full md:w-1/2">
-              <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
-                SUITABLE FOR
+              <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
+                Suitable For
               </p>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-konsumi mb-8">
+              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-8 leading-[1.5]">
                 こんなシーンに
               </h2>
               <div className="space-y-6">
                 {suitableFor.map((item) => (
                   <div key={item.title}>
-                    <h3 className="font-serif text-lg font-bold text-konsumi mb-2">
+                    <h3 className="font-serif text-base text-konsumi tracking-wider font-light mb-2">
                       {item.title}
                     </h3>
                     <p className="text-haicha leading-loose">{item.text}</p>
@@ -147,53 +147,53 @@ export default function MobileRoastingPage() {
       </section>
 
       {/* Pricing */}
-      <section className="bg-tsuchikabe py-20 md:py-28 overflow-hidden">
+      <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
-              PRICING
+            <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
+              Pricing
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-xl md:text-2xl text-center text-konsumi tracking-wider font-light mb-6">
               料金
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
           </ScrollReveal>
 
           <ScrollReveal delay={0.2}>
-            <div className="bg-white rounded-lg p-10 md:p-14 shadow-sm">
+            <div className="bg-white rounded-sm p-10 md:p-14">
               <div className="space-y-8">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-8 border-b border-usuzumi/30">
                   <div>
-                    <h3 className="font-serif text-lg font-bold text-konsumi mb-1">
+                    <h3 className="font-serif text-lg text-konsumi tracking-wider font-light mb-1">
                       基本料金
                     </h3>
                     <p className="text-sm text-haicha">2名様まで</p>
                   </div>
-                  <p className="text-3xl font-bold text-gold">
+                  <p className="text-3xl font-light text-gold">
                     ¥11,000
-                    <span className="text-sm font-normal text-haicha ml-2">（税込）</span>
+                    <span className="text-sm text-haicha ml-2">（税込）</span>
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-8 border-b border-usuzumi/30">
                   <div>
-                    <h3 className="font-serif text-lg font-bold text-konsumi mb-1">
+                    <h3 className="font-serif text-lg text-konsumi tracking-wider font-light mb-1">
                       追加料金
                     </h3>
                     <p className="text-sm text-haicha">3名様目以降、1名あたり</p>
                   </div>
-                  <p className="text-3xl font-bold text-gold">
+                  <p className="text-3xl font-light text-gold">
                     +¥3,300
-                    <span className="text-sm font-normal text-haicha ml-2">（税込 / 人）</span>
+                    <span className="text-sm text-haicha ml-2">（税込 / 人）</span>
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h3 className="font-serif text-lg font-bold text-konsumi mb-1">
+                    <h3 className="font-serif text-lg text-konsumi tracking-wider font-light mb-1">
                       大人数・特別プラン
                     </h3>
                     <p className="text-sm text-haicha">10名様以上やカスタム内容</p>
                   </div>
-                  <p className="text-xl font-bold text-konsumi">
+                  <p className="text-xl font-light text-konsumi">
                     要相談
                   </p>
                 </div>
@@ -209,13 +209,13 @@ export default function MobileRoastingPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 md:py-28 overflow-hidden">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <ScrollReveal>
-            <h2 className="font-serif text-3xl md:text-4xl text-konsumi mb-8">
+            <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-8">
               出張焙煎のご相談
             </h2>
-            <p className="text-haicha text-lg leading-loose mb-10">
+            <p className="text-haicha leading-loose mb-12">
               日程・場所・人数をお知らせいただければ、
               <br />
               折り返しご連絡いたします。
@@ -224,7 +224,7 @@ export default function MobileRoastingPage() {
           <ScrollReveal delay={0.2}>
             <Link
               href="/contact"
-              className="inline-block bg-gold hover:bg-gold-dark text-white px-10 py-4 rounded text-lg font-medium transition-colors"
+              className="inline-block bg-gold/90 hover:bg-gold text-white px-8 py-4 text-xs tracking-[0.2em] transition-all duration-500"
             >
               お問い合わせはこちら
             </Link>

@@ -37,23 +37,23 @@ export default function CommunityPage() {
       />
 
       {/* Concept */}
-      <section className="py-20 md:py-28 overflow-hidden">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
           <ScrollReveal>
-            <p className="text-sm tracking-[0.3em] text-gold font-medium mb-8">
-              CONCEPT
+            <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
+              Concept
             </p>
-            <h2 className="font-serif text-3xl md:text-5xl text-konsumi mb-8 leading-tight">
+            <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6 leading-[1.5]">
               コーヒーでつながる
             </h2>
             <div className="w-16 h-px bg-gold mx-auto mb-12" />
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
-            <p className="text-haicha text-lg leading-loose max-w-2xl mx-auto mb-6">
+            <p className="text-haicha leading-loose max-w-2xl mx-auto mb-6">
               三十日珈琲は、コーヒーを「飲む場所」であると同時に、
               「人と出会う場所」でありたいと考えています。
             </p>
-            <p className="text-haicha text-lg leading-loose max-w-2xl mx-auto">
+            <p className="text-haicha leading-loose max-w-2xl mx-auto">
               焙煎体験に訪れる人、コーヒースタンドで立ち寄る人、
               オンラインで豆を注文する人。さまざまな形で三十日珈琲と関わるすべての人が、
               ゆるやかにつながるコミュニティを育てています。
@@ -63,16 +63,16 @@ export default function CommunityPage() {
       </section>
 
       {/* Three Connections */}
-      <section className="bg-tsuchikabe py-20 md:py-28 overflow-hidden">
+      <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">
         <div className="max-w-5xl mx-auto px-4 md:px-8">
           <ScrollReveal>
-            <p className="text-sm tracking-[0.3em] text-gold font-medium text-center mb-4">
-              CONNECTIONS
+            <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
+              Connections
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-center text-konsumi mb-6">
+            <h2 className="font-serif text-xl md:text-2xl text-center text-konsumi tracking-wider font-light mb-6">
               3つのつながり
             </h2>
-            <div className="w-16 h-px bg-gold mx-auto mb-14 md:mb-16" />
+            <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
           </ScrollReveal>
 
           <div className="space-y-10">
@@ -82,16 +82,16 @@ export default function CommunityPage() {
                 direction={i % 2 === 0 ? "left" : "right"}
                 delay={i * 0.1}
               >
-                <div className="bg-white p-8 md:p-12 rounded-lg shadow-sm">
+                <div className="bg-white p-8 md:p-12 rounded-sm">
                   <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start">
-                    <span className="text-3xl font-serif text-gold/40 font-bold flex-shrink-0">
+                    <span className="text-3xl font-serif text-gold/15 font-light flex-shrink-0">
                       {item.num}
                     </span>
                     <div>
-                      <h3 className="font-serif text-xl font-bold text-konsumi mb-4">
+                      <h3 className="font-serif text-lg text-konsumi tracking-wider font-light mb-4">
                         {item.title}
                       </h3>
-                      <p className="text-haicha text-lg leading-loose">
+                      <p className="text-haicha leading-loose">
                         {item.text}
                       </p>
                     </div>
@@ -104,15 +104,15 @@ export default function CommunityPage() {
       </section>
 
       {/* Instagram & Events */}
-      <section className="py-20 md:py-28 overflow-hidden">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 md:px-8">
           <div className="grid md:grid-cols-2 gap-10 md:gap-16">
             <ScrollReveal direction="left">
-              <div className="bg-tsuchikabe p-10 rounded-lg h-full">
-                <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
-                  INSTAGRAM
+              <div className="bg-tsuchikabe p-10 rounded-sm h-full">
+                <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-4 uppercase">
+                  Instagram
                 </p>
-                <h3 className="font-serif text-xl font-bold text-konsumi mb-6">
+                <h3 className="font-serif text-lg text-konsumi tracking-wider font-light mb-6">
                   日々の発信
                 </h3>
                 <p className="text-haicha leading-loose mb-8">
@@ -123,7 +123,7 @@ export default function CommunityPage() {
                   href="https://instagram.com/misoca_coffee"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-6 py-3 rounded font-medium transition-all duration-300 text-sm"
+                  className="inline-block border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white px-6 py-3 text-xs tracking-[0.2em] transition-all duration-500"
                 >
                   @misoca_coffee
                 </a>
@@ -131,11 +131,11 @@ export default function CommunityPage() {
             </ScrollReveal>
 
             <ScrollReveal direction="right" delay={0.15}>
-              <div className="bg-tsuchikabe p-10 rounded-lg h-full">
-                <p className="text-sm tracking-[0.3em] text-gold font-medium mb-4">
-                  EVENTS
+              <div className="bg-tsuchikabe p-10 rounded-sm h-full">
+                <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-4 uppercase">
+                  Events
                 </p>
-                <h3 className="font-serif text-xl font-bold text-konsumi mb-6">
+                <h3 className="font-serif text-lg text-konsumi tracking-wider font-light mb-6">
                   イベント
                 </h3>
                 <p className="text-haicha leading-loose mb-8">
@@ -146,7 +146,7 @@ export default function CommunityPage() {
                 </p>
                 <Link
                   href="/stand"
-                  className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-6 py-3 rounded font-medium transition-all duration-300 text-sm"
+                  className="inline-block border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white px-6 py-3 text-xs tracking-[0.2em] transition-all duration-500"
                 >
                   コーヒースタンドへ
                 </Link>
@@ -157,13 +157,13 @@ export default function CommunityPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-tsuchikabe py-20 md:py-28 overflow-hidden">
+      <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <ScrollReveal>
-            <h2 className="font-serif text-3xl md:text-4xl text-konsumi mb-8">
+            <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-8">
               三十日珈琲とつながる
             </h2>
-            <p className="text-haicha text-lg leading-loose mb-10">
+            <p className="text-haicha leading-loose mb-12">
               焙煎体験でお会いしましょう。
               <br />
               コーヒーを通じた新しいつながりが、ここから始まります。
@@ -173,13 +173,13 @@ export default function CommunityPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/experience"
-                className="inline-block bg-gold hover:bg-gold-dark text-white px-10 py-4 rounded text-lg font-medium transition-colors"
+                className="inline-block bg-gold/90 hover:bg-gold text-white px-8 py-4 text-xs tracking-[0.2em] transition-all duration-500"
               >
                 焙煎体験を予約する
               </Link>
               <Link
                 href="/contact"
-                className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-10 py-4 rounded text-lg font-medium transition-all duration-300"
+                className="inline-block border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white px-8 py-4 text-xs tracking-[0.2em] transition-all duration-500"
               >
                 お問い合わせ
               </Link>

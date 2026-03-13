@@ -9,9 +9,9 @@ export default function TokushohoPage() {
   return (
     <>
       <PageHero title="LEGAL" subtitle="特定商取引法に基づく表記" />
-      <section className="py-16 md:py-24">
+      <section className="py-24 md:py-32">
         <div className="max-w-3xl mx-auto px-4">
-          <div className="bg-white p-8 rounded-lg shadow-sm">
+          <div className="bg-white p-8 rounded-sm">
             <dl className="space-y-4 text-sm">
               {[
                 ["販売業者", "三十日珈琲"],
@@ -23,7 +23,7 @@ export default function TokushohoPage() {
                 ["商品の引き渡し時期", "注文確定後、焙煎の上3日以内に発送"],
                 ["返品・交換", "商品到着後7日以内にご連絡ください"],
               ].map(([dt, dd]) => (
-                <div key={dt} className="flex border-b border-usuzumi/50 pb-4">
+                <div key={dt} className="flex border-b border-usuzumi/30 pb-4">
                   <dt className="w-40 text-haicha flex-shrink-0">{dt}</dt>
                   <dd className="text-sumi">{dd}</dd>
                 </div>

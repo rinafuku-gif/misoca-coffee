@@ -64,35 +64,35 @@ export default function MenuPage() {
         image="/images/menu/ethiopia.jpg"
       />
 
-      <section className="py-32 md:py-44 overflow-hidden">
+      <section className="py-24 md:py-32 overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
             {products.map((product, i) => (
               <ScrollReveal key={product.name} direction="up" delay={i * 0.1}>
-                <div className="group bg-white rounded-lg overflow-hidden shadow-sm">
-                  <div className="relative aspect-square overflow-hidden">
+                <div className="group overflow-hidden">
+                  <div className="relative aspect-square overflow-hidden rounded-sm">
                     <Image
                       src={product.image}
                       alt={product.name}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-700"
+                      className="object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
                   </div>
-                  <div className="p-8">
+                  <div className="pt-6">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs border border-karekusa/30 text-karekusa px-2 py-1 rounded">
+                      <span className="text-xs border border-karekusa/30 text-karekusa px-2 py-1">
                         {product.roast}
                       </span>
                     </div>
-                    <h3 className="font-serif font-bold text-konsumi mb-2">
+                    <h3 className="font-serif text-base text-konsumi tracking-wider font-light mb-2">
                       {product.name}
                     </h3>
                     <p className="text-sm text-haicha mb-3">
                       {product.description}
                     </p>
-                    <p className="font-bold text-karekusa">{product.price}</p>
+                    <p className="font-light text-karekusa">{product.price}</p>
                   </div>
                 </div>
               </ScrollReveal>
