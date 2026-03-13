@@ -35,6 +35,21 @@ const sceneryPhotos = [
   { month: "2025年12月", src: "/images/stand/scenery-2025-12.jpg" },
   { month: "2025年11月", src: "/images/stand/scenery-2025-11.jpg" },
   { month: "2025年10月", src: "/images/stand/scenery-2025-10.jpg" },
+  { month: "2025年9月", src: "/images/stand/scenery-2025-09.jpg" },
+  { month: "2025年8月", src: "/images/stand/scenery-2025-08.jpg" },
+  { month: "2025年7月", src: "/images/stand/scenery-2025-07.jpg" },
+  { month: "2025年6月", src: "/images/stand/scenery-2025-06.jpg" },
+  { month: "2025年5月", src: "/images/stand/scenery-2025-05.jpg" },
+  { month: "2025年4月", src: "/images/stand/scenery-2025-04.jpg" },
+  { month: "2025年3月", src: "/images/stand/scenery-2025-03.jpg" },
+  { month: "2025年2月", src: "/images/stand/scenery-2025-02.jpg" },
+  { month: "2025年1月", src: "/images/stand/scenery-2025-01.jpg" },
+  { month: "2024年12月", src: "/images/stand/scenery-2024-12.jpg" },
+  { month: "2024年11月", src: "/images/stand/scenery-2024-11.jpg" },
+  { month: "2024年10月", src: "/images/stand/scenery-2024-10.jpg" },
+  { month: "2024年9月", src: "/images/stand/scenery-2024-09.jpg" },
+  { month: "2024年8月", src: "/images/stand/scenery-2024-08.jpg" },
+  { month: "2024年7月", src: "/images/stand/scenery-2024-07.jpg" },
 ];
 
 export default function StandPage() {
