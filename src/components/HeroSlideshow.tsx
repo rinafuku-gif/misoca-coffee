@@ -11,10 +11,11 @@ interface Slide {
 }
 
 const slides: Slide[] = [
-  { src: "/images/hero/hero-interior-atmosphere.jpg", alt: "古民家の情緒ある空間" },
   { src: "/images/hero/hero-beans-pour.jpg", alt: "生豆を焙煎機に注ぐ" },
+  { src: "/images/hero/hero-interior-atmosphere.jpg", alt: "古民家の情緒ある空間" },
   { src: "/images/hero/hero-roasting-output.jpg", alt: "焙煎豆の出来上がり" },
-  { src: "/images/hero/hero-experience-group.jpg", alt: "焙煎体験の様子" },
+  { src: "/images/about/scenery-1.jpg", alt: "上野原の風景" },
+  { src: "/images/about/scenery-2.jpg", alt: "焙煎所のある里山" },
 ];
 
 const SLIDE_DURATION = 6000;
@@ -73,7 +74,7 @@ export function HeroSlideshow() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Gradient Overlay - elegant multi-layer */}
+      {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
 
@@ -85,7 +86,7 @@ export function HeroSlideshow() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="font-serif text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-[1.4] mb-10"
+              className="font-serif text-2xl md:text-4xl lg:text-5xl font-light text-white leading-[1.6] tracking-wider mb-12"
             >
               <span className="block">コーヒーと暮らす。</span>
               <span className="block mt-2 md:mt-3">古くて新しい、みんなの焙煎所。</span>
@@ -95,12 +96,12 @@ export function HeroSlideshow() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="mb-14"
+              className="mb-16"
             >
-              <p className="text-base md:text-lg text-white/80 leading-relaxed tracking-wide">
+              <p className="text-sm md:text-base text-white/70 leading-[2] tracking-[0.1em] font-light">
                 築300年の古民家で、自分だけのコーヒーを焙煎する。
               </p>
-              <p className="text-base md:text-lg text-white/60 leading-relaxed tracking-wide mt-1">
+              <p className="text-sm md:text-base text-white/55 leading-[2] tracking-[0.1em] font-light mt-1">
                 山梨県上野原市から届ける、体験とスペシャルティコーヒー。
               </p>
             </motion.div>
@@ -113,17 +114,21 @@ export function HeroSlideshow() {
             >
               <Link
                 href="/experience"
-                className="inline-flex items-center gap-3 border border-white/40 text-white hover:bg-white hover:text-konsumi px-10 py-4 text-sm font-medium tracking-wide transition-all duration-300"
+                className="inline-flex items-center gap-3 border border-white/40 text-white text-xs tracking-[0.2em] px-8 py-4 hover:bg-white/15 transition-all duration-500"
               >
-                焙煎体験を予約する
-                <span className="text-xs">→</span>
+                <span>焙煎体験を予約する</span>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
               </Link>
               <Link
                 href="/shop"
-                className="inline-flex items-center gap-3 border border-white/40 text-white hover:bg-white hover:text-konsumi px-10 py-4 text-sm font-medium tracking-wide transition-all duration-300"
+                className="inline-flex items-center gap-3 border border-white/25 text-white/70 text-xs tracking-[0.2em] px-8 py-4 hover:bg-white/10 hover:text-white transition-all duration-500"
               >
-                コーヒー豆を購入する
-                <span className="text-xs">→</span>
+                <span>コーヒー豆を購入する</span>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
               </Link>
             </motion.div>
           </div>
