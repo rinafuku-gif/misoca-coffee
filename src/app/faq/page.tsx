@@ -63,10 +63,10 @@ export default function FaqPage() {
       <PageHero title="FAQ" subtitle="よくある質問" />
 
       <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-3xl mx-auto px-4 md:px-8">
+        <div className="max-w-3xl mx-auto px-4 md:px-8 space-y-20 md:space-y-24">
           {faqCategories.map((category, ci) => (
             <ScrollReveal key={category.title} delay={ci * 0.1}>
-              <div className="mb-24 last:mb-0">
+              <div>
                 <h2 className="font-serif text-lg md:text-xl text-konsumi tracking-wider font-light mb-3">
                   {category.title}
                 </h2>
