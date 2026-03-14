@@ -478,6 +478,292 @@ export default function ShopPage() {
         </div>
       </section>
 
+      {/* Gift Ticket */}
+      <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">
+        <div className="max-w-5xl mx-auto px-6 md:px-8">
+          <ScrollReveal>
+            <div className="text-center mb-16 md:mb-20">
+              <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
+                Gift
+              </p>
+              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6">
+                ギフトチケット
+              </h2>
+              <p className="text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide">
+                大切な人に、焙煎体験を贈りませんか。
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.2}>
+            <div className="flex flex-col md:flex-row gap-8 md:gap-12 bg-white rounded-sm overflow-hidden">
+              <div className="relative aspect-[4/3] md:aspect-auto md:w-1/2">
+                <Image
+                  src="/images/experience/gallery-1.jpg"
+                  alt="焙煎体験ギフトチケット"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+              <div className="flex flex-col justify-center p-8 md:p-10 md:w-1/2">
+                <p className="text-[10px] tracking-[0.3em] text-gold/70 uppercase mb-3">
+                  Roasting Experience Gift
+                </p>
+                <h3 className="font-serif text-xl text-konsumi tracking-wider font-light mb-4">
+                  焙煎体験ギフトチケット
+                </h3>
+                <p className="text-sm text-haicha leading-[2] tracking-wide mb-6">
+                  築300年の古民家で、生豆の選別から焙煎、テイスティングまで。
+                  特別な時間を大切な方へ贈れるギフトチケットです。
+                  2名様まで体験いただけます。
+                </p>
+                <ul className="text-sm text-haicha space-y-2 mb-8">
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold/50 flex-shrink-0" />
+                    所要約90分 / 2名様まで
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold/50 flex-shrink-0" />
+                    焙煎豆お持ち帰り付き
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold/50 flex-shrink-0" />
+                    有効期限：発行から6ヶ月
+                  </li>
+                </ul>
+                <div className="flex items-end justify-between">
+                  <p className="text-3xl font-light text-gold">
+                    ¥8,800
+                    <span className="text-sm text-haicha ml-2">（税込）</span>
+                  </p>
+                  <motion.button
+                    onClick={() =>
+                      addToCart({
+                        id: "gift-roasting-experience",
+                        name: "焙煎体験ギフトチケット",
+                        origin: "",
+                        roast: "",
+                        flavor: "",
+                        price: 8800,
+                        unit: "1枚",
+                        image: "/images/experience/gallery-1.jpg",
+                        inStock: true,
+                        process: "",
+                        variety: "",
+                        region: "",
+                        farm: "",
+                        altitude: "",
+                        description: "",
+                      })
+                    }
+                    whileTap={{ scale: 0.97 }}
+                    className={`px-5 py-2.5 text-xs tracking-[0.1em] transition-all duration-500 ${
+                      addedFeedback === "gift-roasting-experience"
+                        ? "bg-konsumi text-white"
+                        : "border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white"
+                    }`}
+                  >
+                    <AnimatePresence mode="wait">
+                      {addedFeedback === "gift-roasting-experience" ? (
+                        <motion.span
+                          key="added"
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -5 }}
+                          className="flex items-center gap-1"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
+                          </svg>
+                          追加しました
+                        </motion.span>
+                      ) : (
+                        <motion.span
+                          key="add"
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -5 }}
+                        >
+                          カートに入れる
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </motion.button>
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Equipment */}
+      <section className="py-24 md:py-32 overflow-hidden">
+        <div className="max-w-5xl mx-auto px-6 md:px-8">
+          <ScrollReveal>
+            <div className="text-center mb-16 md:mb-20">
+              <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
+                Equipment
+              </p>
+              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6">
+                コーヒー器具
+              </h2>
+              <p className="text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide">
+                焙煎士が実際に使い、おすすめする器具をご紹介します。
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.2}>
+            <div className="flex flex-col md:flex-row-reverse gap-8 md:gap-12 bg-white rounded-sm overflow-hidden">
+              <div className="relative aspect-[4/3] md:aspect-auto md:w-1/2 bg-tsuchikabe flex items-center justify-center">
+                <div className="text-center p-8">
+                  <p className="text-6xl text-karekusa/15 font-serif mb-4">HARIO</p>
+                  <p className="text-sm text-haicha tracking-wide">Switch 360</p>
+                </div>
+              </div>
+              <div className="flex flex-col justify-center p-8 md:p-10 md:w-1/2">
+                <p className="text-[10px] tracking-[0.3em] text-gold/70 uppercase mb-3">
+                  Recommended by Roaster
+                </p>
+                <h3 className="font-serif text-xl text-konsumi tracking-wider font-light mb-4">
+                  HARIO 浸漬式ドリッパー スイッチ360
+                </h3>
+                <p className="text-sm text-haicha leading-[2] tracking-wide mb-6">
+                  お湯を注いでスイッチを押すだけ。浸漬式だから、誰でも均一でおいしいコーヒーが淹れられます。
+                  三十日珈琲オリジナルのレシピカード付き。
+                </p>
+                <ul className="text-sm text-haicha space-y-2 mb-8">
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold/50 flex-shrink-0" />
+                    出来上がり量 360ml（1〜2杯分）
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold/50 flex-shrink-0" />
+                    ペーパーフィルター40枚付属
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span className="w-4 h-px bg-gold/50 flex-shrink-0" />
+                    オリジナル抽出レシピ付き
+                  </li>
+                </ul>
+                <div className="flex items-end justify-between">
+                  <p className="text-3xl font-light text-gold">
+                    ¥4,400
+                    <span className="text-sm text-haicha ml-2">（税込）</span>
+                  </p>
+                  <motion.button
+                    onClick={() =>
+                      addToCart({
+                        id: "hario-switch-360",
+                        name: "HARIO 浸漬式ドリッパー スイッチ360",
+                        origin: "",
+                        roast: "",
+                        flavor: "",
+                        price: 4400,
+                        unit: "1個",
+                        image: "",
+                        inStock: true,
+                        process: "",
+                        variety: "",
+                        region: "",
+                        farm: "",
+                        altitude: "",
+                        description: "",
+                      })
+                    }
+                    whileTap={{ scale: 0.97 }}
+                    className={`px-5 py-2.5 text-xs tracking-[0.1em] transition-all duration-500 ${
+                      addedFeedback === "hario-switch-360"
+                        ? "bg-konsumi text-white"
+                        : "border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white"
+                    }`}
+                  >
+                    <AnimatePresence mode="wait">
+                      {addedFeedback === "hario-switch-360" ? (
+                        <motion.span
+                          key="added"
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -5 }}
+                          className="flex items-center gap-1"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
+                          </svg>
+                          追加しました
+                        </motion.span>
+                      ) : (
+                        <motion.span
+                          key="add"
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -5 }}
+                        >
+                          カートに入れる
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </motion.button>
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Our Roaster */}
+      <section className="bg-konsumi py-24 md:py-32 overflow-hidden">
+        <div className="max-w-5xl mx-auto px-6 md:px-8">
+          <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center">
+            <ScrollReveal direction="left" className="w-full md:w-1/2">
+              <div className="relative aspect-[4/3] rounded-sm overflow-hidden">
+                <Image
+                  src="/images/experience/roaster-machine.jpg"
+                  alt="Aillio Bullet R1 V2 焙煎機"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal direction="right" delay={0.2} className="w-full md:w-1/2">
+              <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
+                Our Roaster
+              </p>
+              <h2 className="font-serif text-xl md:text-2xl text-white tracking-wider font-light mb-6 leading-[1.5]">
+                Aillio Bullet R1 V2
+              </h2>
+              <p className="text-white/70 leading-[2] tracking-wide mb-6">
+                デンマーク設計・台湾製造の小型焙煎機。
+                火力・排気・温度をPCでリアルタイムに管理し、
+                焙煎プロファイル（温度曲線の記録）を活用して
+                豆の個性を最大限に引き出します。
+              </p>
+              <p className="text-white/70 leading-[2] tracking-wide mb-8">
+                一度に最大1kgまで焙煎可能。少量ずつ丁寧に焙煎するから、
+                いつでも焙煎したての新鮮なコーヒーをお届けできます。
+                焙煎体験でも、この焙煎機を実際にお使いいただけます。
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <div className="border border-white/20 px-4 py-3 text-center">
+                  <p className="text-white/40 text-[10px] tracking-wider uppercase mb-1">Design</p>
+                  <p className="text-white text-sm tracking-wide">デンマーク</p>
+                </div>
+                <div className="border border-white/20 px-4 py-3 text-center">
+                  <p className="text-white/40 text-[10px] tracking-wider uppercase mb-1">Capacity</p>
+                  <p className="text-white text-sm tracking-wide">最大 1kg</p>
+                </div>
+                <div className="border border-white/20 px-4 py-3 text-center">
+                  <p className="text-white/40 text-[10px] tracking-wider uppercase mb-1">Control</p>
+                  <p className="text-white text-sm tracking-wide">PC連動</p>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
       {/* Shipping Info */}
       <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">
         <div className="max-w-4xl mx-auto px-6 md:px-8">
