@@ -537,59 +537,15 @@ export default function ShopPage() {
                     ¥8,800
                     <span className="text-sm text-haicha ml-2">（税込）</span>
                   </p>
-                  <motion.button
-                    onClick={() =>
-                      addToCart({
-                        id: "gift-roasting-experience",
-                        name: "焙煎体験ギフトチケット",
-                        origin: "",
-                        roast: "",
-                        flavor: "",
-                        price: 8800,
-                        unit: "1枚",
-                        image: "/images/experience/gallery-1.jpg",
-                        inStock: true,
-                        process: "",
-                        variety: "",
-                        region: "",
-                        farm: "",
-                        altitude: "",
-                        description: "",
-                      })
-                    }
-                    whileTap={{ scale: 0.97 }}
-                    className={`px-5 py-2.5 text-xs tracking-[0.1em] transition-all duration-500 ${
-                      addedFeedback === "gift-roasting-experience"
-                        ? "bg-konsumi text-white"
-                        : "border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white"
-                    }`}
+                  <Link
+                    href="/shop/gift-ticket"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 text-xs tracking-[0.1em] border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white transition-all duration-500"
                   >
-                    <AnimatePresence mode="wait">
-                      {addedFeedback === "gift-roasting-experience" ? (
-                        <motion.span
-                          key="added"
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -5 }}
-                          className="flex items-center gap-1"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
-                          </svg>
-                          追加しました
-                        </motion.span>
-                      ) : (
-                        <motion.span
-                          key="add"
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -5 }}
-                        >
-                          カートに入れる
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </motion.button>
+                    詳細を見る
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -652,59 +608,15 @@ export default function ShopPage() {
                     ¥4,400
                     <span className="text-sm text-haicha ml-2">（税込）</span>
                   </p>
-                  <motion.button
-                    onClick={() =>
-                      addToCart({
-                        id: "hario-switch-360",
-                        name: "HARIO 浸漬式ドリッパー スイッチ360",
-                        origin: "",
-                        roast: "",
-                        flavor: "",
-                        price: 4400,
-                        unit: "1個",
-                        image: "",
-                        inStock: true,
-                        process: "",
-                        variety: "",
-                        region: "",
-                        farm: "",
-                        altitude: "",
-                        description: "",
-                      })
-                    }
-                    whileTap={{ scale: 0.97 }}
-                    className={`px-5 py-2.5 text-xs tracking-[0.1em] transition-all duration-500 ${
-                      addedFeedback === "hario-switch-360"
-                        ? "bg-konsumi text-white"
-                        : "border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white"
-                    }`}
+                  <Link
+                    href="/shop/hario-switch"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 text-xs tracking-[0.1em] border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white transition-all duration-500"
                   >
-                    <AnimatePresence mode="wait">
-                      {addedFeedback === "hario-switch-360" ? (
-                        <motion.span
-                          key="added"
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -5 }}
-                          className="flex items-center gap-1"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
-                          </svg>
-                          追加しました
-                        </motion.span>
-                      ) : (
-                        <motion.span
-                          key="add"
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -5 }}
-                        >
-                          カートに入れる
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </motion.button>
+                    詳細を見る
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  </Link>
                 </div>
               </div>
             </div>
