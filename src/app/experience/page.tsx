@@ -148,7 +148,7 @@ export default function ExperiencePage() {
                   グループ焙煎体験
                 </h3>
                 <p className="text-4xl md:text-5xl font-light text-gold mb-1">
-                  ¥3,300
+                  ¥4,400
                 </p>
                 <p className="text-xs text-haicha mb-10">（税込 / 1名）</p>
                 <ul className="text-sm text-haicha space-y-5 text-left mb-12">

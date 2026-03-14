@@ -181,7 +181,7 @@ export default function MobileRoastingPage() {
                     <p className="text-sm text-haicha">3名様目以降、1名あたり</p>
                   </div>
                   <p className="text-3xl font-light text-gold">
-                    +¥3,300
+                    +¥4,400
                     <span className="text-sm text-haicha ml-2">（税込 / 人）</span>
                   </p>
                 </div>
