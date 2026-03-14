@@ -53,6 +53,49 @@ export async function getJournalPosts(): Promise<JournalPost[]> {
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type NotionBlock = Record<string, any>;
+
+export async function getJournalPostById(id: string): Promise<JournalPost | null> {
+  if (!process.env.NOTION_API_KEY) return null;
+
+  try {
+    const page = await notion.pages.retrieve({ page_id: id }) as Record<string, unknown>;
+    const props = page["properties"] as Record<string, Record<string, unknown>>;
+
+    return {
+      id: page["id"] as string,
+      title: getTitle(props["タイトル"]),
+      category: getSelect(props["カテゴリ"]),
+      status: getSelect(props["ステータス"]),
+      date: getDate(props["公開日"]),
+      excerpt: getRichText(props["抜粋"]),
+      coverImage: getFile(props["カバー画像"]) || "",
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function getPageBlocks(pageId: string): Promise<NotionBlock[]> {
+  if (!process.env.NOTION_API_KEY) return [];
+
+  const blocks: NotionBlock[] = [];
+  let cursor: string | undefined = undefined;
+
+  do {
+    const response = await notion.blocks.children.list({
+      block_id: pageId,
+      start_cursor: cursor,
+      page_size: 100,
+    });
+    blocks.push(...(response.results as NotionBlock[]));
+    cursor = response.has_more ? (response.next_cursor ?? undefined) : undefined;
+  } while (cursor);
+
+  return blocks;
+}
+
 export interface Product {
   id: string;
   name: string;

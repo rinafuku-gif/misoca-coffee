@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { PageHero } from "@/components/PageHero";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import type { JournalPost } from "@/lib/notion";
@@ -104,7 +105,8 @@ export default function BlogPage() {
             <div className="grid md:grid-cols-3 gap-10">
               {filtered.map((post, i) => (
                 <ScrollReveal key={post.id} direction="up" delay={i * 0.1}>
-                  <article className="group overflow-hidden">
+                  <Link href={`/blog/${post.id}`}>
+                  <article className="group overflow-hidden cursor-pointer">
                     <div className="aspect-[16/9] bg-tsuchikabe relative overflow-hidden rounded-sm">
                       {post.coverImage ? (
                         <Image
@@ -136,6 +138,7 @@ export default function BlogPage() {
                       <p className="text-xs text-haicha/60">{formatDate(post.date)}</p>
                     </div>
                   </article>
+                  </Link>
                 </ScrollReveal>
               ))}
             </div>
