@@ -8,7 +8,7 @@ import { ExperienceClientSections } from "./ExperienceClientSections";
 export const metadata: Metadata = {
   title: "焙煎体験予約",
   description:
-    "築300年の古民家で、自分だけのコーヒーを焙煎する体験。生豆の選別から焙煎、ドリップまで約90分。公式サイトからの直予約が最もお得です。",
+    "築300年の古民家で、自分だけのコーヒーを焙煎する体験。Aillio Bullet R1 V2で生豆の選別から焙煎、ドリップまで約90分。公式サイトからの直予約が最もお得です。",
 };
 
 const steps = [
@@ -27,7 +27,7 @@ const steps = [
   {
     num: "03",
     title: "焙煎する",
-    text: "手回し焙煎機で自分の手で焙煎。焙煎士がマンツーマンでサポートします。",
+    text: "Aillio Bullet R1 V2で自分の手で焙煎。焙煎士がマンツーマンでサポートします。",
     image: "/images/experience/roasting-hands.jpg",
   },
   {
@@ -39,7 +39,7 @@ const steps = [
   {
     num: "05",
     title: "お持ち帰り",
-    text: "焙煎した豆（約200g）はお土産に。ご自宅でも焙煎所の味をお楽しみいただけます。",
+    text: "焙煎した豆はお土産に。プライベート体験では約400g（250g×2回焙煎）、グループ体験では人数に応じた量をお持ち帰りいただけます。",
     image: "/images/experience/takeaway-bags.jpg",
   },
 ];
@@ -120,7 +120,7 @@ export default function ExperiencePage() {
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    焙煎豆お持ち帰り（約200g）
+                    焙煎豆お持ち帰り（プライベート: 約400g）
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
@@ -312,11 +312,11 @@ export default function ExperiencePage() {
                   </li>
                   <li className="flex items-start gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0 mt-3" />
-                    新宿から約50分（特急利用）
+                    新宿から約65分（中央特快利用）
                   </li>
                   <li className="flex items-start gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0 mt-3" />
-                    高尾から約15分
+                    高尾から約16分
                   </li>
                 </ul>
               </div>
@@ -333,7 +333,7 @@ export default function ExperiencePage() {
                   </li>
                   <li className="flex items-start gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0 mt-3" />
-                    駐車場あり
+                    駐車場あり（無料・6台）
                   </li>
                 </ul>
               </div>

@@ -17,7 +17,12 @@ const menuItems = [
     note: "Hot",
   },
   {
-    name: "オーツミルラテ",
+    name: "本日のコーヒー",
+    price: "¥300",
+    note: "水曜 8:00〜9:30 限定5杯",
+  },
+  {
+    name: "オーツミルクラテ",
     price: "¥800",
     note: "Hot",
   },
@@ -158,7 +163,13 @@ export default function StandPage() {
                 ※ アイスはすべて +¥50
               </p>
               <p className="text-sm text-haicha leading-relaxed">
-                ※ オーツミルクオプション +¥50
+                ※ オーツミルク変更 +¥50
+              </p>
+              <p className="text-sm text-haicha leading-relaxed">
+                ※ 砂糖・ミルクの標準提供はございません
+              </p>
+              <p className="text-sm text-haicha leading-relaxed">
+                ※ 自家焙煎豆の販売もしています（100g ¥800〜 / 種類により変動）
               </p>
               <p className="text-xs text-haicha/60 mt-4">
                 季節や仕入れ状況により、メニュー・価格が変わる場合があります。

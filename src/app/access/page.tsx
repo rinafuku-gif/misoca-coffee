@@ -6,7 +6,7 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 export const metadata: Metadata = {
   title: "アクセス",
   description:
-    "三十日珈琲へのアクセス。山梨県上野原市松留939。JR中央本線「上野原」駅から。新宿から特急で約50分、高尾から約15分。中央自動車道「上野原IC」から約10分。",
+    "三十日珈琲へのアクセス。山梨県上野原市松留939。JR中央本線「上野原」駅から。新宿から中央特快で約65分、高尾から約16分。中央自動車道「上野原IC」から約10分。",
 };
 
 export default function AccessPage() {
@@ -86,11 +86,11 @@ export default function AccessPage() {
                   </li>
                   <li className="flex items-start gap-4">
                     <span className="w-5 h-px bg-gold/40 flex-shrink-0 mt-3" />
-                    新宿から約60分（特急利用で約50分）
+                    新宿から約65分（中央特快利用）
                   </li>
                   <li className="flex items-start gap-4">
                     <span className="w-5 h-px bg-gold/40 flex-shrink-0 mt-3" />
-                    高尾から約15分
+                    高尾から約16分
                   </li>
                 </ul>
               </div>
@@ -109,7 +109,7 @@ export default function AccessPage() {
                   </li>
                   <li className="flex items-start gap-4">
                     <span className="w-5 h-px bg-gold/40 flex-shrink-0 mt-3" />
-                    駐車場あり（無料）
+                    駐車場あり（無料・6台）
                   </li>
                 </ul>
               </div>
