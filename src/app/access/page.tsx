@@ -33,6 +33,17 @@ export default function AccessPage() {
               <p className="text-sm text-haicha leading-[2.2] tracking-wide">
                 〒409-0115 山梨県上野原市松留939
               </p>
+              <div className="mt-6 space-y-2">
+                <p className="text-sm text-konsumi font-medium tracking-wide">
+                  完全予約制
+                </p>
+                <p className="text-sm text-haicha leading-[2.2] tracking-wide">
+                  TEL: <a href="tel:09080802165" className="underline underline-offset-4 decoration-gold/30 hover:text-konsumi transition-colors">090-8080-2165</a>
+                </p>
+                <p className="text-sm text-haicha leading-[2.2] tracking-wide">
+                  MAIL: <a href="mailto:misocacoffee@gmail.com" className="underline underline-offset-4 decoration-gold/30 hover:text-konsumi transition-colors">misocacoffee@gmail.com</a>
+                </p>
+              </div>
             </div>
           </ScrollReveal>
 
