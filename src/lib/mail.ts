@@ -31,7 +31,7 @@ interface OrderNotification {
   isGiftTicket?: boolean;
 }
 
-export async function sendOrderNotification(order: OrderNotification) {
+export async function sendOrderNotification(order: OrderNotification, overrideTo?: string) {
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
     console.warn("Gmail credentials not configured, skipping email notification");
     return;
@@ -84,7 +84,7 @@ ${itemList}
 
   await transporter.sendMail({
     from: `三十日珈琲 EC <${process.env.GMAIL_USER}>`,
-    to: "misocacoffee@gmail.com",
+    to: overrideTo || "misocacoffee@gmail.com",
     subject: `${order.isGiftTicket ? "【ギフトチケット注文】" : "【新規注文】"}${order.customerName || "お客様"} 様 - ¥${order.amountTotal?.toLocaleString() || 0}`,
     text,
   });
