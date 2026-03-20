@@ -142,7 +142,7 @@ export function Header() {
               />
             </div>
             <Image
-              src={scrolled ? "/images/logo-text-dark.svg" : "/images/logo-text-white.svg"}
+              src={scrolled ? "/images/logo-text-dark.png" : "/images/logo-text-white.png"}
               alt="三十日珈琲 Shared Roasting"
               width={100}
               height={50}
@@ -316,7 +316,7 @@ export function Header() {
               <div className="flex items-center justify-between px-6 h-20 border-b border-usuzumi/30">
                 <div className="flex flex-col">
                   <Image
-                    src="/images/logo-text-dark.svg"
+                    src="/images/logo-text-dark.png"
                     alt="三十日珈琲 Shared Roasting"
                     width={100}
                     height={50}

@@ -64,7 +64,7 @@ export function Footer() {
               </div>
               <div>
                 <Image
-                  src="/images/logo-text-white.svg"
+                  src="/images/logo-text-white.png"
                   alt="三十日珈琲 Shared Roasting"
                   width={130}
                   height={65}
