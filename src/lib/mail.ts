@@ -91,18 +91,13 @@ ${itemList}
 }
 
 /**
- * ギフトチケットのメールをお客様に送信
+ * ギフトチケットメールの本文を生成（確認画面でも使用）
  */
-export async function sendGiftTicketEmail(params: {
-  customerEmail: string;
+export function buildGiftTicketEmailBody(params: {
   customerName: string;
   sessionId: string;
-}) {
-  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-    throw new Error("Gmail credentials not configured");
-  }
-
-  const text = `
+}): string {
+  return `
 ${params.customerName || "お客様"} 様
 
 この度は三十日珈琲の焙煎体験ギフトチケットを
@@ -151,6 +146,21 @@ JR中央本線「上野原」駅より送迎あり（要予約）
 misocacoffee@gmail.com
 https://misoca-coffee.vercel.app
 `.trim();
+}
+
+/**
+ * ギフトチケットのメールをお客様に送信
+ */
+export async function sendGiftTicketEmail(params: {
+  customerEmail: string;
+  customerName: string;
+  sessionId: string;
+}) {
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+    throw new Error("Gmail credentials not configured");
+  }
+
+  const text = buildGiftTicketEmailBody(params);
 
   await transporter.sendMail({
     from: `三十日珈琲 <${process.env.GMAIL_USER}>`,
