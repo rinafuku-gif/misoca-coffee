@@ -150,11 +150,12 @@ export function Header() {
                 三十日珈琲
               </span>
               <span
-                className={`font-[family-name:var(--font-display)] text-[9px] tracking-[0.25em] uppercase transition-colors duration-500 ${
+                className={`block font-[family-name:var(--font-display)] text-[9px] uppercase transition-colors duration-500 ${
                   scrolled ? "text-haicha" : "text-white/70"
                 }`}
+                style={{ letterSpacing: "0.32em" }}
               >
-                Shared Roasting
+                SHARED ROASTING
               </span>
             </div>
           </Link>
@@ -324,8 +325,8 @@ export function Header() {
               <div className="flex items-center justify-between px-6 h-20 border-b border-usuzumi/30">
                 <div className="flex flex-col">
                   <span className="font-serif text-lg font-bold text-konsumi">三十日珈琲</span>
-                  <span className="font-[family-name:var(--font-display)] text-[9px] tracking-[0.25em] text-haicha uppercase">
-                    Shared Roasting
+                  <span className="block font-[family-name:var(--font-display)] text-[9px] text-haicha uppercase" style={{ letterSpacing: "0.32em" }}>
+                    SHARED ROASTING
                   </span>
                 </div>
                 <button

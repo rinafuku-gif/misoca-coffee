@@ -64,8 +64,8 @@ export function Footer() {
               </div>
               <div>
                 <p className="font-serif text-2xl tracking-wide font-light">三十日珈琲</p>
-                <p className="font-[family-name:var(--font-display)] text-[11px] tracking-[0.25em] text-ainezu uppercase mt-0.5">
-                  Shared Roasting
+                <p className="font-[family-name:var(--font-display)] text-[11px] text-ainezu uppercase mt-0.5" style={{ letterSpacing: "0.38em" }}>
+                  SHARED ROASTING
                 </p>
               </div>
             </div>
