@@ -133,7 +133,7 @@ export default function AboutPage() {
               <div className="relative aspect-[4/3] rounded-sm overflow-hidden">
                 <Image
                   src="/images/about/founders.jpg"
-                  alt="三十日珈琲のメンバー"
+                  alt="共同代表 稲福良祐（左）と後藤伸啓（右）。焙煎機Aillio Bulletの前で"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-1000 ease-out"
                   sizes="(max-width: 768px) 100vw, 50vw"
