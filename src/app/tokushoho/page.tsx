@@ -14,7 +14,7 @@ export default function TokushohoPage() {
           <div className="bg-white p-8 rounded-sm">
             <dl className="space-y-4 text-sm">
               {[
-                ["販売業者", "三十日珈琲"],
+                ["販売業者", "三十日珈琲（稲福良祐・後藤伸啓）"],
                 ["所在地", "〒409-0115 山梨県上野原市松留939"],
                 ["メールアドレス", "misocacoffee@gmail.com"],
                 ["販売価格", "各商品ページに記載"],

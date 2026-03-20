@@ -56,12 +56,15 @@ const particleColors = [
 ];
 
 export default function SuccessPage() {
-  // Clear cart on mount (successful purchase)
+  // Only clear cart if redirected from Stripe (session_id present in URL)
   useEffect(() => {
-    try {
-      localStorage.removeItem(CART_STORAGE_KEY);
-    } catch {
-      // ignore
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("session_id")) {
+      try {
+        localStorage.removeItem(CART_STORAGE_KEY);
+      } catch {
+        // ignore
+      }
     }
   }, []);
 
@@ -187,19 +190,19 @@ export default function SuccessPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Link
               href="/"
-              className="inline-block border-2 border-usuzumi text-haicha hover:bg-tsuchikabe px-8 py-3.5 rounded-lg font-medium transition-all duration-300"
+              className="inline-flex items-center justify-center gap-2 border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white px-8 py-3.5 text-xs tracking-[0.15em] transition-all duration-500"
             >
               トップページへ
             </Link>
             <Link
               href="/experience"
-              className="inline-block bg-gold hover:bg-gold-dark text-white px-8 py-3.5 rounded-lg font-medium transition-all duration-300 shadow-md"
+              className="inline-flex items-center justify-center gap-2 bg-gold/90 hover:bg-gold text-white px-8 py-3.5 text-xs tracking-[0.15em] transition-all duration-500"
             >
               焙煎体験を予約する
             </Link>
             <Link
               href="/shop"
-              className="inline-block border-2 border-karekusa text-karekusa hover:bg-karekusa hover:text-white px-8 py-3.5 rounded-lg font-medium transition-all duration-300"
+              className="inline-flex items-center justify-center gap-2 border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white px-8 py-3.5 text-xs tracking-[0.15em] transition-all duration-500"
             >
               オンラインショップに戻る
             </Link>

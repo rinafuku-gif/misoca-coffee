@@ -195,7 +195,7 @@ export default function GiftTicketPage() {
                     1
                   </span>
                   <p className="text-sm text-haicha leading-[2] tracking-wide pt-0.5">
-                    チケット右上「分配」をタップ
+                    購入完了後、確認メールが届きます
                   </p>
                 </li>
                 <li className="flex gap-4">
@@ -203,7 +203,7 @@ export default function GiftTicketPage() {
                     2
                   </span>
                   <p className="text-sm text-haicha leading-[2] tracking-wide pt-0.5">
-                    右下「分配」をタップ
+                    メールに記載のチケット情報を、LINEやメールで贈る方にお送りください
                   </p>
                 </li>
                 <li className="flex gap-4">
@@ -211,7 +211,7 @@ export default function GiftTicketPage() {
                     3
                   </span>
                   <p className="text-sm text-haicha leading-[2] tracking-wide pt-0.5">
-                    分配する方法を選択（LINE・メール・Facebook Messenger・WhatsApp）
+                    贈られた方が三十日珈琲へ直接ご予約いただきます
                   </p>
                 </li>
               </ol>
@@ -287,7 +287,7 @@ export default function GiftTicketPage() {
             </div>
 
             <p className="text-sm text-haicha mt-8 leading-[2] tracking-wide">
-              （1）〜（5）まで 約75分
+              （1）〜（5）まで 約90分
             </p>
           </ScrollReveal>
         </div>
@@ -311,7 +311,7 @@ export default function GiftTicketPage() {
               {[
                 { title: "レッスン", desc: "焙煎機の使い方を含むレクチャー" },
                 { title: "用具一式貸出", desc: "焙煎に必要な器具はすべてご用意" },
-                { title: "生豆 500g", desc: "焙煎した豆はすべてお持ち帰り" },
+                { title: "生豆 約400g", desc: "焙煎した豆はすべてお持ち帰り（250g×2回焙煎）" },
               ].map((item) => (
                 <div key={item.title} className="bg-white rounded-sm p-6 text-center">
                   <h3 className="font-serif text-base text-konsumi tracking-wider font-light mb-2">

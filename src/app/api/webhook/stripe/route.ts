@@ -5,6 +5,11 @@ import type Stripe from "stripe";
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
+// Simple in-memory set to prevent duplicate processing of the same event
+// (Stripe retries webhooks if our response is slow or fails)
+const processedEvents = new Set<string>();
+const MAX_PROCESSED_EVENTS = 1000;
+
 export async function POST(request: NextRequest) {
   const body = await request.text();
   const sig = request.headers.get("stripe-signature");
@@ -27,6 +32,18 @@ export async function POST(request: NextRequest) {
       { error: `Webhook Error: ${message}` },
       { status: 400 }
     );
+  }
+
+  // Idempotency: skip already-processed events
+  if (processedEvents.has(event.id)) {
+    console.log(`Skipping duplicate event: ${event.id}`);
+    return NextResponse.json({ received: true });
+  }
+  processedEvents.add(event.id);
+  // Prevent unbounded growth
+  if (processedEvents.size > MAX_PROCESSED_EVENTS) {
+    const first = processedEvents.values().next().value;
+    if (first) processedEvents.delete(first);
   }
 
   switch (event.type) {

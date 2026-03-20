@@ -27,6 +27,7 @@ const navItems: NavItem[] = [
     ],
   },
   { label: "オンラインショップ", href: "/shop" },
+  { label: "コーヒースタンド", href: "/stand" },
   {
     label: "知る",
     href: "/about",

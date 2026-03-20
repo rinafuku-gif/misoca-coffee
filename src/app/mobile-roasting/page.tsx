@@ -202,6 +202,17 @@ export default function MobileRoastingPage() {
                 <br />
                 ※ 電源（家庭用コンセント）と作業スペース（テーブル1台分）をご用意ください。
               </p>
+              <div className="mt-8 pt-8 border-t border-usuzumi/30">
+                <h4 className="font-serif text-base text-konsumi tracking-wider font-light mb-3">
+                  対応エリア
+                </h4>
+                <ul className="text-sm text-haicha leading-loose space-y-1">
+                  <li>山梨県 上野原市（全域）</li>
+                  <li>山梨県 大月市（市内中心部・近隣）</li>
+                  <li>相模原市 緑区（藤野エリア周辺）</li>
+                  <li className="text-haicha/60">※ 上記以外の近隣エリアもご相談ください</li>
+                </ul>
+              </div>
             </div>
           </ScrollReveal>
         </div>

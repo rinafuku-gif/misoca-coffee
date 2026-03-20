@@ -32,13 +32,17 @@ export async function POST(request: Request) {
       });
     }
 
-    // GAS Webhookでメール通知
+    // GAS Webhookでメール通知（失敗してもNotion保存は成功しているのでsuccessを返す）
     if (process.env.GAS_WEBHOOK_URL) {
-      await fetch(process.env.GAS_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, name, email, phone, message }),
-      });
+      try {
+        await fetch(process.env.GAS_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type, name, email, phone, message }),
+        });
+      } catch (gasError) {
+        console.error("GAS webhook failed (inquiry saved to Notion):", gasError);
+      }
     }
 
     return NextResponse.json({ success: true });
