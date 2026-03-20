@@ -198,24 +198,10 @@ export default function StandPage() {
                 毎週水曜日
               </p>
 
-              <div className="space-y-8 mb-10">
-                <div>
-                  <p className="text-xs text-haicha/60 tracking-wide mb-2">
-                    〜2026年3月
-                  </p>
-                  <p className="text-haicha leading-loose">
-                    8:00 〜 13:00
-                  </p>
-                </div>
-                <div className="w-12 h-px bg-gold/30 mx-auto" />
-                <div>
-                  <p className="text-xs text-haicha/60 tracking-wide mb-2">
-                    2026年4月〜
-                  </p>
-                  <p className="text-haicha leading-loose">
-                    8:00 〜 9:30 / 10:30 〜 16:00
-                  </p>
-                </div>
+              <div className="space-y-4 mb-10">
+                <p className="text-haicha leading-loose">
+                  8:00 〜 9:30 / 10:30 〜 16:00
+                </p>
               </div>
 
               <div className="w-16 h-px bg-gold mx-auto mb-8" />

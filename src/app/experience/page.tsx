@@ -108,11 +108,11 @@ export default function ExperiencePage() {
                 <ul className="text-sm text-haicha space-y-5 text-left mb-12">
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    所要約90分
+                    完全予約制・プライベート空間
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    マンツーマン焙煎指導
+                    所要約90分・マンツーマン指導
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
@@ -120,11 +120,11 @@ export default function ExperiencePage() {
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    焙煎豆お持ち帰り（プライベート: 約400g）
+                    焙煎豆お持ち帰り（約400g）
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    完全予約制・少人数制
+                    ご希望の日時をリクエスト
                   </li>
                 </ul>
                 <a
@@ -154,11 +154,11 @@ export default function ExperiencePage() {
                 <ul className="text-sm text-haicha space-y-5 text-left mb-12">
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    所要約90分
+                    1名から参加OK
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    グループでの焙煎体験
+                    所要約90分
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
@@ -170,7 +170,7 @@ export default function ExperiencePage() {
                   </li>
                   <li className="flex items-center gap-4">
                     <span className="w-5 h-px bg-gold/50 flex-shrink-0" />
-                    団体・イベント向け
+                    開催日程は予約枠を確認
                   </li>
                 </ul>
                 <Link
@@ -184,13 +184,18 @@ export default function ExperiencePage() {
           </div>
 
           <ScrollReveal delay={0.3}>
-            <p className="text-center text-xs text-haicha mt-14 leading-relaxed">
-              ※ SOW Experience・anatae経由は¥11,000/組（2名まで）。
-              <br className="md:hidden" />
-              公式サイトからの直予約が最もお得です。
-              <br />
-              ※ 3名以上の場合は追加料金がかかります。お気軽にお問い合わせください。
-            </p>
+            <div className="max-w-3xl mx-auto mt-14 space-y-3">
+              <p className="text-center text-xs text-haicha leading-relaxed">
+                ※ SOW Experience・anatae経由は¥11,000/組（2名まで）。
+                <br className="md:hidden" />
+                公式サイトからの直予約が最もお得です。
+              </p>
+              <p className="text-center text-xs text-haicha/60 leading-relaxed">
+                焙煎体験（直予約）── ご希望の日時をリクエストしていただく完全プライベート制です。
+                <br />
+                グループ焙煎体験 ── 三十日珈琲が開放した予約枠に、おひとりから参加できます。空き状況はお問い合わせください。
+              </p>
+            </div>
           </ScrollReveal>
         </div>
       </section>
