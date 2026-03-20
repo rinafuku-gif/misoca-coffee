@@ -109,7 +109,7 @@ export default function GiftTicketPage() {
                 <span className="text-sm text-haicha ml-2">（税込）</span>
               </p>
               <p className="text-xs text-haicha/60 mb-8">
-                ※別途発券手数料2%がかかります
+                送料無料・電子チケット
               </p>
 
               <p className="text-sm text-haicha leading-[2] tracking-wide mb-8">

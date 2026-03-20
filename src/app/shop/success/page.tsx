@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ScrollReveal } from "@/components/ScrollReveal";
@@ -56,9 +56,13 @@ const particleColors = [
 ];
 
 export default function SuccessPage() {
-  // Only clear cart if redirected from Stripe (session_id present in URL)
+  const [isGift, setIsGift] = useState(false);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    if (params.get("type") === "gift") {
+      setIsGift(true);
+    }
     if (params.get("session_id")) {
       try {
         localStorage.removeItem(CART_STORAGE_KEY);
@@ -154,35 +158,71 @@ export default function SuccessPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
         >
-          <p className="text-haicha text-lg leading-loose mb-4">
-            焙煎したてのコーヒー豆を心を込めてお届けいたします。
-          </p>
-          <p className="text-haicha leading-loose mb-4">
-            ご注文の確認メールをお送りしました。
-            <br />
-            届かない場合はお手数ですがお問い合わせください。
-          </p>
-          <div className="bg-white rounded-xl p-6 md:p-8 shadow-sm mb-12 max-w-md mx-auto">
-            <div className="flex items-start gap-3">
-              <svg
-                className="w-5 h-5 text-gold mt-0.5 flex-shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <p className="text-sm text-haicha leading-relaxed text-left">
-                ご注文後に焙煎し、3日以内に発送いたします。
-                発送完了時に追跡番号をメールでお知らせします。
+          {isGift ? (
+            <>
+              <p className="text-haicha text-lg leading-loose mb-4">
+                ギフトチケットのご購入ありがとうございます。
               </p>
-            </div>
-          </div>
+              <p className="text-haicha leading-loose mb-4">
+                チケット情報を、ご登録のメールアドレス宛にお送りいたします。
+                <br />
+                届きましたら、贈る方へLINEやメールで転送してください。
+              </p>
+              <div className="bg-white rounded-sm p-6 md:p-8 shadow-sm mb-12 max-w-md mx-auto">
+                <div className="flex items-start gap-3">
+                  <svg
+                    className="w-5 h-5 text-gold mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <p className="text-sm text-haicha leading-relaxed text-left">
+                    チケット情報のお届けまで、通常1営業日以内にご連絡いたします。
+                    届かない場合はお気軽にお問い合わせください。
+                  </p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-haicha text-lg leading-loose mb-4">
+                焙煎したてのコーヒー豆を心を込めてお届けいたします。
+              </p>
+              <p className="text-haicha leading-loose mb-4">
+                ご注文の確認メールをお送りしました。
+                <br />
+                届かない場合はお手数ですがお問い合わせください。
+              </p>
+              <div className="bg-white rounded-sm p-6 md:p-8 shadow-sm mb-12 max-w-md mx-auto">
+                <div className="flex items-start gap-3">
+                  <svg
+                    className="w-5 h-5 text-gold mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <p className="text-sm text-haicha leading-relaxed text-left">
+                    ご注文後に焙煎し、3日以内に発送いたします。
+                    発送完了時に追跡番号をメールでお知らせします。
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
         </motion.div>
 
         {/* Navigation Links */}

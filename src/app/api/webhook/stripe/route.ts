@@ -72,6 +72,7 @@ export async function POST(request: NextRequest) {
       } | null;
 
       // Send email notification
+      const isGiftTicket = session.metadata?.is_gift_ticket === "true";
       try {
         await sendOrderNotification({
           sessionId: session.id,
@@ -81,6 +82,7 @@ export async function POST(request: NextRequest) {
           address: shipping?.address || null,
           amountTotal: session.amount_total || 0,
           items,
+          isGiftTicket,
         });
         console.log("Order notification email sent");
       } catch (emailError) {

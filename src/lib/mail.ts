@@ -28,6 +28,7 @@ interface OrderNotification {
   } | null;
   amountTotal: number;
   items: OrderItem[];
+  isGiftTicket?: boolean;
 }
 
 export async function sendOrderNotification(order: OrderNotification) {
@@ -45,10 +46,15 @@ export async function sendOrderNotification(order: OrderNotification) {
     ? `〒${addr.postal_code || ""}\n  ${addr.state || ""}${addr.city || ""}${addr.line1 || ""}${addr.line2 ? "\n  " + addr.line2 : ""}`
     : "未入力";
 
+  const giftNote = order.isGiftTicket
+    ? `\n⚠️ ギフトチケット注文です\nお客様にチケット情報をメールまたはLINEでお送りしてください\n`
+    : "";
+
   const text = `
 ━━━━━━━━━━━━━━━━━━━━━━━━
   新しい注文が入りました
 ━━━━━━━━━━━━━━━━━━━━━━━━
+${giftNote}
 
 【注文ID】
 ${order.sessionId}
@@ -74,7 +80,7 @@ ${itemList}
   await transporter.sendMail({
     from: `三十日珈琲 EC <${process.env.GMAIL_USER}>`,
     to: "misocacoffee@gmail.com",
-    subject: `【新規注文】${order.customerName || "お客様"} 様 - ¥${order.amountTotal?.toLocaleString() || 0}`,
+    subject: `${order.isGiftTicket ? "【ギフトチケット注文】" : "【新規注文】"}${order.customerName || "お客様"} 様 - ¥${order.amountTotal?.toLocaleString() || 0}`,
     text,
   });
 }
