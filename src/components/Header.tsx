@@ -144,9 +144,9 @@ export function Header() {
             <Image
               src={scrolled ? "/images/logo-text-dark.png" : "/images/logo-text-white.png"}
               alt="三十日珈琲 Shared Roasting"
-              width={100}
-              height={50}
-              className="transition-opacity duration-500 h-[38px] w-auto"
+              width={130}
+              height={48}
+              className="transition-opacity duration-500 h-[44px] w-auto"
               priority
             />
           </Link>
