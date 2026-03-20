@@ -149,23 +149,20 @@ https://misoca-coffee.vercel.app
 }
 
 /**
- * ギフトチケットのメールをお客様に送信
+ * ギフトチケットのメールをお客様に送信（編集済み本文を直接渡す）
  */
-export async function sendGiftTicketEmail(params: {
+export async function sendGiftTicketEmailWithBody(params: {
   customerEmail: string;
-  customerName: string;
-  sessionId: string;
+  body: string;
 }) {
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
     throw new Error("Gmail credentials not configured");
   }
 
-  const text = buildGiftTicketEmailBody(params);
-
   await transporter.sendMail({
     from: `三十日珈琲 <${process.env.GMAIL_USER}>`,
     to: params.customerEmail,
     subject: "【三十日珈琲】焙煎体験ギフトチケットのお届け",
-    text,
+    text: params.body,
   });
 }

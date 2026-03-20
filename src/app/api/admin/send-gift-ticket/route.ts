@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sendGiftTicketEmail, buildGiftTicketEmailBody } from "@/lib/mail";
+import { sendGiftTicketEmailWithBody, buildGiftTicketEmailBody } from "@/lib/mail";
 
 function escapeHtml(str: string) {
   return str
@@ -55,13 +55,16 @@ h1{font-size:1.25rem;color:#3a3a3a;margin:0 0 .5rem;text-align:center}
 .info-label{color:#888;min-width:5rem;flex-shrink:0}
 .info-value{color:#3a3a3a;word-break:break-all}
 .preview-label{font-size:.85rem;color:#888;margin-bottom:.5rem}
-.preview{background:#fff;border-radius:4px;padding:1.5rem;white-space:pre-wrap;font-size:.85rem;line-height:1.9;color:#4a4a4a;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:2rem;max-height:500px;overflow-y:auto}
+.editor{display:block;width:100%;min-height:420px;background:#fff;border:1px solid #e0ddd6;border-radius:4px;padding:1.5rem;white-space:pre-wrap;font-family:-apple-system,sans-serif;font-size:.85rem;line-height:1.9;color:#4a4a4a;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:2rem;resize:vertical}
+.editor:focus{outline:none;border-color:#b8a47c;box-shadow:0 0 0 2px #b8a47c30}
 .actions{display:flex;gap:1rem;justify-content:center}
 .btn{padding:.85rem 2.5rem;border:none;border-radius:4px;font-size:.9rem;cursor:pointer;transition:all .2s}
 .btn-send{background:#b8a47c;color:#fff}
 .btn-send:hover{background:#a69368}
 .btn-cancel{background:#fff;color:#888;border:1px solid #ddd}
 .btn-cancel:hover{background:#f5f3ef}
+.btn-reset{background:#fff;color:#b8a47c;border:1px solid #b8a47c40}
+.btn-reset:hover{background:#b8a47c10}
 .sending .btn-send{opacity:.5;pointer-events:none}
 </style>
 </head>
@@ -89,18 +92,24 @@ h1{font-size:1.25rem;color:#3a3a3a;margin:0 0 .5rem;text-align:center}
     </div>
   </div>
 
-  <p class="preview-label">メール本文プレビュー</p>
-  <div class="preview">${escapeHtml(emailBody)}</div>
-
-  <form id="sendForm" class="actions" method="POST" action="/api/admin/send-gift-ticket?session_id=${encodeURIComponent(params.sessionId)}&email=${encodeURIComponent(params.email)}&name=${encodeURIComponent(params.name)}&token=${encodeURIComponent(params.token || "")}">
-    <button type="button" class="btn btn-cancel" onclick="window.close()">キャンセル</button>
-    <button type="submit" class="btn btn-send" id="sendBtn">送信する</button>
+  <p class="preview-label">メール本文（編集できます）</p>
+  <form id="sendForm" method="POST" action="/api/admin/send-gift-ticket?session_id=${encodeURIComponent(params.sessionId)}&email=${encodeURIComponent(params.email)}&name=${encodeURIComponent(params.name)}&token=${encodeURIComponent(params.token || "")}">
+    <textarea name="body" class="editor">${escapeHtml(emailBody)}</textarea>
+    <div class="actions">
+      <button type="button" class="btn btn-cancel" onclick="window.close()">キャンセル</button>
+      <button type="button" class="btn btn-reset" id="resetBtn">元に戻す</button>
+      <button type="submit" class="btn btn-send" id="sendBtn">送信する</button>
+    </div>
   </form>
 </div>
 <script>
+var original=${JSON.stringify(emailBody)};
 document.getElementById('sendForm').addEventListener('submit',function(){
   document.getElementById('sendBtn').textContent='送信中...';
   this.classList.add('sending');
+});
+document.getElementById('resetBtn').addEventListener('click',function(){
+  document.querySelector('.editor').value=original;
 });
 </script>
 </body>
@@ -119,11 +128,14 @@ export async function POST(request: NextRequest) {
     return htmlResponse(400, errorHtml("パラメータ不足", "必要な情報が不足しています。"));
   }
 
+  // フォームから編集後の本文を取得
+  const formData = await request.formData();
+  const editedBody = formData.get("body") as string | null;
+
   try {
-    await sendGiftTicketEmail({
+    await sendGiftTicketEmailWithBody({
       customerEmail: params.email,
-      customerName: params.name,
-      sessionId: params.sessionId,
+      body: editedBody || buildGiftTicketEmailBody({ customerName: params.name, sessionId: params.sessionId }),
     });
 
     const html = `<!DOCTYPE html>
