@@ -46,8 +46,13 @@ export async function sendOrderNotification(order: OrderNotification) {
     ? `〒${addr.postal_code || ""}\n  ${addr.state || ""}${addr.city || ""}${addr.line1 || ""}${addr.line2 ? "\n  " + addr.line2 : ""}`
     : "未入力";
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://misoca-coffee.vercel.app";
+  const giftSendUrl = order.isGiftTicket && order.customerEmail
+    ? `${baseUrl}/api/admin/send-gift-ticket?session_id=${encodeURIComponent(order.sessionId)}&email=${encodeURIComponent(order.customerEmail)}&name=${encodeURIComponent(order.customerName || "")}&token=${encodeURIComponent(process.env.ADMIN_SECRET || "")}`
+    : null;
+
   const giftNote = order.isGiftTicket
-    ? `\n⚠️ ギフトチケット注文です\nお客様にチケット情報をメールまたはLINEでお送りしてください\n`
+    ? `\n⚠️ ギフトチケット注文です\n\n▼ 下記リンクをクリックすると、お客様にチケットメールが自動送信されます\n${giftSendUrl || "（メールアドレス未取得のためリンクを生成できません）"}\n`
     : "";
 
   const text = `
@@ -65,7 +70,7 @@ ${order.sessionId}
 電話番号: ${order.phone || "未入力"}
 
 【配送先】
-${addressText}
+${order.isGiftTicket ? "（電子チケット・配送なし）" : addressText}
 
 【注文内容】
 ${itemList}
@@ -81,6 +86,76 @@ ${itemList}
     from: `三十日珈琲 EC <${process.env.GMAIL_USER}>`,
     to: "misocacoffee@gmail.com",
     subject: `${order.isGiftTicket ? "【ギフトチケット注文】" : "【新規注文】"}${order.customerName || "お客様"} 様 - ¥${order.amountTotal?.toLocaleString() || 0}`,
+    text,
+  });
+}
+
+/**
+ * ギフトチケットのメールをお客様に送信
+ */
+export async function sendGiftTicketEmail(params: {
+  customerEmail: string;
+  customerName: string;
+  sessionId: string;
+}) {
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+    throw new Error("Gmail credentials not configured");
+  }
+
+  const text = `
+${params.customerName || "お客様"} 様
+
+この度は三十日珈琲の焙煎体験ギフトチケットを
+ご購入いただき、誠にありがとうございます。
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+  焙煎体験ギフトチケット
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+チケット番号: ${params.sessionId.slice(-8).toUpperCase()}
+体験内容: コーヒー焙煎体験（約90分）
+対象人数: 1組・2名様まで
+有効期限: ご購入日から6ヶ月間
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+■ 贈る方へ
+このメールの内容を、贈りたい方へ
+LINEやメール等で転送してください。
+
+■ 贈られた方へ（ご予約方法）
+下記いずれかの方法でご連絡いただき、
+体験日時をご予約ください。
+
+・LINE: https://lin.ee/ihDBxM8
+・Instagram DM: @misoca_coffee
+・メール: misocacoffee@gmail.com
+
+ご予約の際に「ギフトチケット利用」と
+チケット番号をお伝えください。
+
+■ 体験場所
+三十日珈琲
+〒409-0115 山梨県上野原市松留939
+https://maps.app.goo.gl/6vi6JLqVkv5AF26R6
+
+JR中央本線「上野原」駅より送迎あり（要予約）
+駐車場あり（無料・6台）
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+ご不明な点がございましたら、
+お気軽にお問い合わせください。
+
+三十日珈琲（みそかこーひー）
+misocacoffee@gmail.com
+https://misoca-coffee.vercel.app
+`.trim();
+
+  await transporter.sendMail({
+    from: `三十日珈琲 <${process.env.GMAIL_USER}>`,
+    to: params.customerEmail,
+    subject: "【三十日珈琲】焙煎体験ギフトチケットのお届け",
     text,
   });
 }
