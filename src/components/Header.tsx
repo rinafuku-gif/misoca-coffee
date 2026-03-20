@@ -153,7 +153,7 @@ export function Header() {
                 className={`block font-[family-name:var(--font-display)] text-[9px] uppercase transition-colors duration-500 ${
                   scrolled ? "text-haicha" : "text-white/70"
                 }`}
-                style={{ letterSpacing: "0.32em" }}
+                style={{ textAlign: "justify", textAlignLast: "justify" }}
               >
                 SHARED ROASTING
               </span>
@@ -325,7 +325,7 @@ export function Header() {
               <div className="flex items-center justify-between px-6 h-20 border-b border-usuzumi/30">
                 <div className="flex flex-col">
                   <span className="font-serif text-lg font-bold text-konsumi">三十日珈琲</span>
-                  <span className="block font-[family-name:var(--font-display)] text-[9px] text-haicha uppercase" style={{ letterSpacing: "0.32em" }}>
+                  <span className="block font-[family-name:var(--font-display)] text-[9px] text-haicha uppercase" style={{ textAlign: "justify", textAlignLast: "justify" }}>
                     SHARED ROASTING
                   </span>
                 </div>
