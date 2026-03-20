@@ -105,6 +105,7 @@ export default function ShopPage() {
   const [roastFilter, setRoastFilter] = useState<string>("全て");
   const [originFilter, setOriginFilter] = useState<string | null>(null);
   const [addedFeedback, setAddedFeedback] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -347,7 +348,7 @@ export default function ShopPage() {
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 1.2, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <div className="group">
+                    <div className="group cursor-pointer" onClick={() => setSelectedProduct(product)}>
                       {/* Image */}
                       <div className="relative aspect-[4/5] overflow-hidden mb-6">
                         <Image
@@ -415,7 +416,7 @@ export default function ShopPage() {
 
                           {product.inStock && (
                             <motion.button
-                              onClick={() => addToCart(product)}
+                              onClick={(e) => { e.stopPropagation(); addToCart(product); }}
                               whileTap={{ scale: 0.97 }}
                               className={`relative px-5 py-2.5 text-xs tracking-[0.1em] transition-all duration-500 ${
                                 addedFeedback === product.id
@@ -773,9 +774,134 @@ export default function ShopPage() {
         </div>
       </section>
 
+      {/* Product Detail Modal */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setSelectedProduct(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.97 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-2xl max-h-[90vh] bg-white overflow-y-auto rounded-sm shadow-2xl"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedProduct(null)}
+                className="absolute top-4 right-4 z-10 text-haicha hover:text-konsumi p-2 rounded-full hover:bg-tsuchikabe transition-colors bg-white/80 backdrop-blur-sm"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* Product Image */}
+              <div className="relative aspect-[16/10] overflow-hidden">
+                <Image
+                  src={selectedProduct.image}
+                  alt={selectedProduct.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 672px"
+                />
+                <span className="absolute top-4 left-4 bg-konsumi/80 text-white text-[10px] px-3 py-1.5 tracking-wider">
+                  {selectedProduct.roast}
+                </span>
+              </div>
+
+              {/* Product Info */}
+              <div className="p-8 md:p-10">
+                <p className="text-[10px] tracking-[0.3em] text-karekusa uppercase mb-2">
+                  {selectedProduct.origin}
+                </p>
+                <h3 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-4 leading-snug">
+                  {selectedProduct.name}
+                </h3>
+
+                {selectedProduct.flavor && (
+                  <p className="text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide mb-6">
+                    {selectedProduct.flavor}
+                  </p>
+                )}
+
+                {selectedProduct.description && (
+                  <p className="text-sm text-haicha leading-[2.2] tracking-wide mb-6">
+                    {selectedProduct.description}
+                  </p>
+                )}
+
+                {/* Detail Grid */}
+                <div className="grid grid-cols-2 gap-x-6 gap-y-4 mb-8">
+                  {selectedProduct.region && (
+                    <div>
+                      <p className="text-[10px] tracking-[0.2em] text-gold/70 uppercase mb-1">Region</p>
+                      <p className="text-sm text-haicha tracking-wide">{selectedProduct.region}</p>
+                    </div>
+                  )}
+                  {selectedProduct.farm && (
+                    <div>
+                      <p className="text-[10px] tracking-[0.2em] text-gold/70 uppercase mb-1">Farm</p>
+                      <p className="text-sm text-haicha tracking-wide">{selectedProduct.farm}</p>
+                    </div>
+                  )}
+                  {selectedProduct.process && (
+                    <div>
+                      <p className="text-[10px] tracking-[0.2em] text-gold/70 uppercase mb-1">Process</p>
+                      <p className="text-sm text-haicha tracking-wide">{selectedProduct.process}</p>
+                    </div>
+                  )}
+                  {selectedProduct.variety && (
+                    <div>
+                      <p className="text-[10px] tracking-[0.2em] text-gold/70 uppercase mb-1">Variety</p>
+                      <p className="text-sm text-haicha tracking-wide">{selectedProduct.variety}</p>
+                    </div>
+                  )}
+                  {selectedProduct.altitude && (
+                    <div>
+                      <p className="text-[10px] tracking-[0.2em] text-gold/70 uppercase mb-1">Altitude</p>
+                      <p className="text-sm text-haicha tracking-wide">{selectedProduct.altitude}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="w-full h-px bg-karekusa/15 mb-6" />
+
+                {/* Price & Add to Cart */}
+                <div className="flex items-end justify-between">
+                  <p className="text-karekusa text-2xl font-light tracking-wider">
+                    ¥{selectedProduct.price.toLocaleString()}
+                    <span className="text-sm text-haicha/50 ml-2">/ {selectedProduct.unit}</span>
+                  </p>
+                  {selectedProduct.inStock && (
+                    <motion.button
+                      onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }}
+                      whileTap={{ scale: 0.97 }}
+                      className="inline-flex items-center gap-2 px-7 py-3.5 text-xs tracking-[0.15em] border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white transition-all duration-500"
+                    >
+                      カートに入れる
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
+                    </motion.button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Cart Floating Button (Mobile-optimized) */}
       <AnimatePresence>
-        {cartCount > 0 && !cartOpen && (
+        {cartCount > 0 && !cartOpen && !selectedProduct && (
           <motion.button
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
