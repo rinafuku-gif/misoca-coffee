@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -66,15 +67,20 @@ const mobileItemVariants = {
   }),
 };
 
+// Pages without dark hero images need the header to always show dark text
+const LIGHT_BG_PAGES = ["/shop/gift-ticket", "/shop/hario-switch", "/shop/success"];
+
 export function Header() {
+  const pathname = usePathname();
+  const forceScrolled = LIGHT_BG_PAGES.includes(pathname);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(forceScrolled);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleScroll = useCallback(() => {
-    setScrolled(window.scrollY > 20);
-  }, []);
+    setScrolled(forceScrolled || window.scrollY > 20);
+  }, [forceScrolled]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
