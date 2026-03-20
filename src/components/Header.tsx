@@ -141,23 +141,14 @@ export function Header() {
                 }`}
               />
             </div>
-            <div className="flex flex-col">
-              <span
-                className={`font-serif text-lg font-bold tracking-wide transition-colors duration-500 ${
-                  scrolled ? "text-konsumi" : "text-white"
-                }`}
-              >
-                三十日珈琲
-              </span>
-              <span
-                className={`block font-[family-name:var(--font-display)] text-[11.5px] uppercase transition-colors duration-500 ${
-                  scrolled ? "text-haicha" : "text-white/70"
-                }`}
-                style={{ textAlign: "justify", textAlignLast: "justify" }}
-              >
-                Shared Roasting
-              </span>
-            </div>
+            <Image
+              src={scrolled ? "/images/logo-text-dark.svg" : "/images/logo-text-white.svg"}
+              alt="三十日珈琲 Shared Roasting"
+              width={100}
+              height={50}
+              className="transition-opacity duration-500 h-[38px] w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop Nav */}
@@ -324,10 +315,13 @@ export function Header() {
               {/* Drawer Header */}
               <div className="flex items-center justify-between px-6 h-20 border-b border-usuzumi/30">
                 <div className="flex flex-col">
-                  <span className="font-serif text-lg font-bold text-konsumi">三十日珈琲</span>
-                  <span className="block font-[family-name:var(--font-display)] text-[11.5px] text-haicha" style={{ textAlign: "justify", textAlignLast: "justify" }}>
-                    Shared Roasting
-                  </span>
+                  <Image
+                    src="/images/logo-text-dark.svg"
+                    alt="三十日珈琲 Shared Roasting"
+                    width={100}
+                    height={50}
+                    className="h-[38px] w-auto"
+                  />
                 </div>
                 <button
                   onClick={() => setMobileOpen(false)}

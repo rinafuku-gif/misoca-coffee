@@ -63,10 +63,13 @@ export function Footer() {
                 />
               </div>
               <div>
-                <p className="font-serif text-2xl tracking-wide font-light">三十日珈琲</p>
-                <p className="font-[family-name:var(--font-display)] text-[15px] text-ainezu mt-0.5" style={{ textAlign: "justify", textAlignLast: "justify" }}>
-                  Shared Roasting
-                </p>
+                <Image
+                  src="/images/logo-text-white.svg"
+                  alt="三十日珈琲 Shared Roasting"
+                  width={130}
+                  height={65}
+                  className="h-[50px] w-auto"
+                />
               </div>
             </div>
             <div className="space-y-2 text-sm text-ainezu leading-relaxed">
