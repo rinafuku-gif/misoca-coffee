@@ -1,12 +1,19 @@
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+let _transporter: nodemailer.Transporter | null = null;
+
+function getTransporter() {
+  if (!_transporter) {
+    _transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
+    });
+  }
+  return _transporter;
+}
 
 interface OrderItem {
   name: string;
@@ -82,7 +89,7 @@ ${itemList}
 三十日珈琲 EC注文通知
 `.trim();
 
-  await transporter.sendMail({
+  await getTransporter().sendMail({
     from: `三十日珈琲 EC <${process.env.GMAIL_USER}>`,
     to: overrideTo || "misocacoffee@gmail.com",
     subject: `${order.isGiftTicket ? "【ギフトチケット注文】" : "【新規注文】"}${order.customerName || "お客様"} 様 - ¥${order.amountTotal?.toLocaleString() || 0}`,
@@ -159,7 +166,7 @@ export async function sendGiftTicketEmailWithBody(params: {
     throw new Error("Gmail credentials not configured");
   }
 
-  await transporter.sendMail({
+  await getTransporter().sendMail({
     from: `三十日珈琲 <${process.env.GMAIL_USER}>`,
     to: params.customerEmail,
     subject: "【三十日珈琲】焙煎体験ギフトチケットのお届け",
