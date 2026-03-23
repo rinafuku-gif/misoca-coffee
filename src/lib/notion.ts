@@ -149,7 +149,7 @@ export async function getProducts(): Promise<Product[]> {
       flavor: getRichText(props["フレーバー"]),
       price: getNumber(props["100g豆売売価"]),
       unit: "100g",
-      image: getFile(props["画像"]) || "/images/menu/default-bean.jpg",
+      image: getProductImageUrl((page as Record<string, unknown>)["id"] as string, props["画像"]),
       inStock: true, // Already filtered by EC販売ステータス = 販売中
       process: getSelect(props["生産処理"]),
       variety: getMultiSelect(props["品種"]),
@@ -208,4 +208,22 @@ function getFile(prop: Record<string, unknown> | undefined): string {
   if (file.type === "file") return file.file?.url || "";
   if (file.type === "external") return file.external?.url || "";
   return "";
+}
+
+function getProductImageUrl(
+  pageId: string,
+  fileProp: Record<string, unknown> | undefined
+): string {
+  const directUrl = getFile(fileProp);
+  if (!directUrl) return "/images/menu/default-bean.jpg";
+  // external型（Google Drive等の永続URL）はそのまま使う
+  if (
+    fileProp &&
+    fileProp["type"] === "files" &&
+    (fileProp["files"] as Array<{ type: string }>)?.[0]?.type === "external"
+  ) {
+    return directUrl;
+  }
+  // Notion file型（一時URL）はプロキシ経由にする
+  return `/api/notion-image?pageId=${pageId}`;
 }
