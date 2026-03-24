@@ -19,7 +19,7 @@ const notoSerif = Noto_Serif_JP({
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400"],
   variable: "--font-playfair",
   display: "swap",
 });
