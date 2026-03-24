@@ -225,5 +225,5 @@ function getProductImageUrl(
     return directUrl;
   }
   // Notion file型（一時URL）はプロキシ経由にする
-  return `/api/notion-image?pageId=${pageId}`;
+  return `/api/notion-image/${pageId}`;
 }
