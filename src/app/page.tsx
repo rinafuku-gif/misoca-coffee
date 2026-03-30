@@ -114,6 +114,7 @@ export default function Home() {
     coverImage: "",
     ...j,
   })));
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetch("/api/products")
@@ -439,13 +440,14 @@ export default function Home() {
               <ScrollReveal key={post.id} direction="up" delay={i * 0.15}>
                 <Link href={`/blog/${post.id}`} className="group block">
                   <div className="relative aspect-[16/9] overflow-hidden bg-tsuchikabe mb-4 rounded-sm">
-                    {post.coverImage ? (
+                    {post.coverImage && !failedImages.has(post.id) ? (
                       <Image
                         src={post.coverImage}
                         alt={post.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
                         sizes="(max-width: 768px) 100vw, 33vw"
+                        onError={() => setFailedImages((prev) => new Set(prev).add(post.id))}
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">

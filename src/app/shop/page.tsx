@@ -117,6 +117,7 @@ export default function ShopPage() {
 
   // Save cart to localStorage on change (skip initial empty state)
   const [cartInitialized, setCartInitialized] = useState(false);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   useEffect(() => {
     if (!cartInitialized) {
       setCartInitialized(true);
@@ -351,13 +352,14 @@ export default function ShopPage() {
                     <div className="group cursor-pointer" onClick={() => setSelectedProduct(product)}>
                       {/* Image */}
                       <div className="relative aspect-[4/5] overflow-hidden mb-6">
-                        {product.image ? (
+                        {product.image && !failedImages.has(product.id) ? (
                           <Image
                             src={product.image}
                             alt={product.name}
                             fill
                             className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
                             sizes="(max-width: 768px) 100vw, 33vw"
+                            onError={() => setFailedImages((prev) => new Set(prev).add(product.id))}
                           />
                         ) : (
                           <div className="absolute inset-0 bg-tsuchikabe/40 flex flex-col items-center justify-center gap-3">
@@ -814,13 +816,14 @@ export default function ShopPage() {
 
               {/* Product Image */}
               <div className="relative aspect-[16/10] overflow-hidden">
-                {selectedProduct.image ? (
+                {selectedProduct.image && !failedImages.has(selectedProduct.id) ? (
                   <Image
                     src={selectedProduct.image}
                     alt={selectedProduct.name}
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 672px"
+                    onError={() => setFailedImages((prev) => new Set(prev).add(selectedProduct.id))}
                   />
                 ) : (
                   <div className="absolute inset-0 bg-tsuchikabe/40 flex flex-col items-center justify-center gap-3">
@@ -1071,13 +1074,14 @@ export default function ShopPage() {
                           className="flex gap-4 pb-5 border-b border-usuzumi/20"
                         >
                           <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
-                            {item.product.image ? (
+                            {item.product.image && !failedImages.has(item.product.id) ? (
                               <Image
                                 src={item.product.image}
                                 alt={item.product.name}
                                 fill
                                 className="object-cover"
                                 sizes="80px"
+                                onError={() => setFailedImages((prev) => new Set(prev).add(item.product.id))}
                               />
                             ) : (
                               <div className="absolute inset-0 bg-tsuchikabe/40 flex items-center justify-center">

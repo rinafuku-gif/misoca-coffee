@@ -51,6 +51,7 @@ function formatDate(dateStr: string): string {
 export default function BlogPage() {
   const [posts, setPosts] = useState<JournalPost[]>(fallbackPosts);
   const [activeCategory, setActiveCategory] = useState("すべて");
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetch("/api/journal")
@@ -108,13 +109,14 @@ export default function BlogPage() {
                   <Link href={`/blog/${post.id}`}>
                   <article className="group overflow-hidden cursor-pointer">
                     <div className="aspect-[16/9] bg-tsuchikabe relative overflow-hidden rounded-sm">
-                      {post.coverImage ? (
+                      {post.coverImage && !failedImages.has(post.id) ? (
                         <Image
                           src={post.coverImage}
                           alt={post.title}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
                           sizes="(max-width: 768px) 100vw, 33vw"
+                          onError={() => setFailedImages((prev) => new Set(prev).add(post.id))}
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
