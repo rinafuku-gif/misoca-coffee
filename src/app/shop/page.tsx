@@ -351,13 +351,22 @@ export default function ShopPage() {
                     <div className="group cursor-pointer" onClick={() => setSelectedProduct(product)}>
                       {/* Image */}
                       <div className="relative aspect-[4/5] overflow-hidden mb-6">
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          fill
-                          className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                        />
+                        {product.image ? (
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 bg-tsuchikabe/40 flex flex-col items-center justify-center gap-3">
+                            <svg className="w-10 h-10 text-haicha/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span className="text-[10px] tracking-[0.2em] text-haicha/40">NO IMAGE</span>
+                          </div>
+                        )}
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-700" />
 
                         {/* Roast Badge */}
@@ -805,13 +814,22 @@ export default function ShopPage() {
 
               {/* Product Image */}
               <div className="relative aspect-[16/10] overflow-hidden">
-                <Image
-                  src={selectedProduct.image}
-                  alt={selectedProduct.name}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 672px"
-                />
+                {selectedProduct.image ? (
+                  <Image
+                    src={selectedProduct.image}
+                    alt={selectedProduct.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 672px"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-tsuchikabe/40 flex flex-col items-center justify-center gap-3">
+                    <svg className="w-12 h-12 text-haicha/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-[11px] tracking-[0.2em] text-haicha/40">NO IMAGE</span>
+                  </div>
+                )}
                 <span className="absolute top-4 left-4 bg-konsumi/80 text-white text-[10px] px-3 py-1.5 tracking-wider">
                   {selectedProduct.roast}
                 </span>
@@ -1053,13 +1071,21 @@ export default function ShopPage() {
                           className="flex gap-4 pb-5 border-b border-usuzumi/20"
                         >
                           <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
-                            <Image
-                              src={item.product.image}
-                              alt={item.product.name}
-                              fill
-                              className="object-cover"
-                              sizes="80px"
-                            />
+                            {item.product.image ? (
+                              <Image
+                                src={item.product.image}
+                                alt={item.product.name}
+                                fill
+                                className="object-cover"
+                                sizes="80px"
+                              />
+                            ) : (
+                              <div className="absolute inset-0 bg-tsuchikabe/40 flex items-center justify-center">
+                                <svg className="w-6 h-6 text-haicha/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                              </div>
+                            )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <h4 className="font-serif text-sm text-konsumi tracking-wide font-light mb-0.5 truncate">

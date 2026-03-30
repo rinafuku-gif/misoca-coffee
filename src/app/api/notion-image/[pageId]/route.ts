@@ -21,16 +21,12 @@ export async function GET(
     const imageUrl = await resolveNotionImageUrl(pageId, property);
 
     if (!imageUrl) {
-      return NextResponse.redirect(
-        new URL("/images/menu/default-bean.jpg", request.url)
-      );
+      return new NextResponse(null, { status: 404 });
     }
 
     const imageRes = await fetch(imageUrl);
     if (!imageRes.ok) {
-      return NextResponse.redirect(
-        new URL("/images/menu/default-bean.jpg", request.url)
-      );
+      return new NextResponse(null, { status: 404 });
     }
 
     const contentType = imageRes.headers.get("content-type") || "image/jpeg";

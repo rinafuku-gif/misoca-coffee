@@ -22,7 +22,7 @@ export async function getJournalPosts(): Promise<JournalPost[]> {
     return [];
   }
 
-  const response = await (notion as unknown as { dataSources: { query: (args: Record<string, unknown>) => Promise<{ results: unknown[] }> } }).dataSources.query({
+  const response = await notion.dataSources.query({
     data_source_id: journalDbId,
     filter: {
       property: "ステータス",
@@ -40,15 +40,33 @@ export async function getJournalPosts(): Promise<JournalPost[]> {
 
   return response.results.map((page: unknown) => {
     const props = (page as Record<string, unknown>)["properties"] as Record<string, Record<string, unknown>>;
+    const pageId = (page as Record<string, unknown>)["id"] as string;
+    const fileProp = props["カバー画像"];
+    const directUrl = getFile(fileProp);
+
+    let coverImage = "";
+    if (directUrl) {
+      // external型（Google Drive等の永続URL）はそのまま使う
+      if (
+        fileProp &&
+        fileProp["type"] === "files" &&
+        (fileProp["files"] as Array<{ type: string }>)?.[0]?.type === "external"
+      ) {
+        coverImage = directUrl;
+      } else {
+        // Notion file型（一時URL）はプロキシ経由にする
+        coverImage = `/api/notion-image/${pageId}?property=${encodeURIComponent("カバー画像")}`;
+      }
+    }
 
     return {
-      id: (page as Record<string, unknown>)["id"] as string,
+      id: pageId,
       title: getTitle(props["タイトル"]),
       category: getSelect(props["カテゴリ"]),
       status: getSelect(props["ステータス"]),
       date: getDate(props["公開日"]),
       excerpt: getRichText(props["抜粋"]),
-      coverImage: getFile(props["カバー画像"]) || "",
+      coverImage,
     };
   });
 }
@@ -215,7 +233,7 @@ function getProductImageUrl(
   fileProp: Record<string, unknown> | undefined
 ): string {
   const directUrl = getFile(fileProp);
-  if (!directUrl) return "/images/menu/default-bean.jpg";
+  if (!directUrl) return "";
   // external型（Google Drive等の永続URL）はそのまま使う
   if (
     fileProp &&

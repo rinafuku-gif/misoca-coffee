@@ -98,8 +98,22 @@ function ArrowIcon({ className = "w-4 h-4" }: { className?: string }) {
 
 /* ──────────────────── Component ──────────────────── */
 
+interface JournalEntry {
+  id: string;
+  category: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  coverImage: string;
+}
+
 export default function Home() {
   const [products, setProducts] = useState(fallbackProducts);
+  const [journals, setJournals] = useState<JournalEntry[]>(fallbackJournals.map((j, i) => ({
+    id: String(i),
+    coverImage: "",
+    ...j,
+  })));
 
   useEffect(() => {
     fetch("/api/products")
@@ -110,9 +124,18 @@ export default function Home() {
             data.slice(0, 3).map((p: { name: string; price: number; image: string }) => ({
               name: p.name,
               price: p.price,
-              image: p.image || "/images/experience/bean-selection.jpg",
+              image: p.image,
             }))
           );
+        }
+      })
+      .catch(() => {});
+
+    fetch("/api/journal")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setJournals(data.slice(0, 3));
         }
       })
       .catch(() => {});
@@ -412,15 +435,24 @@ export default function Home() {
           </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-10 md:gap-14">
-            {fallbackJournals.map((post, i) => (
-              <ScrollReveal key={i} direction="up" delay={i * 0.15}>
-                <Link href="/blog" className="group block">
-                  <div className="relative aspect-[16/9] overflow-hidden bg-tsuchikabe mb-4">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-[10px] text-haicha/30 tracking-widest uppercase">
-                        Photo
-                      </span>
-                    </div>
+            {journals.map((post, i) => (
+              <ScrollReveal key={post.id} direction="up" delay={i * 0.15}>
+                <Link href={`/blog/${post.id}`} className="group block">
+                  <div className="relative aspect-[16/9] overflow-hidden bg-tsuchikabe mb-4 rounded-sm">
+                    {post.coverImage ? (
+                      <Image
+                        src={post.coverImage}
+                        alt={post.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-4xl text-karekusa/20 font-serif">JOURNAL</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
                   </div>
                   <p className="text-[10px] tracking-[0.3em] text-karekusa uppercase">
                     {post.category}
@@ -428,10 +460,14 @@ export default function Home() {
                   <h3 className="font-serif text-base text-konsumi tracking-wider font-light mt-3 mb-3 leading-snug group-hover:text-gold/80 transition-colors duration-300">
                     {post.title}
                   </h3>
-                  <p className="text-xs md:text-sm text-haicha leading-[2] tracking-wide mb-3 line-clamp-2">
-                    {post.excerpt}
+                  {post.excerpt && (
+                    <p className="text-xs md:text-sm text-haicha leading-[2] tracking-wide mb-3 line-clamp-2">
+                      {post.excerpt}
+                    </p>
+                  )}
+                  <p className="text-[11px] text-haicha/50 tracking-wide">
+                    {post.date ? post.date.replace(/-/g, ".") : ""}
                   </p>
-                  <p className="text-[11px] text-haicha/50 tracking-wide">{post.date}</p>
                 </Link>
               </ScrollReveal>
             ))}
