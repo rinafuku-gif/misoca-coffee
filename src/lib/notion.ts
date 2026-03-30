@@ -225,6 +225,7 @@ function resolveJournalCoverImage(
   const fileProp = props["カバー画像"];
   const directUrl = getFile(fileProp);
   if (directUrl) {
+    // external型（Google Drive等の永続URL）はそのまま使う
     if (
       fileProp &&
       fileProp["type"] === "files" &&
@@ -232,7 +233,8 @@ function resolveJournalCoverImage(
     ) {
       return directUrl;
     }
-    return `/api/notion-image/${pageId}?property=${encodeURIComponent("カバー画像")}`;
+    // Notion file型はプロキシ経由（クエリパラメータなし）
+    return `/api/notion-image/${pageId}`;
   }
 
   // 2) ページカバー（page.cover）から取得
@@ -243,8 +245,8 @@ function resolveJournalCoverImage(
       if (ext?.url) return ext.url;
     }
     if (cover["type"] === "file") {
-      // Notion file型の一時URLはプロキシ経由で取得
-      return `/api/notion-image/${pageId}?source=cover`;
+      // プロキシが自動的にページカバーを検出する
+      return `/api/notion-image/${pageId}`;
     }
   }
 

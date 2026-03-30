@@ -138,7 +138,7 @@ function NotionBlockRenderer({ block }: { block: NotionBlock }) {
         src = block.image.external.url;
       } else {
         // Notion file型の一時URLは期限切れするのでプロキシ経由
-        src = `/api/notion-image/${block.id}?block=${block.id}`;
+        src = `/api/notion-image/${block.id}`;
       }
       return (
         <figure className="my-8">
