@@ -97,8 +97,8 @@ export default function StandPage() {
             <ScrollReveal direction="right" delay={0.2} className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] rounded-sm overflow-hidden">
                 <Image
-                  src="/images/stand/coffee-stand-morning-view.jpg"
-                  alt="見晴亭からの朝霧と山並み"
+                  src="/images/stand/stand-morning-mist.jpg"
+                  alt="朝霧と朝日の風景"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-1000 ease-out"
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -115,8 +115,8 @@ export default function StandPage() {
           <ScrollReveal>
             <div className="relative aspect-video rounded-sm overflow-hidden">
               <Image
-                src="/images/stand/stand-3.jpg"
-                alt="コーヒースタンド"
+                src="/images/stand/stand-summer-lake.jpg"
+                alt="夏の緑と湖の景色"
                 fill
                 className="object-cover"
                 sizes="100vw"
