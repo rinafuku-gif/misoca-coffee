@@ -131,21 +131,24 @@ function NotionBlockRenderer({ block }: { block: NotionBlock }) {
       return <hr className="border-t border-usuzumi/20 my-8" />;
 
     case "image": {
-      const src =
-        block.image.type === "file"
-          ? block.image.file.url
-          : block.image.external?.url;
       const caption = block.image.caption?.[0]?.plain_text || "";
-      if (!src) return null;
+      // external型の永続URLはそのまま、Notion file型はプロキシ経由
+      let src: string;
+      if (block.image.type === "external" && block.image.external?.url) {
+        src = block.image.external.url;
+      } else {
+        // Notion file型の一時URLは期限切れするのでプロキシ経由
+        src = `/api/notion-image/${block.id}?block=${block.id}`;
+      }
       return (
         <figure className="my-8">
           <div className="relative aspect-[16/9] rounded-sm overflow-hidden">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={src}
               alt={caption || "記事画像"}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 720px"
+              className="object-cover w-full h-full absolute inset-0"
+              loading="lazy"
             />
           </div>
           {caption && (

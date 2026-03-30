@@ -10,6 +10,7 @@ export async function GET(
   { params }: { params: Promise<{ pageId: string }> }
 ) {
   const { pageId } = await params;
+  const source = request.nextUrl.searchParams.get("source");
   const property =
     request.nextUrl.searchParams.get("property") || "画像";
 
@@ -18,7 +19,15 @@ export async function GET(
   }
 
   try {
-    const imageUrl = await resolveNotionImageUrl(pageId, property);
+    const blockId = request.nextUrl.searchParams.get("block");
+    let imageUrl: string | null;
+    if (source === "cover") {
+      imageUrl = await resolvePageCoverUrl(pageId);
+    } else if (blockId) {
+      imageUrl = await resolveBlockImageUrl(blockId);
+    } else {
+      imageUrl = await resolveNotionImageUrl(pageId, property);
+    }
 
     if (!imageUrl) {
       return new NextResponse(null, { status: 404 });
@@ -41,9 +50,7 @@ export async function GET(
     });
   } catch (error) {
     console.error("Failed to fetch Notion image:", error);
-    return NextResponse.redirect(
-      new URL("/images/menu/default-bean.jpg", request.url)
-    );
+    return new NextResponse(null, { status: 404 });
   }
 }
 
@@ -71,5 +78,37 @@ async function resolveNotionImageUrl(
   const file = files[0];
   if (file.type === "file") return file.file?.url || null;
   if (file.type === "external") return file.external?.url || null;
+  return null;
+}
+
+async function resolveBlockImageUrl(blockId: string): Promise<string | null> {
+  const block = await notion.blocks.retrieve({ block_id: blockId }) as Record<string, unknown>;
+  const image = block["image"] as Record<string, unknown> | undefined;
+  if (!image) return null;
+
+  if (image["type"] === "file") {
+    const file = image["file"] as { url: string } | undefined;
+    return file?.url || null;
+  }
+  if (image["type"] === "external") {
+    const ext = image["external"] as { url: string } | undefined;
+    return ext?.url || null;
+  }
+  return null;
+}
+
+async function resolvePageCoverUrl(pageId: string): Promise<string | null> {
+  const page = await notion.pages.retrieve({ page_id: pageId });
+  const cover = (page as Record<string, unknown>)["cover"] as Record<string, unknown> | undefined;
+  if (!cover) return null;
+
+  if (cover["type"] === "file") {
+    const file = cover["file"] as { url: string } | undefined;
+    return file?.url || null;
+  }
+  if (cover["type"] === "external") {
+    const ext = cover["external"] as { url: string } | undefined;
+    return ext?.url || null;
+  }
   return null;
 }

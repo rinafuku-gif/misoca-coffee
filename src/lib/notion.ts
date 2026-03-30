@@ -39,25 +39,12 @@ export async function getJournalPosts(): Promise<JournalPost[]> {
   });
 
   return response.results.map((page: unknown) => {
-    const props = (page as Record<string, unknown>)["properties"] as Record<string, Record<string, unknown>>;
-    const pageId = (page as Record<string, unknown>)["id"] as string;
-    const fileProp = props["カバー画像"];
-    const directUrl = getFile(fileProp);
+    const pageObj = page as Record<string, unknown>;
+    const props = pageObj["properties"] as Record<string, Record<string, unknown>>;
+    const pageId = pageObj["id"] as string;
 
-    let coverImage = "";
-    if (directUrl) {
-      // external型（Google Drive等の永続URL）はそのまま使う
-      if (
-        fileProp &&
-        fileProp["type"] === "files" &&
-        (fileProp["files"] as Array<{ type: string }>)?.[0]?.type === "external"
-      ) {
-        coverImage = directUrl;
-      } else {
-        // Notion file型（一時URL）はプロキシ経由にする
-        coverImage = `/api/notion-image/${pageId}?property=${encodeURIComponent("カバー画像")}`;
-      }
-    }
+    // カバー画像の取得: 1) プロパティ「カバー画像」 2) ページカバー（page.cover）
+    const coverImage = resolveJournalCoverImage(pageId, props, pageObj);
 
     return {
       id: pageId,
@@ -80,15 +67,16 @@ export async function getJournalPostById(id: string): Promise<JournalPost | null
   try {
     const page = await notion.pages.retrieve({ page_id: id }) as Record<string, unknown>;
     const props = page["properties"] as Record<string, Record<string, unknown>>;
+    const pageId = page["id"] as string;
 
     return {
-      id: page["id"] as string,
+      id: pageId,
       title: getTitle(props["タイトル"]),
       category: getSelect(props["カテゴリ"]),
       status: getSelect(props["ステータス"]),
       date: getDate(props["公開日"]),
       excerpt: getRichText(props["抜粋"]),
-      coverImage: getFile(props["カバー画像"]) || "",
+      coverImage: resolveJournalCoverImage(pageId, props, page),
     };
   } catch {
     return null;
@@ -225,6 +213,41 @@ function getFile(prop: Record<string, unknown> | undefined): string {
   const file = files[0];
   if (file.type === "file") return file.file?.url || "";
   if (file.type === "external") return file.external?.url || "";
+  return "";
+}
+
+function resolveJournalCoverImage(
+  pageId: string,
+  props: Record<string, Record<string, unknown>>,
+  pageObj: Record<string, unknown>,
+): string {
+  // 1) プロパティ「カバー画像」から取得
+  const fileProp = props["カバー画像"];
+  const directUrl = getFile(fileProp);
+  if (directUrl) {
+    if (
+      fileProp &&
+      fileProp["type"] === "files" &&
+      (fileProp["files"] as Array<{ type: string }>)?.[0]?.type === "external"
+    ) {
+      return directUrl;
+    }
+    return `/api/notion-image/${pageId}?property=${encodeURIComponent("カバー画像")}`;
+  }
+
+  // 2) ページカバー（page.cover）から取得
+  const cover = pageObj["cover"] as Record<string, unknown> | undefined;
+  if (cover) {
+    if (cover["type"] === "external") {
+      const ext = cover["external"] as { url: string } | undefined;
+      if (ext?.url) return ext.url;
+    }
+    if (cover["type"] === "file") {
+      // Notion file型の一時URLはプロキシ経由で取得
+      return `/api/notion-image/${pageId}?source=cover`;
+    }
+  }
+
   return "";
 }
 
