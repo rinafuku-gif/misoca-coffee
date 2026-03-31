@@ -73,20 +73,33 @@ export async function POST(request: NextRequest) {
 
       // Send email notification
       const isGiftTicket = session.metadata?.is_gift_ticket === "true";
+      const orderData = {
+        sessionId: session.id,
+        customerEmail: session.customer_details?.email || null,
+        customerName: session.customer_details?.name || null,
+        phone: session.customer_details?.phone || shipping?.phone || null,
+        address: shipping?.address || null,
+        amountTotal: session.amount_total || 0,
+        items,
+        isGiftTicket,
+      };
+
+      // オーナーに注文通知メール
       try {
-        await sendOrderNotification({
-          sessionId: session.id,
-          customerEmail: session.customer_details?.email || null,
-          customerName: session.customer_details?.name || null,
-          phone: session.customer_details?.phone || shipping?.phone || null,
-          address: shipping?.address || null,
-          amountTotal: session.amount_total || 0,
-          items,
-          isGiftTicket,
-        });
-        console.log("Order notification email sent");
+        await sendOrderNotification(orderData);
+        console.log("Order notification email sent to owner");
       } catch (emailError) {
-        console.error("Failed to send order notification:", emailError);
+        console.error("Failed to send order notification to owner:", emailError);
+      }
+
+      // 顧客に注文確認メール（メールアドレスがある場合）
+      if (session.customer_details?.email) {
+        try {
+          await sendOrderNotification(orderData, session.customer_details.email);
+          console.log("Order confirmation email sent to customer");
+        } catch (emailError) {
+          console.error("Failed to send confirmation to customer:", emailError);
+        }
       }
 
       console.log("Payment succeeded:", {

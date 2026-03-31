@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
+import { getProducts } from "@/lib/notion";
 
 interface CartItem {
   id: string;
@@ -10,6 +11,7 @@ interface CartItem {
 }
 
 const GIFT_TICKET_IDS = ["gift-roasting-experience"];
+const GIFT_TICKET_PRICE = 8800;
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,15 +24,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    if (!baseUrl) {
+      console.error("NEXT_PUBLIC_BASE_URL is not configured");
+      return NextResponse.json(
+        { error: "サーバー設定エラーが発生しました" },
+        { status: 500 }
+      );
+    }
+
+    // サーバー側で正規価格を取得し、クライアントの価格は無視する
+    const products = await getProducts();
+    const productPriceMap = new Map(products.map((p) => [p.id, p.price]));
+
+    const verifiedItems: Array<CartItem & { verifiedPrice: number }> = [];
+    for (const item of items) {
+      if (GIFT_TICKET_IDS.includes(item.id)) {
+        verifiedItems.push({ ...item, verifiedPrice: GIFT_TICKET_PRICE });
+        continue;
+      }
+      const realPrice = productPriceMap.get(item.id);
+      if (realPrice === undefined) {
+        return NextResponse.json(
+          { error: `商品「${item.name}」は現在販売されていません` },
+          { status: 400 }
+        );
+      }
+      verifiedItems.push({ ...item, verifiedPrice: realPrice });
+    }
 
     // Gift ticket orders: no shipping needed
-    const isGiftTicketOnly = items.every((item) =>
+    const isGiftTicketOnly = verifiedItems.every((item) =>
       GIFT_TICKET_IDS.includes(item.id)
     );
 
-    const subtotal = items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+    const subtotal = verifiedItems.reduce(
+      (sum, item) => sum + item.verifiedPrice * item.quantity,
       0
     );
     const shippingCost = isGiftTicketOnly ? 0 : subtotal >= 5000 ? 0 : 370;
@@ -42,14 +71,14 @@ export async function POST(request: NextRequest) {
         unit_amount: number;
       };
       quantity: number;
-    }> = items.map((item) => ({
+    }> = verifiedItems.map((item) => ({
       price_data: {
         currency: "jpy",
         product_data: {
           name: item.name,
           description: `${item.unit}`,
         },
-        unit_amount: item.price,
+        unit_amount: item.verifiedPrice,
       },
       quantity: item.quantity,
     }));
@@ -79,7 +108,7 @@ export async function POST(request: NextRequest) {
       },
       metadata: {
         items: JSON.stringify(
-          items.map((i) => ({ id: i.id, name: i.name, qty: i.quantity }))
+          verifiedItems.map((i) => ({ id: i.id, name: i.name, qty: i.quantity }))
         ),
         is_gift_ticket: isGiftTicketOnly ? "true" : "false",
       },

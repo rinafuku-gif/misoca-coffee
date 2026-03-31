@@ -55,7 +55,7 @@ export async function sendOrderNotification(order: OrderNotification, overrideTo
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://misoca-coffee.vercel.app";
   const giftSendUrl = order.isGiftTicket && order.customerEmail
-    ? `${baseUrl}/api/admin/send-gift-ticket?session_id=${encodeURIComponent(order.sessionId)}&email=${encodeURIComponent(order.customerEmail)}&name=${encodeURIComponent(order.customerName || "")}&token=${encodeURIComponent(process.env.ADMIN_SECRET || "")}`
+    ? `${baseUrl}/api/admin/send-gift-ticket?session_id=${encodeURIComponent(order.sessionId)}&email=${encodeURIComponent(order.customerEmail)}&name=${encodeURIComponent(order.customerName || "")}`
     : null;
 
   const giftNote = order.isGiftTicket

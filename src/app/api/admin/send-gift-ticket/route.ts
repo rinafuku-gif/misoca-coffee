@@ -9,24 +9,24 @@ function escapeHtml(str: string) {
     .replace(/"/g, "&quot;");
 }
 
-function auth(request: NextRequest) {
+function getParams(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const token = searchParams.get("token");
-  if (!process.env.ADMIN_SECRET || token !== process.env.ADMIN_SECRET) {
-    return null;
-  }
   return {
-    token,
+    token: searchParams.get("token"),
     sessionId: searchParams.get("session_id") || "",
     email: searchParams.get("email") || "",
     name: searchParams.get("name") || "",
   };
 }
 
+function verifyToken(token: string | null): boolean {
+  return !!process.env.ADMIN_SECRET && token === process.env.ADMIN_SECRET;
+}
+
 /** GET: 確認画面を表示 */
 export async function GET(request: NextRequest) {
-  const params = auth(request);
-  if (!params) {
+  const params = getParams(request);
+  if (!verifyToken(params.token)) {
     return htmlResponse(401, errorHtml("認証エラー", "アクセス権限がありません。"));
   }
   if (!params.sessionId || !params.email) {
@@ -93,7 +93,8 @@ h1{font-size:1.25rem;color:#3a3a3a;margin:0 0 .5rem;text-align:center}
   </div>
 
   <p class="preview-label">メール本文（編集できます）</p>
-  <form id="sendForm" method="POST" action="/api/admin/send-gift-ticket?session_id=${encodeURIComponent(params.sessionId)}&email=${encodeURIComponent(params.email)}&name=${encodeURIComponent(params.name)}&token=${encodeURIComponent(params.token || "")}">
+  <form id="sendForm" method="POST" action="/api/admin/send-gift-ticket?session_id=${encodeURIComponent(params.sessionId)}&email=${encodeURIComponent(params.email)}&name=${encodeURIComponent(params.name)}">
+    <input type="hidden" name="token" value="${escapeHtml(params.token || "")}" />
     <textarea name="body" class="editor">${escapeHtml(emailBody)}</textarea>
     <div class="actions">
       <button type="button" class="btn btn-cancel" onclick="window.close()">キャンセル</button>
@@ -120,16 +121,18 @@ document.getElementById('resetBtn').addEventListener('click',function(){
 
 /** POST: 実際にメールを送信 */
 export async function POST(request: NextRequest) {
-  const params = auth(request);
-  if (!params) {
+  const params = getParams(request);
+
+  // フォームから編集後の本文とトークンを取得
+  const formData = await request.formData();
+  const token = (formData.get("token") as string | null) || params.token;
+  if (!verifyToken(token)) {
     return htmlResponse(401, errorHtml("認証エラー", "アクセス権限がありません。"));
   }
   if (!params.sessionId || !params.email) {
     return htmlResponse(400, errorHtml("パラメータ不足", "必要な情報が不足しています。"));
   }
 
-  // フォームから編集後の本文を取得
-  const formData = await request.formData();
   const editedBody = formData.get("body") as string | null;
 
   try {
