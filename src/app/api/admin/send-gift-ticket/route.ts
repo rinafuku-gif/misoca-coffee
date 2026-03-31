@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { sendGiftTicketEmailWithBody, buildGiftTicketEmailBody } from "@/lib/mail";
 
 function escapeHtml(str: string) {
@@ -12,15 +13,23 @@ function escapeHtml(str: string) {
 function getParams(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   return {
-    token: searchParams.get("token"),
     sessionId: searchParams.get("session_id") || "",
     email: searchParams.get("email") || "",
     name: searchParams.get("name") || "",
   };
 }
 
-function verifyToken(token: string | null): boolean {
-  return !!process.env.ADMIN_SECRET && token === process.env.ADMIN_SECRET;
+function generateSendToken(sessionId: string, email: string): string {
+  return crypto
+    .createHmac("sha256", process.env.ADMIN_SECRET!)
+    .update(`${sessionId}:${email}`)
+    .digest("hex");
+}
+
+function verifySendToken(token: string | null, sessionId: string, email: string): boolean {
+  if (!token || !process.env.ADMIN_SECRET) return false;
+  const expected = generateSendToken(sessionId, email);
+  return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected));
 }
 
 /** GET: 確認画面を表示（閲覧のみ、認証不要） */
@@ -91,7 +100,7 @@ h1{font-size:1.25rem;color:#3a3a3a;margin:0 0 .5rem;text-align:center}
 
   <p class="preview-label">メール本文（編集できます）</p>
   <form id="sendForm" method="POST" action="/api/admin/send-gift-ticket?session_id=${encodeURIComponent(params.sessionId)}&email=${encodeURIComponent(params.email)}&name=${encodeURIComponent(params.name)}">
-    <input type="hidden" name="token" value="${escapeHtml(process.env.ADMIN_SECRET || "")}" />
+    <input type="hidden" name="token" value="${escapeHtml(generateSendToken(params.sessionId, params.email))}" />
     <textarea name="body" class="editor">${escapeHtml(emailBody)}</textarea>
     <div class="actions">
       <button type="button" class="btn btn-cancel" onclick="window.close()">キャンセル</button>
@@ -122,8 +131,8 @@ export async function POST(request: NextRequest) {
 
   // フォームから編集後の本文とトークンを取得
   const formData = await request.formData();
-  const token = (formData.get("token") as string | null) || params.token;
-  if (!verifyToken(token)) {
+  const token = formData.get("token") as string | null;
+  if (!verifySendToken(token, params.sessionId, params.email)) {
     return htmlResponse(401, errorHtml("認証エラー", "アクセス権限がありません。"));
   }
   if (!params.sessionId || !params.email) {
