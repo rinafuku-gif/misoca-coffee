@@ -98,6 +98,57 @@ ${itemList}
 }
 
 /**
+ * 顧客向け注文確認メール
+ */
+export async function sendCustomerConfirmation(order: OrderNotification) {
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+    console.warn("Gmail credentials not configured, skipping customer email");
+    return;
+  }
+  if (!order.customerEmail) return;
+
+  const itemList = order.items
+    .map((item) => `  ${item.name} × ${item.qty}`)
+    .join("\n");
+
+  const text = `
+${order.customerName || "お客様"} 様
+
+この度は三十日珈琲をご利用いただき、
+誠にありがとうございます。
+
+以下の内容でご注文を承りました。
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+  ご注文内容
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+${itemList}
+
+合計: ¥${order.amountTotal?.toLocaleString() || 0}
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+ご注文内容を確認後、発送の準備に入ります。
+発送が完了しましたら、改めてご連絡いたします。
+
+ご不明な点がございましたら、
+お気軽にお問い合わせください。
+
+三十日珈琲（みそかこーひー）
+misocacoffee@gmail.com
+https://misoca-coffee.vercel.app
+`.trim();
+
+  await getTransporter().sendMail({
+    from: `三十日珈琲 <${process.env.GMAIL_USER}>`,
+    to: order.customerEmail,
+    subject: `【三十日珈琲】ご注文ありがとうございます`,
+    text,
+  });
+}
+
+/**
  * ギフトチケットメールの本文を生成（確認画面でも使用）
  */
 export function buildGiftTicketEmailBody(params: {

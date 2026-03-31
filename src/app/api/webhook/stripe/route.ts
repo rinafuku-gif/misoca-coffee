@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
-import { sendOrderNotification } from "@/lib/mail";
+import { sendOrderNotification, sendCustomerConfirmation } from "@/lib/mail";
 import type Stripe from "stripe";
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
       // 顧客に注文確認メール（メールアドレスがある場合）
       if (session.customer_details?.email) {
         try {
-          await sendOrderNotification(orderData, session.customer_details.email);
+          await sendCustomerConfirmation(orderData);
           console.log("Order confirmation email sent to customer");
         } catch (emailError) {
           console.error("Failed to send confirmation to customer:", emailError);

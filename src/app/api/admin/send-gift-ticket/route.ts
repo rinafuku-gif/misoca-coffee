@@ -23,12 +23,9 @@ function verifyToken(token: string | null): boolean {
   return !!process.env.ADMIN_SECRET && token === process.env.ADMIN_SECRET;
 }
 
-/** GET: 確認画面を表示 */
+/** GET: 確認画面を表示（閲覧のみ、認証不要） */
 export async function GET(request: NextRequest) {
   const params = getParams(request);
-  if (!verifyToken(params.token)) {
-    return htmlResponse(401, errorHtml("認証エラー", "アクセス権限がありません。"));
-  }
   if (!params.sessionId || !params.email) {
     return htmlResponse(400, errorHtml("パラメータ不足", "必要な情報が不足しています。"));
   }
@@ -94,7 +91,7 @@ h1{font-size:1.25rem;color:#3a3a3a;margin:0 0 .5rem;text-align:center}
 
   <p class="preview-label">メール本文（編集できます）</p>
   <form id="sendForm" method="POST" action="/api/admin/send-gift-ticket?session_id=${encodeURIComponent(params.sessionId)}&email=${encodeURIComponent(params.email)}&name=${encodeURIComponent(params.name)}">
-    <input type="hidden" name="token" value="${escapeHtml(params.token || "")}" />
+    <input type="hidden" name="token" value="${escapeHtml(process.env.ADMIN_SECRET || "")}" />
     <textarea name="body" class="editor">${escapeHtml(emailBody)}</textarea>
     <div class="actions">
       <button type="button" class="btn btn-cancel" onclick="window.close()">キャンセル</button>
