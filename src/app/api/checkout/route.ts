@@ -24,14 +24,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    if (!baseUrl) {
-      console.error("NEXT_PUBLIC_BASE_URL is not configured");
-      return NextResponse.json(
-        { error: "サーバー設定エラーが発生しました" },
-        { status: 500 }
-      );
-    }
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+      || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : null)
+      || "https://misoca-coffee.vercel.app";
 
     // サーバー側で正規価格を取得し、クライアントの価格は無視する
     const products = await getProducts();
