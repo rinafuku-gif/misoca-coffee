@@ -431,8 +431,8 @@ export function StandCalendar() {
         >
           <span
             style={{
-              fontSize: "9px",
-              letterSpacing: "0.28em",
+              fontSize: "12px",
+              letterSpacing: "0.3em",
               fontWeight: 400,
               color: `${USUZUMI}CC`,
             }}
