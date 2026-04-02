@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+import type { calendar_v3 } from "googleapis";
 import crypto from "crypto";
 
 // ---- 型定義 ----------------------------------------------------------------
@@ -195,12 +196,16 @@ export interface ReservationInfo {
   experienceType: string;
   cancellationToken: string;
   paymentIntentId?: string;
+  location?: string;
+  transportFee?: number;
+  transportDistance?: number;
 }
 
 /**
  * 予約確定時にイベントを書き換える。
- * タイトル →「予約済み｜{name}」
+ * タイトル →「予約済み｜{name}」（出張の場合は「予約済み｜{name}（出張準備含む）」）
  * 説明 → 予約者情報すべて + キャンセルトークン + Stripe Payment Intent ID
+ * 出張焙煎体験の場合: 開始60分前〜終了30分後に時間を拡張してブロック
  */
 export async function bookSlot(
   eventId: string,
@@ -208,6 +213,8 @@ export async function bookSlot(
 ): Promise<void> {
   const calendar = getCalendarClient();
   const calendarId = getCalendarId();
+
+  const isOnsite = info.experienceType === "出張焙煎体験";
 
   const descriptionLines = [
     `【予約者情報】`,
@@ -224,9 +231,24 @@ export async function bookSlot(
     `焙煎体験の有無: ${info.roastingExperience}`,
     `好きなコーヒー: ${info.favoriteCoffee}`,
     `きっかけ: ${info.howFound}`,
-    ``,
-    `cancellationToken:${info.cancellationToken}`,
   ];
+
+  if (isOnsite) {
+    if (info.location) {
+      descriptionLines.push(`出張先: ${info.location}`);
+    }
+    if (info.transportFee !== undefined) {
+      const feeText =
+        info.transportFee === 0 ? "無料（対象エリア）" : `¥${info.transportFee.toLocaleString()}`;
+      descriptionLines.push(`交通費: ${feeText}`);
+    }
+    if (info.transportDistance !== undefined && info.transportDistance > 0) {
+      descriptionLines.push(`片道距離: ${info.transportDistance}km`);
+    }
+    descriptionLines.push(`※開始60分前〜終了30分後を準備・片付け時間として確保`);
+  }
+
+  descriptionLines.push(``, `cancellationToken:${info.cancellationToken}`);
 
   if (info.paymentIntentId) {
     descriptionLines.push(`stripePaymentIntentId:${info.paymentIntentId}`);
@@ -234,13 +256,42 @@ export async function bookSlot(
 
   const description = descriptionLines.join("\n");
 
+  const patchBody: calendar_v3.Schema$Event = {
+    summary: isOnsite
+      ? `予約済み｜${info.name}（出張準備含む）`
+      : `予約済み｜${info.name}`,
+    description,
+  };
+
+  // 出張焙煎体験: 現在のイベント時刻を取得して開始60分前・終了30分後に拡張
+  if (isOnsite) {
+    const eventRes = await calendar.events.get({ calendarId, eventId });
+    const origStart = eventRes.data.start?.dateTime;
+    const origEnd = eventRes.data.end?.dateTime;
+
+    if (origStart && origEnd) {
+      const startDate = new Date(origStart);
+      const endDate = new Date(origEnd);
+
+      // 元の開始・終了をイベント説明に保存（cancelSlotで復元するため）
+      descriptionLines.push(
+        `originalStart:${origStart}`,
+        `originalEnd:${origEnd}`
+      );
+      patchBody.description = descriptionLines.join("\n");
+
+      const newStart = new Date(startDate.getTime() - 60 * 60 * 1000);
+      const newEnd = new Date(endDate.getTime() + 30 * 60 * 1000);
+
+      patchBody.start = { dateTime: newStart.toISOString(), timeZone: "Asia/Tokyo" };
+      patchBody.end = { dateTime: newEnd.toISOString(), timeZone: "Asia/Tokyo" };
+    }
+  }
+
   await calendar.events.patch({
     calendarId,
     eventId,
-    requestBody: {
-      summary: `予約済み｜${info.name}`,
-      description,
-    },
+    requestBody: patchBody,
   });
 }
 
@@ -322,18 +373,29 @@ export async function cancelSlot(
   const experienceLabel = experienceType || "プライベート";
   const shortLabel = experienceLabel.replace("焙煎体験", "").trim() || experienceLabel;
 
-  // 予約日時を取得
-  const startDateTime = response.data.start?.dateTime ?? "";
+  // 予約日時を取得（出張の場合はoriginalStartを優先）
+  const originalStart = findValue("originalStart:");
+  const originalEnd = findValue("originalEnd:");
+  const currentStartDateTime = response.data.start?.dateTime ?? "";
+  const startDateTime = originalStart || currentStartDateTime;
   const date = startDateTime ? toDateString(startDateTime) : "";
   const startTime = startDateTime ? toTimeString(startDateTime) : "";
+
+  const patchBody: calendar_v3.Schema$Event = {
+    summary: `予約可能｜${shortLabel}`,
+    description: "",
+  };
+
+  // 出張焙煎体験で元の時間が保存されている場合、元の時間に戻す
+  if (originalStart && originalEnd) {
+    patchBody.start = { dateTime: originalStart, timeZone: "Asia/Tokyo" };
+    patchBody.end = { dateTime: originalEnd, timeZone: "Asia/Tokyo" };
+  }
 
   await calendar.events.patch({
     calendarId,
     eventId,
-    requestBody: {
-      summary: `予約可能｜${shortLabel}`,
-      description: "",
-    },
+    requestBody: patchBody,
   });
 
   return { name, email, experienceType, date, startTime, paymentIntentId };

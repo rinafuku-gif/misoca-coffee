@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar } from "./Calendar";
 import { TimeSlotPicker } from "./TimeSlotPicker";
-import { ReservationForm, type FormValues } from "./ReservationForm";
+import { ReservationForm, type FormValues, type TransportFeeResult } from "./ReservationForm";
 import type { CalendarSlot } from "@/lib/google-calendar";
 import { calculatePrice } from "@/lib/pricing";
 import type { ExperienceType } from "@/lib/google-calendar";
@@ -52,6 +52,7 @@ const FORM_LABEL: Partial<Record<keyof FormValues, string>> = {
   favoriteCoffee: "好きなコーヒー",
   numberOfGuests: "来店人数",
   coffeeDrinkingFrequency: "コーヒーを飲む頻度",
+  location: "出張先住所",
 };
 
 // ─── コンポーネント ───────────────────────────────────────────────────────────
@@ -63,6 +64,7 @@ export function ReservationFlow() {
   const [daySlots, setDaySlots] = useState<CalendarSlot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | null>(null);
   const [formValues, setFormValues] = useState<FormValues | null>(null);
+  const [transportFeeResult, setTransportFeeResult] = useState<TransportFeeResult | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [cancellationToken, setCancellationToken] = useState<string | null>(null);
@@ -90,8 +92,9 @@ export function ReservationFlow() {
   };
 
   // Step 3 → Step 4
-  const handleFormSubmit = (values: FormValues) => {
+  const handleFormSubmit = (values: FormValues, transportFee?: TransportFeeResult) => {
     setFormValues(values);
+    setTransportFeeResult(transportFee ?? null);
     goToStep(4);
   };
 
@@ -101,7 +104,9 @@ export function ReservationFlow() {
     setIsSubmitting(true);
     setSubmitError(null);
 
-    const payload = {
+    const isOnsite = selectedSlot.experienceType === "出張焙煎体験";
+
+    const payload: Record<string, unknown> = {
       eventId: selectedSlot.eventId,
       experienceType: selectedSlot.experienceType,
       email: formValues.email,
@@ -118,6 +123,15 @@ export function ReservationFlow() {
       numberOfGuests: Number(formValues.numberOfGuests),
       coffeeDrinkingFrequency: formValues.coffeeDrinkingFrequency,
     };
+
+    if (isOnsite && formValues.location) {
+      payload.location = formValues.location;
+      if (transportFeeResult) {
+        payload.transportFee = transportFeeResult.fee;
+        payload.transportDistance = transportFeeResult.distance;
+        payload.transportIsFreeArea = transportFeeResult.isFreeArea;
+      }
+    }
 
     try {
       const res = await fetch("/api/reservation/checkout", {
@@ -359,18 +373,57 @@ export function ReservationFlow() {
                   ];
                   if (!VALID_TYPES.includes(expType)) return null;
                   const pricing = calculatePrice(expType, numberOfGuests);
+                  const isOnsite = expType === "出張焙煎体験";
+                  const transport = isOnsite ? transportFeeResult : null;
+                  const totalWithTransport = pricing.totalAmount + (transport?.fee ?? 0);
+
                   return (
                     <div className="bg-white border border-gold/30 rounded-sm px-5 py-4 mb-6">
-                      <p className="text-xs text-haicha/70 tracking-wide mb-2">
+                      <p className="text-xs text-haicha/70 tracking-wide mb-3">
                         お支払い金額
                       </p>
-                      <p className="text-2xl text-gold font-light">
-                        ¥{pricing.totalAmount.toLocaleString()}
-                        <span className="text-xs text-haicha/60 ml-1">（税込）</span>
-                      </p>
-                      <p className="text-[11px] text-haicha/60 mt-1">
-                        {pricing.breakdown}
-                      </p>
+                      {isOnsite ? (
+                        <>
+                          <div className="space-y-2 text-sm mb-3">
+                            <div className="flex justify-between">
+                              <span className="text-haicha">{expType}（{numberOfGuests}名）</span>
+                              <span className="text-sumi">¥{pricing.totalAmount.toLocaleString()}</span>
+                            </div>
+                            {transport ? (
+                              <div className="flex justify-between">
+                                <span className="text-haicha">
+                                  {transport.isFreeArea
+                                    ? "交通費"
+                                    : `交通費（往復${Math.round(transport.distance * 2 * 10) / 10}km）`}
+                                </span>
+                                <span className="text-sumi">
+                                  {transport.isFreeArea
+                                    ? "無料（対象エリア）"
+                                    : `¥${transport.fee.toLocaleString()}`}
+                                </span>
+                              </div>
+                            ) : null}
+                            <div className="border-t border-usuzumi/30 pt-2 flex justify-between font-medium">
+                              <span className="text-haicha">合計</span>
+                              <span className="text-sumi">¥{totalWithTransport.toLocaleString()}</span>
+                            </div>
+                          </div>
+                          <p className="text-2xl text-gold font-light">
+                            ¥{totalWithTransport.toLocaleString()}
+                            <span className="text-xs text-haicha/60 ml-1">（税込）</span>
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-2xl text-gold font-light">
+                            ¥{pricing.totalAmount.toLocaleString()}
+                            <span className="text-xs text-haicha/60 ml-1">（税込）</span>
+                          </p>
+                          <p className="text-[11px] text-haicha/60 mt-1">
+                            {pricing.breakdown}
+                          </p>
+                        </>
+                      )}
                     </div>
                   );
                 })()}
@@ -392,6 +445,7 @@ export function ReservationFlow() {
                       "favoriteCoffee",
                       "numberOfGuests",
                       "coffeeDrinkingFrequency",
+                      ...(selectedSlot.experienceType === "出張焙煎体験" ? ["location" as keyof FormValues] : []),
                     ] as (keyof FormValues)[]
                   ).map((key) => {
                     const value =

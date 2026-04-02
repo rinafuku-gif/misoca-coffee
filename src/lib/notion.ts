@@ -188,6 +188,9 @@ export interface ReservationRecord {
   roastingExperience: string;
   favoriteCoffee: string;
   coffeeDrinkingFrequency: string;
+  location?: string;
+  transportFee?: number;
+  transportDistance?: number;
 }
 
 /**
@@ -253,6 +256,27 @@ export async function saveReservation(record: ReservationRecord): Promise<void> 
       "イベントID": {
         rich_text: [{ text: { content: record.eventId } }],
       },
+      ...(record.location
+        ? {
+            "出張先住所": {
+              rich_text: [{ text: { content: record.location } }],
+            },
+          }
+        : {}),
+      ...(record.transportFee !== undefined
+        ? {
+            "交通費": {
+              number: record.transportFee,
+            },
+          }
+        : {}),
+      ...(record.transportDistance !== undefined && record.transportDistance > 0
+        ? {
+            "片道距離(km)": {
+              number: record.transportDistance,
+            },
+          }
+        : {}),
     },
   });
 }

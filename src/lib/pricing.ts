@@ -56,6 +56,27 @@ export function calculatePrice(
   };
 }
 
+// ─── 交通費計算 ──────────────────────────────────────────────────────────────
+
+const FREE_AREA_KEYWORDS = ["上野原市", "大月市", "相模原市緑区"] as const;
+
+/**
+ * 住所が交通費無料エリアかどうかを判定する
+ */
+export function isFreeArea(address: string): boolean {
+  return FREE_AREA_KEYWORDS.some((keyword) => address.includes(keyword));
+}
+
+/**
+ * 片道距離（km）から交通費を計算する
+ * 往復距離 ÷ 10(km/L) × 200(円/L) → 10円単位で切り上げ
+ */
+export function calculateTransportFee(oneWayDistanceKm: number): number {
+  const roundTripKm = oneWayDistanceKm * 2;
+  const rawFee = (roundTripKm / 10) * 200;
+  return Math.ceil(rawFee / 10) * 10;
+}
+
 // ─── ExperienceType ガード ───────────────────────────────────────────────────
 
 const VALID_EXPERIENCE_TYPES = new Set<ExperienceType>([

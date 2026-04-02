@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import type { CalendarSlot, ExperienceType } from "@/lib/google-calendar";
 import { calculatePrice } from "@/lib/pricing";
@@ -21,6 +21,13 @@ export interface FormValues {
   favoriteCoffee: string;
   numberOfGuests: string;
   coffeeDrinkingFrequency: string;
+  location: string;
+}
+
+export interface TransportFeeResult {
+  fee: number;
+  distance: number;
+  isFreeArea: boolean;
 }
 
 interface FieldError {
@@ -29,7 +36,7 @@ interface FieldError {
 
 interface ReservationFormProps {
   slot: CalendarSlot;
-  onSubmit: (values: FormValues) => void;
+  onSubmit: (values: FormValues, transportFee?: TransportFeeResult) => void;
   onBack: () => void;
   isSubmitting: boolean;
 }
@@ -63,12 +70,14 @@ const INITIAL_VALUES: FormValues = {
   favoriteCoffee: "",
   numberOfGuests: "1",
   coffeeDrinkingFrequency: "",
+  location: "",
 };
 
 // ─── バリデーション ───────────────────────────────────────────────────────────
 
-function validateForm(values: FormValues): FieldError {
+function validateForm(values: FormValues, experienceType?: ExperienceType): FieldError {
   const errors: FieldError = {};
+  const isOnsite = experienceType === "出張焙煎体験";
 
   if (!values.email) {
     errors.email = "メールアドレスを入力してください";
@@ -122,6 +131,10 @@ function validateForm(values: FormValues): FieldError {
 
   if (!values.coffeeDrinkingFrequency.trim()) {
     errors.coffeeDrinkingFrequency = "コーヒーを飲む頻度を入力してください";
+  }
+
+  if (isOnsite && !values.location.trim()) {
+    errors.location = "出張先の住所を入力してください";
   }
 
   return errors;
@@ -180,6 +193,35 @@ export function ReservationForm({
   const [values, setValues] = useState<FormValues>(INITIAL_VALUES);
   const [errors, setErrors] = useState<FieldError>({});
   const [touched, setTouched] = useState<Set<string>>(new Set());
+  const [transportFee, setTransportFee] = useState<TransportFeeResult | null>(null);
+  const [transportFeeLoading, setTransportFeeLoading] = useState(false);
+  const [transportFeeError, setTransportFeeError] = useState<string | null>(null);
+
+  const isOnsiteExperience = slot.experienceType === "出張焙煎体験";
+
+  const fetchTransportFee = useCallback(async (location: string) => {
+    if (!location.trim()) return;
+    setTransportFeeLoading(true);
+    setTransportFeeError(null);
+    try {
+      const res = await fetch(
+        `/api/transport-fee?location=${encodeURIComponent(location)}`
+      );
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string };
+        throw new Error(data.error ?? "交通費の計算に失敗しました");
+      }
+      const data = (await res.json()) as TransportFeeResult;
+      setTransportFee(data);
+    } catch (err) {
+      setTransportFeeError(
+        err instanceof Error ? err.message : "交通費の計算に失敗しました"
+      );
+      setTransportFee(null);
+    } finally {
+      setTransportFeeLoading(false);
+    }
+  }, []);
 
   const handleChange = (
     field: keyof FormValues,
@@ -188,26 +230,35 @@ export function ReservationForm({
     setValues((prev) => ({ ...prev, [field]: value }));
     if (touched.has(field)) {
       const newValues = { ...values, [field]: value };
-      const newErrors = validateForm(newValues);
+      const newErrors = validateForm(newValues, slot.experienceType as ExperienceType);
       setErrors((prev) => ({
         ...prev,
         [field]: newErrors[field] ?? "",
       }));
     }
+    // location が変更されたら交通費キャッシュをリセット
+    if (field === "location") {
+      setTransportFee(null);
+      setTransportFeeError(null);
+    }
   };
 
   const handleBlur = (field: keyof FormValues) => {
     setTouched((prev) => new Set(prev).add(field));
-    const newErrors = validateForm(values);
+    const newErrors = validateForm(values, slot.experienceType as ExperienceType);
     setErrors((prev) => ({
       ...prev,
       [field]: newErrors[field] ?? "",
     }));
+    // location のblur時に交通費を取得
+    if (field === "location" && isOnsiteExperience && values.location.trim()) {
+      void fetchTransportFee(values.location);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const allErrors = validateForm(values);
+    const allErrors = validateForm(values, slot.experienceType as ExperienceType);
     if (Object.keys(allErrors).length > 0) {
       setErrors(allErrors);
       // 全フィールドをタッチ済みにする
@@ -221,7 +272,7 @@ export function ReservationForm({
       }
       return;
     }
-    onSubmit(values);
+    onSubmit(values, transportFee ?? undefined);
   };
 
   return (
@@ -513,6 +564,46 @@ export function ReservationForm({
             </motion.div>
           );
         })()}
+
+        {/* 出張先住所（出張焙煎体験のみ） */}
+        {isOnsiteExperience && (
+          <div id="field-location">
+            <FieldWrap
+              label="出張先の住所"
+              required
+              error={errors.location}
+              hint="当日の出張先（会場・施設等）の住所を入力してください"
+            >
+              <input
+                type="text"
+                value={values.location}
+                onChange={(e) => handleChange("location", e.target.value)}
+                onBlur={() => handleBlur("location")}
+                placeholder="例: 東京都八王子市○○町1-2-3"
+                className={errors.location ? inputErrorClass : inputClass}
+              />
+            </FieldWrap>
+
+            {/* 交通費表示 */}
+            {transportFeeLoading && (
+              <p className="text-xs text-haicha/60 mt-2">交通費を計算中...</p>
+            )}
+            {!transportFeeLoading && transportFeeError && (
+              <p className="text-xs text-error mt-2">{transportFeeError}</p>
+            )}
+            {!transportFeeLoading && !transportFeeError && transportFee && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-xs text-haicha mt-2"
+              >
+                {transportFee.isFreeArea
+                  ? "交通費: 無料（対象エリア）"
+                  : `交通費: ¥${transportFee.fee.toLocaleString()}（往復${Math.round(transportFee.distance * 2 * 10) / 10}km）`}
+              </motion.p>
+            )}
+          </div>
+        )}
 
         {/* コーヒーを飲む頻度 */}
         <div id="field-coffeeDrinkingFrequency">

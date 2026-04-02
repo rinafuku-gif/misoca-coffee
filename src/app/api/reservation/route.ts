@@ -24,6 +24,9 @@ interface ReservationRequest {
   coffeeDrinkingFrequency: string;
   paymentIntentId?: string;
   cancellationToken?: string;
+  location?: string;
+  transportFee?: number;
+  transportDistance?: number;
 }
 
 const REQUIRED_FIELDS: (keyof ReservationRequest)[] = [
@@ -116,6 +119,20 @@ export async function POST(request: NextRequest) {
       ? sanitizeString(body["paymentIntentId"])
       : undefined;
 
+  const experienceType = sanitizeString(body["experienceType"]);
+  const isOnsite = experienceType === "出張焙煎体験";
+  const location = isOnsite
+    ? sanitizeString(body["location"])
+    : undefined;
+  const transportFee =
+    isOnsite && typeof body["transportFee"] === "number"
+      ? (body["transportFee"] as number)
+      : undefined;
+  const transportDistance =
+    isOnsite && typeof body["transportDistance"] === "number"
+      ? (body["transportDistance"] as number)
+      : undefined;
+
   try {
     await bookSlot(eventId, {
       name: sanitizeString(body["name"]),
@@ -130,9 +147,12 @@ export async function POST(request: NextRequest) {
       favoriteCoffee: sanitizeString(body["favoriteCoffee"]),
       numberOfGuests,
       coffeeDrinkingFrequency: sanitizeString(body["coffeeDrinkingFrequency"]),
-      experienceType: sanitizeString(body["experienceType"]),
+      experienceType,
       cancellationToken,
       paymentIntentId,
+      location,
+      transportFee,
+      transportDistance,
     });
   } catch {
     return NextResponse.json(
@@ -207,6 +227,9 @@ export async function POST(request: NextRequest) {
       roastingExperience: mailParams.roastingExperience,
       favoriteCoffee: mailParams.favoriteCoffee,
       coffeeDrinkingFrequency: mailParams.coffeeDrinkingFrequency,
+      location,
+      transportFee,
+      transportDistance,
     });
   } catch (err) {
     console.error("[reservation] Notion保存失敗:", err);
