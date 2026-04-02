@@ -289,13 +289,13 @@ export function StandCalendar() {
           }}
         />
 
-        {/* ── ヘッダー: 左=月 / 中央=ロゴ / 右=QR ── */}
+        {/* ── ヘッダー: 左=月 / 中央=ロゴ+タイトル / 右=QR ── */}
         <div
           style={{
             display: "flex",
             alignItems: "flex-end",
             justifyContent: "space-between",
-            marginBottom: "20px",
+            marginBottom: "16px",
           }}
         >
           {/* 左: 月数字 */}
@@ -336,13 +336,13 @@ export function StandCalendar() {
             </div>
           </div>
 
-          {/* 中央: ロゴ */}
+          {/* 中央: ロゴ + タイトル */}
           <div
             style={{
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "6px",
+              gap: "12px",
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -359,6 +359,16 @@ export function StandCalendar() {
                 border: `1.5px solid ${GOLD}66`,
               }}
             />
+            <span
+              style={{
+                fontSize: "12px",
+                letterSpacing: "0.3em",
+                fontWeight: 400,
+                color: `${USUZUMI}CC`,
+              }}
+            >
+              misoca coffee stand OPENDAY
+            </span>
           </div>
 
           {/* 右: QRコード + Instagram情報 */}
@@ -420,25 +430,6 @@ export function StandCalendar() {
               QRコードからご確認お願いします。
             </div>
           </div>
-        </div>
-
-        {/* タイトル */}
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: "16px",
-          }}
-        >
-          <span
-            style={{
-              fontSize: "12px",
-              letterSpacing: "0.3em",
-              fontWeight: 400,
-              color: `${USUZUMI}CC`,
-            }}
-          >
-            misoca coffee stand OPENDAY
-          </span>
         </div>
 
         {/* ── カレンダーグリッド（アニメーション付き） ── */}
