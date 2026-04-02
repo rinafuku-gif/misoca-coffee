@@ -150,14 +150,20 @@ export function StandCalendar() {
       pdf.setFillColor(95, 94, 74); // #5F5E4A
       pdf.rect(0, 0, pdfWidth, pdfHeight, "F");
 
-      // カレンダーをA4幅いっぱいに配置し、上下中央に配置
-      const margin = 8; // 左右マージン8mm
-      const drawWidth = pdfWidth - margin * 2;
+      // カレンダーをA4全面に引き伸ばし（上下の余白を最小限に）
+      const drawWidth = pdfWidth;
       const drawHeight = drawWidth * (canvas.height / canvas.width);
-      const offsetX = margin;
-      const offsetY = (pdfHeight - drawHeight) / 2;
+      const offsetX = 0;
+      // 上下余白を均等にするが、ページ高さを超える場合は高さに合わせる
+      let finalWidth = drawWidth;
+      let finalHeight = drawHeight;
+      if (drawHeight > pdfHeight) {
+        finalHeight = pdfHeight;
+        finalWidth = pdfHeight * (canvas.width / canvas.height);
+      }
+      const offsetY = (pdfHeight - finalHeight) / 2;
 
-      pdf.addImage(imgData, "JPEG", offsetX, offsetY, drawWidth, drawHeight);
+      pdf.addImage(imgData, "JPEG", (pdfWidth - finalWidth) / 2, offsetY, finalWidth, finalHeight);
       pdf.save(`misoca-coffee-stand-${year}-${String(month).padStart(2, "0")}.pdf`);
     } finally {
       setDownloading(false);
@@ -353,17 +359,6 @@ export function StandCalendar() {
                 border: `1.5px solid ${GOLD}66`,
               }}
             />
-            <span
-              style={{
-                fontSize: "9px",
-                letterSpacing: "0.18em",
-                fontWeight: 300,
-                color: `${USUZUMI}CC`,
-                textTransform: "uppercase",
-              }}
-            >
-              misoca coffee
-            </span>
           </div>
 
           {/* 右: QRコード + Instagram情報 */}
