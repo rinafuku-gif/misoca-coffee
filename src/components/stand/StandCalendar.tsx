@@ -535,19 +535,19 @@ export function StandCalendar() {
                   const isSun = dow === 6;
                   const isOpen = cell.event !== null && cell.isCurrentMonth;
 
-                  // 色の決定
-                  let bgColor = "transparent";
-                  let borderColor = `${KOMINKA_WHITE}18`;
+                  // 色の決定: セルは白ベース、営業日だけ色付け
+                  let bgColor = cell.isCurrentMonth ? KOMINKA_WHITE : `${USUZUMI}44`;
+                  let borderColor = `${USUZUMI}66`;
                   let dateColor = cell.isCurrentMonth
                     ? isSat
-                      ? AINEZU
+                      ? "#4A6FA5"
                       : isSun
-                      ? "#C8A0A0"
-                      : KOMINKA_WHITE
-                    : `${USUZUMI}55`;
+                      ? "#B85555"
+                      : HAICHA
+                    : `${USUZUMI}88`;
 
                   if (isOpen) {
-                    bgColor = `${KONSUMI}CC`;
+                    bgColor = `${KONSUMI}`;
                     borderColor = `${KONSUMI}`;
                     dateColor = KOMINKA_WHITE;
                   }
