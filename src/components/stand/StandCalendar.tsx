@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 
 // ---- 型定義 ----------------------------------------------------------------
 
@@ -342,28 +341,20 @@ export function StandCalendar() {
               gap: "6px",
             }}
           >
-            <div
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/logo-circle-green.jpg"
+              alt="三十日珈琲 ロゴ"
+              width={56}
+              height={56}
               style={{
                 width: "56px",
                 height: "56px",
                 borderRadius: "50%",
-                overflow: "hidden",
+                objectFit: "cover",
                 border: `1.5px solid ${GOLD}66`,
               }}
-            >
-              <Image
-                src="/images/logo-circle-green.jpg"
-                alt="三十日珈琲 ロゴ"
-                width={56}
-                height={56}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  transform: "scale(1.35)",
-                }}
-              />
-            </div>
+            />
             <span
               style={{
                 fontSize: "9px",
@@ -393,15 +384,17 @@ export function StandCalendar() {
                 height: "64px",
                 borderRadius: "4px",
                 overflow: "hidden",
-                backgroundColor: "#FFFFFF",
-                padding: "2px",
+                backgroundColor: BG_DARK,
+                padding: "4px",
+                border: `1px solid ${GOLD}44`,
               }}
             >
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src="/images/instagram-qr.png"
                 alt="Instagram QRコード"
-                width={60}
-                height={60}
+                width={56}
+                height={56}
                 style={{
                   width: "100%",
                   height: "100%",
