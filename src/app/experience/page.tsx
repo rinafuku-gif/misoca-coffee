@@ -128,9 +128,7 @@ export default function ExperiencePage() {
                   </li>
                 </ul>
                 <a
-                  href="https://docs.google.com/forms/d/e/1FAIpQLSddXQX_VthNqn6GmfG_Nf_tidQgW_9q_oJtIeBMvPAGoTwCvQ/viewform"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#reservation"
                   className="inline-block bg-gold/90 hover:bg-gold text-white px-8 py-4 text-xs tracking-[0.2em] transition-all duration-500 w-full"
                 >
                   このプランを予約する

@@ -167,6 +167,129 @@ export async function getProducts(): Promise<Product[]> {
   });
 }
 
+// ---- 焙煎体験予約 DB --------------------------------------------------------
+
+const reservationDbId = process.env.NOTION_RESERVATION_DB_ID || "";
+
+export interface ReservationRecord {
+  eventId: string;
+  experienceType: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  name: string;
+  nameKana: string;
+  email: string;
+  phone: string;
+  address: string;
+  numberOfGuests: number;
+  transportation: string;
+  howFound: string;
+  roastingExperience: string;
+  favoriteCoffee: string;
+  coffeeDrinkingFrequency: string;
+}
+
+/**
+ * 予約をNotionデータベースに保存する
+ */
+export async function saveReservation(record: ReservationRecord): Promise<void> {
+  if (!process.env.NOTION_API_KEY || !reservationDbId) {
+    return;
+  }
+
+  await notion.pages.create({
+    parent: { database_id: reservationDbId },
+    properties: {
+      "お名前": {
+        title: [{ text: { content: record.name } }],
+      },
+      "フリガナ": {
+        rich_text: [{ text: { content: record.nameKana } }],
+      },
+      "メールアドレス": {
+        email: record.email,
+      },
+      "電話番号": {
+        phone_number: record.phone,
+      },
+      "住所": {
+        rich_text: [{ text: { content: record.address } }],
+      },
+      "体験種別": {
+        select: { name: record.experienceType },
+      },
+      "予約日時": {
+        date: {
+          start: record.date && record.startTime
+            ? `${record.date}T${record.startTime}:00+09:00`
+            : record.date || new Date().toISOString().slice(0, 10),
+          end: record.date && record.endTime
+            ? `${record.date}T${record.endTime}:00+09:00`
+            : undefined,
+        },
+      },
+      "来店人数": {
+        number: record.numberOfGuests,
+      },
+      "来店交通手段": {
+        select: { name: record.transportation },
+      },
+      "認知経路": {
+        rich_text: [{ text: { content: record.howFound } }],
+      },
+      "焙煎体験の有無": {
+        select: { name: record.roastingExperience },
+      },
+      "好きなコーヒー": {
+        rich_text: [{ text: { content: record.favoriteCoffee } }],
+      },
+      "コーヒーを飲む頻度": {
+        select: { name: record.coffeeDrinkingFrequency },
+      },
+      "ステータス": {
+        select: { name: "予約済み" },
+      },
+      "イベントID": {
+        rich_text: [{ text: { content: record.eventId } }],
+      },
+    },
+  });
+}
+
+/**
+ * イベントIDでNotionの予約ページを検索してステータスをキャンセルに更新する
+ */
+export async function cancelReservation(eventId: string): Promise<void> {
+  if (!process.env.NOTION_API_KEY || !reservationDbId) {
+    return;
+  }
+
+  // dataSources.query（既存コードのパターン）でイベントIDを検索
+  const response = await notion.dataSources.query({
+    data_source_id: reservationDbId,
+    filter: {
+      property: "イベントID",
+      rich_text: {
+        equals: eventId,
+      },
+    },
+  });
+
+  if (response.results.length === 0) return;
+
+  const pageId = (response.results[0] as Record<string, unknown>)["id"] as string;
+
+  await notion.pages.update({
+    page_id: pageId,
+    properties: {
+      "ステータス": {
+        select: { name: "キャンセル" },
+      },
+    },
+  });
+}
+
 function getTitle(prop: Record<string, unknown> | undefined): string {
   if (!prop || prop["type"] !== "title") return "";
   const title = prop["title"] as Array<{ plain_text: string }>;
