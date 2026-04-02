@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { PageHero } from "@/components/PageHero";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { StandCalendar } from "@/components/stand/StandCalendar";
 
 export const metadata: Metadata = {
   title: "コーヒースタンド | misoca coffee stand",
@@ -215,6 +216,28 @@ export default function StandPage() {
                 </p>
               </div>
             </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* 営業カレンダー */}
+      <section className="py-24 md:py-32 overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 md:px-8">
+          <ScrollReveal>
+            <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
+              Calendar
+            </p>
+            <h2 className="font-serif text-xl md:text-2xl text-center text-konsumi tracking-wider font-light mb-6">
+              営業カレンダー
+            </h2>
+            <p className="text-center text-sm text-haicha mb-4">
+              青いセルが営業日です。営業時間は日によって変わることがあります。
+            </p>
+            <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.2}>
+            <StandCalendar />
           </ScrollReveal>
         </div>
       </section>
