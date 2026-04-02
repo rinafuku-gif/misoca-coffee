@@ -427,9 +427,6 @@ export function StandCalendar() {
           style={{
             textAlign: "center",
             marginBottom: "16px",
-            borderTop: `1px solid ${KOMINKA_WHITE}33`,
-            borderBottom: `1px solid ${KOMINKA_WHITE}33`,
-            padding: "10px 0",
           }}
         >
           <span
