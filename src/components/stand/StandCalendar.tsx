@@ -450,7 +450,7 @@ export function StandCalendar() {
               lineHeight: 1,
               padding: "0 4px",
               position: "relative",
-              top: "-1px",
+              top: "-3px",
             }}
           >
             misoca coffee stand OPENDAY
