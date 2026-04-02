@@ -205,7 +205,7 @@ export default function StandPage() {
                 見晴亭（上野原駅北口から徒歩すぐ）
               </p>
               <p className="text-xs text-haicha/60 leading-relaxed">
-                〒409-0115 山梨県上野原市上野原
+                〒409-0113 山梨県上野原市新田1053-3
               </p>
             </div>
           </ScrollReveal>
