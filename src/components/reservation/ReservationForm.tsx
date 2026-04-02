@@ -44,7 +44,8 @@ interface ReservationFormProps {
 // ─── 定数 ───────────────────────────────────────────────────────────────────
 
 const TRANSPORTATION_OPTIONS = ["車", "電車", "その他"] as const;
-const GUEST_OPTIONS = ["1", "2", "3", "4"] as const;
+const GUEST_OPTIONS_DEFAULT = ["1", "2", "3", "4"] as const;
+const GUEST_OPTIONS_ONSITE = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
 
 const PREFECTURES = [
   "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
@@ -506,11 +507,11 @@ export function ReservationForm({
         {/* 来店人数 */}
         <div id="field-numberOfGuests">
           <FieldWrap label="来店人数" required>
-            <div className="flex gap-3">
-              {GUEST_OPTIONS.map((n) => (
+            <div className="flex flex-wrap gap-2">
+              {(isOnsiteExperience ? GUEST_OPTIONS_ONSITE : GUEST_OPTIONS_DEFAULT).map((n) => (
                 <label
                   key={n}
-                  className={`flex-1 flex items-center justify-center gap-1 px-2 py-3 rounded-sm border cursor-pointer text-sm transition-all duration-200 ${
+                  className={`flex items-center justify-center gap-1 px-3 py-3 rounded-sm border cursor-pointer text-sm transition-all duration-200 min-w-[52px] ${
                     values.numberOfGuests === n
                       ? "border-gold bg-gold/5 text-gold"
                       : "border-usuzumi/50 text-haicha hover:border-karekusa/40"
@@ -528,6 +529,11 @@ export function ReservationForm({
                 </label>
               ))}
             </div>
+            {isOnsiteExperience && (
+              <p className="text-[11px] text-haicha/60 mt-2 leading-relaxed">
+                10名以上のご予約はLINEまたはお問い合わせよりご相談ください
+              </p>
+            )}
           </FieldWrap>
         </div>
 
@@ -541,7 +547,8 @@ export function ReservationForm({
           const expType = slot.experienceType as ExperienceType;
           if (!VALID_TYPES.includes(expType)) return null;
           const guests = Number(values.numberOfGuests);
-          if (guests < 1 || guests > 4) return null;
+          const maxForDisplay = expType === "出張焙煎体験" ? 9 : 4;
+          if (guests < 1 || guests > maxForDisplay) return null;
           const pricing = calculatePrice(expType, guests);
           return (
             <motion.div

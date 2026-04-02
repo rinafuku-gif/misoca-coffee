@@ -24,8 +24,15 @@ export function calculatePrice(
   experienceType: ExperienceType,
   numberOfGuests: number
 ): PricingResult {
-  if (numberOfGuests < 1 || numberOfGuests > 4) {
-    throw new Error("来店人数は1〜4名で指定してください");
+  const isOnsite = experienceType === "出張焙煎体験";
+  const maxGuests = isOnsite ? 9 : 4;
+
+  if (numberOfGuests < 1 || numberOfGuests > maxGuests) {
+    throw new Error(
+      isOnsite
+        ? "来店人数は1〜9名で指定してください"
+        : "来店人数は1〜4名で指定してください"
+    );
   }
 
   const base = BASE_PRICE[experienceType];

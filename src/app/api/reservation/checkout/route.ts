@@ -64,7 +64,11 @@ async function fetchTransportFeeFromMaps(location: string): Promise<number> {
 
   const data = (await res.json()) as DistanceMatrixResponse;
   if (data.status !== "OK") {
-    throw new Error(`Distance Matrix API returned status: ${data.status}`);
+    const msg =
+      data.status === "REQUEST_DENIED"
+        ? "距離計算サービスが利用できません（APIが無効）"
+        : `Distance Matrix API returned status: ${data.status}`;
+    throw new Error(msg);
   }
 
   const element = data.rows[0]?.elements[0];
@@ -117,11 +121,26 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // 人数チェック
-  const numberOfGuests = Number(body["numberOfGuests"]);
-  if (isNaN(numberOfGuests) || numberOfGuests < 1 || numberOfGuests > 4) {
+  // 体験種別チェック（人数上限の判定に先に使うので先に実施）
+  const experienceTypeRaw = sanitizeString(body["experienceType"]);
+  if (!isValidExperienceType(experienceTypeRaw)) {
     return NextResponse.json(
-      { error: "来店人数は1〜4名で指定してください" },
+      { error: "体験種別が不正です" },
+      { status: 400 }
+    );
+  }
+
+  // 人数チェック（出張焙煎体験は1〜9名、その他は1〜4名）
+  const numberOfGuests = Number(body["numberOfGuests"]);
+  const maxGuests = experienceTypeRaw === "出張焙煎体験" ? 9 : 4;
+  if (isNaN(numberOfGuests) || numberOfGuests < 1 || numberOfGuests > maxGuests) {
+    return NextResponse.json(
+      {
+        error:
+          experienceTypeRaw === "出張焙煎体験"
+            ? "来店人数は1〜9名で指定してください"
+            : "来店人数は1〜4名で指定してください",
+      },
       { status: 400 }
     );
   }
@@ -131,15 +150,6 @@ export async function POST(request: NextRequest) {
   if (!isValidEmail(email)) {
     return NextResponse.json(
       { error: "メールアドレスの形式が不正です" },
-      { status: 400 }
-    );
-  }
-
-  // 体験種別チェック
-  const experienceTypeRaw = sanitizeString(body["experienceType"]);
-  if (!isValidExperienceType(experienceTypeRaw)) {
-    return NextResponse.json(
-      { error: "体験種別が不正です" },
       { status: 400 }
     );
   }

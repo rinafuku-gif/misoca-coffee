@@ -70,11 +70,20 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // 数値チェック
+  // 体験種別を取得（人数上限の判定に使う）
+  const experienceTypeForValidation = sanitizeString(body["experienceType"]);
+
+  // 数値チェック（出張焙煎体験は1〜9名、その他は1〜4名）
   const numberOfGuests = Number(body["numberOfGuests"]);
-  if (isNaN(numberOfGuests) || numberOfGuests < 1 || numberOfGuests > 4) {
+  const maxGuestsForRoute = experienceTypeForValidation === "出張焙煎体験" ? 9 : 4;
+  if (isNaN(numberOfGuests) || numberOfGuests < 1 || numberOfGuests > maxGuestsForRoute) {
     return NextResponse.json(
-      { error: "来店人数は1〜4名で指定してください" },
+      {
+        error:
+          experienceTypeForValidation === "出張焙煎体験"
+            ? "来店人数は1〜9名で指定してください"
+            : "来店人数は1〜4名で指定してください",
+      },
       { status: 400 }
     );
   }

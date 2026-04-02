@@ -80,9 +80,13 @@ export async function GET(request: NextRequest) {
 
   if (data.status !== "OK") {
     console.error("[transport-fee] Distance Matrix API status:", data.status);
+    const errorMessage =
+      data.status === "REQUEST_DENIED"
+        ? "距離計算サービスが利用できません。管理者にお問い合わせください"
+        : "住所から距離を計算できませんでした。住所を確認してください";
     return NextResponse.json(
-      { error: "住所から距離を計算できませんでした。住所を確認してください" },
-      { status: 422 }
+      { error: errorMessage },
+      { status: data.status === "REQUEST_DENIED" ? 503 : 422 }
     );
   }
 
