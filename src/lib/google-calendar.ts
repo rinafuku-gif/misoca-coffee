@@ -27,7 +27,7 @@ function getRequiredEnv(key: string): string {
 }
 
 function createAuth() {
-  // 方式1: GOOGLE_APPLICATION_CREDENTIALS（JSONファイルパス）を優先
+  // 方式1: GOOGLE_APPLICATION_CREDENTIALS（JSONファイルパス、ローカル開発用）
   const credPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
   if (credPath) {
     const fs = require("fs") as typeof import("fs");
@@ -39,22 +39,18 @@ function createAuth() {
     });
   }
 
-  // 方式2: 環境変数から直接読む（Vercel本番用）
-  const email = getRequiredEnv("GOOGLE_SERVICE_ACCOUNT_EMAIL");
-  const rawKey = getRequiredEnv("GOOGLE_PRIVATE_KEY");
-
-  let privateKey: string;
-  if (rawKey.includes("-----BEGIN")) {
-    privateKey = rawKey.replace(/\\n/g, "\n");
-  } else {
-    privateKey = Buffer.from(rawKey, "base64").toString("utf-8");
+  // 方式2: GOOGLE_SERVICE_ACCOUNT_JSON（JSON全体をBase64エンコード、Vercel本番用）
+  const jsonBase64 = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  if (jsonBase64) {
+    const creds = JSON.parse(Buffer.from(jsonBase64, "base64").toString("utf-8"));
+    return new google.auth.JWT({
+      email: creds.client_email,
+      key: creds.private_key,
+      scopes: ["https://www.googleapis.com/auth/calendar"],
+    });
   }
 
-  return new google.auth.JWT({
-    email,
-    key: privateKey,
-    scopes: ["https://www.googleapis.com/auth/calendar"],
-  });
+  throw new Error("GOOGLE_APPLICATION_CREDENTIALS or GOOGLE_SERVICE_ACCOUNT_JSON is required");
 }
 
 function getAuth() {
