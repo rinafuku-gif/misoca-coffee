@@ -422,40 +422,52 @@ export function StandCalendar() {
           </div>
         </div>
 
-        {/* タイトルライン */}
+        {/* タイトルライン — html2canvasのflex align互換のためtable-cell方式 */}
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
+            display: "table",
+            width: "100%",
             marginBottom: "16px",
           }}
         >
           <div
             style={{
-              height: "0px",
-              flex: 1,
-              borderTop: `1px solid ${KOMINKA_WHITE}33`,
-            }}
-          />
-          <span
-            style={{
-              fontSize: "9px",
-              letterSpacing: "0.28em",
-              fontWeight: 400,
-              color: `${USUZUMI}CC`,
-              whiteSpace: "nowrap",
+              display: "table-cell",
+              width: "50%",
+              verticalAlign: "middle",
             }}
           >
-            misoca coffee stand OPENDAY
-          </span>
+            <div style={{ height: "1px", background: `${KOMINKA_WHITE}33` }} />
+          </div>
           <div
             style={{
-              height: "0px",
-              flex: 1,
-              borderTop: `1px solid ${KOMINKA_WHITE}33`,
+              display: "table-cell",
+              verticalAlign: "middle",
+              textAlign: "center",
+              whiteSpace: "nowrap",
+              padding: "0 12px",
             }}
-          />
+          >
+            <span
+              style={{
+                fontSize: "9px",
+                letterSpacing: "0.28em",
+                fontWeight: 400,
+                color: `${USUZUMI}CC`,
+              }}
+            >
+              misoca coffee stand OPENDAY
+            </span>
+          </div>
+          <div
+            style={{
+              display: "table-cell",
+              width: "50%",
+              verticalAlign: "middle",
+            }}
+          >
+            <div style={{ height: "1px", background: `${KOMINKA_WHITE}33` }} />
+          </div>
         </div>
 
         {/* ── カレンダーグリッド（アニメーション付き） ── */}
