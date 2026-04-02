@@ -448,8 +448,9 @@ export function StandCalendar() {
               color: `${USUZUMI}CC`,
               whiteSpace: "nowrap",
               lineHeight: 1,
-              display: "flex",
-              alignItems: "center",
+              padding: "0 4px",
+              position: "relative",
+              top: "-1px",
             }}
           >
             misoca coffee stand OPENDAY
