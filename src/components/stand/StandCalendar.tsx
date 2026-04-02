@@ -283,12 +283,50 @@ export function StandCalendar() {
           }}
         />
 
-        {/* ── ヘッダー ── */}
+        {/* ── ロゴ（中央大きく） ── */}
         <div
           style={{
             display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "8px",
+            marginBottom: "20px",
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/logo-circle-green.jpg"
+            alt="三十日珈琲 ロゴ"
+            width={80}
+            height={80}
+            style={{
+              width: "80px",
+              height: "80px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: `1.5px solid ${GOLD}66`,
+            }}
+          />
+          <span
+            style={{
+              fontSize: "10px",
+              letterSpacing: "0.2em",
+              fontWeight: 300,
+              color: `${USUZUMI}CC`,
+              textTransform: "uppercase",
+            }}
+          >
+            misoca coffee
+          </span>
+        </div>
+
+        {/* ── 月表示 + QRコード（左右バランス） ── */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "40px",
             marginBottom: "20px",
           }}
         >
@@ -296,7 +334,7 @@ export function StandCalendar() {
           <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
             <span
               style={{
-                fontSize: "80px",
+                fontSize: "72px",
                 fontWeight: 200,
                 lineHeight: 1,
                 color: KOMINKA_WHITE,
@@ -330,60 +368,22 @@ export function StandCalendar() {
             </div>
           </div>
 
-          {/* 中央: 三十日珈琲ロゴ */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "6px",
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/logo-circle-green.jpg"
-              alt="三十日珈琲 ロゴ"
-              width={56}
-              height={56}
-              style={{
-                width: "56px",
-                height: "56px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                border: `1.5px solid ${GOLD}66`,
-              }}
-            />
-            <span
-              style={{
-                fontSize: "9px",
-                letterSpacing: "0.18em",
-                fontWeight: 300,
-                color: `${USUZUMI}CC`,
-                textTransform: "uppercase",
-              }}
-            >
-              misoca coffee
-            </span>
-          </div>
-
           {/* 右: Instagram QRコード */}
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-              gap: "5px",
-              maxWidth: "130px",
+              alignItems: "center",
+              gap: "10px",
             }}
           >
             <div
               style={{
-                width: "64px",
-                height: "64px",
+                width: "60px",
+                height: "60px",
                 borderRadius: "4px",
                 overflow: "hidden",
                 backgroundColor: BG_DARK,
-                padding: "4px",
+                padding: "3px",
                 border: `1px solid ${GOLD}44`,
               }}
             >
@@ -391,8 +391,8 @@ export function StandCalendar() {
               <img
                 src="/images/instagram-qr.png"
                 alt="Instagram QRコード"
-                width={56}
-                height={56}
+                width={54}
+                height={54}
                 style={{
                   width: "100%",
                   height: "100%",
@@ -400,29 +400,30 @@ export function StandCalendar() {
                 }}
               />
             </div>
-            <div
-              style={{
-                fontSize: "8px",
-                letterSpacing: "0.06em",
-                fontWeight: 600,
-                color: GOLD,
-                textAlign: "right",
-              }}
-            >
-              @MISOCA_COFFEESTAND
-            </div>
-            <div
-              style={{
-                fontSize: "7px",
-                letterSpacing: "0.02em",
-                lineHeight: 1.6,
-                color: `${USUZUMI}99`,
-                textAlign: "right",
-              }}
-            >
-              最新の情報はInstagramにて発信中
-              <br />
-              上記QRコードからご確認お願いします。
+            <div>
+              <div
+                style={{
+                  fontSize: "8px",
+                  letterSpacing: "0.06em",
+                  fontWeight: 600,
+                  color: GOLD,
+                }}
+              >
+                @MISOCA_COFFEESTAND
+              </div>
+              <div
+                style={{
+                  fontSize: "7px",
+                  letterSpacing: "0.02em",
+                  lineHeight: 1.5,
+                  color: `${USUZUMI}99`,
+                  marginTop: "2px",
+                }}
+              >
+                最新の情報はInstagramにて発信中
+                <br />
+                QRコードからご確認お願いします。
+              </div>
             </div>
           </div>
         </div>
