@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 // ---- 型定義 ----------------------------------------------------------------
 
@@ -67,54 +68,6 @@ function buildCalendarCells(year: number, month: number, events: StandEvent[]): 
   }
 
   return cells;
-}
-
-// ---- コーヒーカップSVGロゴ ---------------------------------------------------
-
-function CoffeeCupIcon({ size = 48 }: { size?: number }) {
-  return (
-    <svg
-      viewBox="0 0 60 50"
-      width={size}
-      height={size * (5 / 6)}
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <ellipse cx="30" cy="20" rx="14" ry="8" stroke="#C8973E" strokeWidth="1.5" fill="none" />
-      <path d="M16 20 Q14 34 30 38 Q46 34 44 20" stroke="#C8973E" strokeWidth="1.5" fill="none" />
-      <path d="M44 22 Q52 22 52 28 Q52 34 44 34" stroke="#C8973E" strokeWidth="1.2" fill="none" />
-      <path d="M24 14 Q26 10 24 6" stroke="#C8973E" strokeWidth="1" strokeLinecap="round" fill="none" />
-      <path d="M30 13 Q32 9 30 5" stroke="#C8973E" strokeWidth="1" strokeLinecap="round" fill="none" />
-      <path d="M36 14 Q38 10 36 6" stroke="#C8973E" strokeWidth="1" strokeLinecap="round" fill="none" />
-    </svg>
-  );
-}
-
-// ---- QRコードSVG -----------------------------------------------------------
-
-function QRCodePlaceholder({ size = 64 }: { size?: number }) {
-  return (
-    <svg viewBox="0 0 40 40" width={size} height={size}>
-      <rect width="40" height="40" fill="#1e1e1e" />
-      {/* 左上 */}
-      <rect x="2" y="2" width="16" height="16" fill="none" stroke="#C8973E" strokeWidth="1.5" />
-      <rect x="5" y="5" width="10" height="10" fill="#C8973E" />
-      {/* 右上 */}
-      <rect x="22" y="2" width="16" height="16" fill="none" stroke="#C8973E" strokeWidth="1.5" />
-      <rect x="25" y="5" width="10" height="10" fill="#C8973E" />
-      {/* 左下 */}
-      <rect x="2" y="22" width="16" height="16" fill="none" stroke="#C8973E" strokeWidth="1.5" />
-      <rect x="5" y="25" width="10" height="10" fill="#C8973E" />
-      {/* 右下ドットパターン */}
-      <rect x="22" y="22" width="4" height="4" fill="#C8973E" />
-      <rect x="28" y="22" width="4" height="4" fill="#C8973E" />
-      <rect x="34" y="22" width="4" height="4" fill="#C8973E" />
-      <rect x="22" y="28" width="4" height="4" fill="#C8973E" />
-      <rect x="28" y="34" width="4" height="4" fill="#C8973E" />
-      <rect x="34" y="28" width="4" height="4" fill="#C8973E" />
-      <rect x="34" y="34" width="4" height="4" fill="#C8973E" />
-    </svg>
-  );
 }
 
 // ---- メインコンポーネント ---------------------------------------------------
@@ -185,7 +138,7 @@ export function StandCalendar() {
       const canvas = await html2canvas(calendarRef.current, {
         scale: 3,
         useCORS: true,
-        backgroundColor: "#1e1e1e",
+        backgroundColor: "#5F5E4A",
       });
 
       const imgData = canvas.toDataURL("image/jpeg", 0.95);
@@ -223,7 +176,7 @@ export function StandCalendar() {
       const srcCanvas = await html2canvas(calendarRef.current, {
         scale: 3,
         useCORS: true,
-        backgroundColor: "#1e1e1e",
+        backgroundColor: "#5F5E4A",
       });
 
       const targetW = 1080;
@@ -234,7 +187,7 @@ export function StandCalendar() {
       const ctx = outCanvas.getContext("2d");
       if (!ctx) throw new Error("canvas context error");
 
-      ctx.fillStyle = "#1e1e1e";
+      ctx.fillStyle = "#5F5E4A";
       ctx.fillRect(0, 0, targetW, targetH);
 
       const srcRatio = srcCanvas.width / srcCanvas.height;
@@ -279,6 +232,27 @@ export function StandCalendar() {
     }),
   };
 
+  // サイトカラー定数
+  // globals.css より:
+  //   --color-karekusa: #5F5E4A  (オリーブグリーン / 背景)
+  //   --color-karekusa-dark: #4A4B3A (濃いオリーブ)
+  //   --color-gold: #C8973E  (アクセント)
+  //   --color-konsumi: #4A4B5F (ブルーグレー / 営業日強調)
+  //   --color-ainezu: #A0A1B5 (淡いブルーグレー)
+  //   --color-kominka-white: #F7F6F1 (オフホワイト)
+  //   --color-usuzumi: #D5D1C9 (薄いグレー)
+  //   --color-haicha: #7A7569 (グレイッシュブラウン)
+  //   --color-sumi: #2A2A2A (ほぼ黒)
+
+  const BG = "#5F5E4A";          // karekusa
+  const BG_DARK = "#4A4B3A";     // karekusa-dark
+  const GOLD = "#C8973E";        // gold
+  const KONSUMI = "#4A4B5F";     // konsumi (営業日背景)
+  const AINEZU = "#A0A1B5";      // ainezu (営業日テキスト補助)
+  const KOMINKA_WHITE = "#F7F6F1"; // kominka-white
+  const USUZUMI = "#D5D1C9";     // usuzumi
+  const HAICHA = "#7A7569";      // haicha
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -290,7 +264,7 @@ export function StandCalendar() {
       <div
         ref={calendarRef}
         style={{
-          backgroundColor: "#1e1e1e",
+          backgroundColor: BG,
           padding: "28px",
           width: "100%",
           maxWidth: "640px",
@@ -307,7 +281,7 @@ export function StandCalendar() {
             left: 0,
             right: 0,
             height: "2px",
-            background: "linear-gradient(90deg, transparent, #C8973E 30%, #C8973E 70%, transparent)",
+            background: `linear-gradient(90deg, transparent, ${GOLD} 30%, ${GOLD} 70%, transparent)`,
           }}
         />
 
@@ -327,7 +301,7 @@ export function StandCalendar() {
                 fontSize: "80px",
                 fontWeight: 200,
                 lineHeight: 1,
-                color: "#C8973E",
+                color: KOMINKA_WHITE,
                 fontFamily: "'Playfair Display', serif",
                 letterSpacing: "-0.02em",
               }}
@@ -335,24 +309,66 @@ export function StandCalendar() {
               {month}
             </span>
             <div style={{ lineHeight: 1.4 }}>
-              <div style={{ fontSize: "11px", fontWeight: 400, color: "rgba(255,255,255,0.5)", letterSpacing: "0.08em" }}>
+              <div
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 400,
+                  color: `${USUZUMI}CC`,
+                  letterSpacing: "0.08em",
+                }}
+              >
                 {year}
               </div>
-              <div style={{ fontSize: "13px", fontWeight: 300, color: "rgba(255,255,255,0.8)", letterSpacing: "0.1em" }}>
+              <div
+                style={{
+                  fontSize: "13px",
+                  fontWeight: 300,
+                  color: KOMINKA_WHITE,
+                  letterSpacing: "0.1em",
+                }}
+              >
                 {MONTH_NAMES[month - 1]}
               </div>
             </div>
           </div>
 
-          {/* 中央: ロゴ */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
-            <CoffeeCupIcon size={52} />
+          {/* 中央: 三十日珈琲ロゴ */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <div
+              style={{
+                width: "56px",
+                height: "56px",
+                borderRadius: "50%",
+                overflow: "hidden",
+                border: `1.5px solid ${GOLD}66`,
+              }}
+            >
+              <Image
+                src="/images/logo-circle-green.jpg"
+                alt="三十日珈琲 ロゴ"
+                width={56}
+                height={56}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  transform: "scale(1.35)",
+                }}
+              />
+            </div>
             <span
               style={{
-                fontSize: "10px",
-                letterSpacing: "0.2em",
+                fontSize: "9px",
+                letterSpacing: "0.18em",
                 fontWeight: 300,
-                color: "rgba(255,255,255,0.7)",
+                color: `${USUZUMI}CC`,
                 textTransform: "uppercase",
               }}
             >
@@ -366,34 +382,59 @@ export function StandCalendar() {
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-end",
-              gap: "6px",
+              gap: "5px",
               maxWidth: "130px",
             }}
           >
-            <QRCodePlaceholder size={60} />
+            {/* Instagramアイコン */}
+            <div
+              style={{
+                width: "60px",
+                height: "60px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: `${BG_DARK}`,
+                borderRadius: "8px",
+                border: `1px solid ${GOLD}44`,
+              }}
+            >
+              <svg
+                viewBox="0 0 40 40"
+                width="40"
+                height="40"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {/* Instagramロゴ風SVG */}
+                <rect x="6" y="6" width="28" height="28" rx="8" stroke={GOLD} strokeWidth="2" />
+                <circle cx="20" cy="20" r="7" stroke={GOLD} strokeWidth="2" />
+                <circle cx="28.5" cy="11.5" r="1.5" fill={GOLD} />
+              </svg>
+            </div>
             <div
               style={{
                 fontSize: "8px",
-                letterSpacing: "0.08em",
-                fontWeight: 500,
-                color: "#C8973E",
+                letterSpacing: "0.06em",
+                fontWeight: 600,
+                color: GOLD,
                 textAlign: "right",
               }}
             >
-              MISOCA_COFFEESTAND
+              @MISOCA_COFFEESTAND
             </div>
             <div
               style={{
                 fontSize: "7px",
                 letterSpacing: "0.02em",
                 lineHeight: 1.6,
-                color: "rgba(255,255,255,0.45)",
+                color: `${USUZUMI}99`,
                 textAlign: "right",
               }}
             >
-              最新の情報はInstagramにて発信中
+              最新の情報はInstagramにて
               <br />
-              QRコードからご確認ください。
+              発信中。フォローお願いします。
             </div>
           </div>
         </div>
@@ -407,19 +448,32 @@ export function StandCalendar() {
             marginBottom: "16px",
           }}
         >
-          <div style={{ height: "1px", flex: 1, background: "rgba(200,151,62,0.3)" }} />
+          <div
+            style={{
+              height: "1px",
+              flex: 1,
+              background: `${KOMINKA_WHITE}33`,
+            }}
+          />
           <span
             style={{
-              fontSize: "10px",
-              letterSpacing: "0.25em",
-              fontWeight: 300,
-              color: "rgba(200,151,62,0.8)",
+              fontSize: "9px",
+              letterSpacing: "0.28em",
+              fontWeight: 400,
+              color: `${USUZUMI}CC`,
               textTransform: "uppercase",
+              whiteSpace: "nowrap",
             }}
           >
             misoca coffee stand openday
           </span>
-          <div style={{ height: "1px", flex: 1, background: "rgba(200,151,62,0.3)" }} />
+          <div
+            style={{
+              height: "1px",
+              flex: 1,
+              background: `${KOMINKA_WHITE}33`,
+            }}
+          />
         </div>
 
         {/* ── カレンダーグリッド（アニメーション付き） ── */}
@@ -454,11 +508,11 @@ export function StandCalendar() {
                         letterSpacing: "0.12em",
                         fontWeight: 500,
                         color: isSat
-                          ? "rgba(180,200,240,0.7)"
+                          ? AINEZU
                           : isSun
-                          ? "rgba(240,160,160,0.7)"
-                          : "rgba(255,255,255,0.35)",
-                        borderBottom: "1px solid rgba(200,151,62,0.2)",
+                          ? "#C8A0A0"
+                          : `${USUZUMI}BB`,
+                        borderBottom: `1px solid ${KOMINKA_WHITE}22`,
                       }}
                     >
                       {day}
@@ -483,19 +537,19 @@ export function StandCalendar() {
 
                   // 色の決定
                   let bgColor = "transparent";
-                  let borderColor = "rgba(255,255,255,0.04)";
+                  let borderColor = `${KOMINKA_WHITE}18`;
                   let dateColor = cell.isCurrentMonth
                     ? isSat
-                      ? "rgba(180,200,240,0.55)"
+                      ? AINEZU
                       : isSun
-                      ? "rgba(240,160,160,0.55)"
-                      : "rgba(255,255,255,0.65)"
-                    : "rgba(255,255,255,0.15)";
+                      ? "#C8A0A0"
+                      : KOMINKA_WHITE
+                    : `${USUZUMI}55`;
 
                   if (isOpen) {
-                    bgColor = "rgba(200,151,62,0.12)";
-                    borderColor = "rgba(200,151,62,0.5)";
-                    dateColor = "#C8973E";
+                    bgColor = `${KONSUMI}CC`;
+                    borderColor = `${KONSUMI}`;
+                    dateColor = KOMINKA_WHITE;
                   }
 
                   return (
@@ -516,7 +570,7 @@ export function StandCalendar() {
                         style={{
                           color: dateColor,
                           fontSize: "13px",
-                          fontWeight: isOpen ? 500 : 300,
+                          fontWeight: isOpen ? 600 : 300,
                           lineHeight: 1,
                           marginBottom: "4px",
                           fontFamily: isOpen ? "'Playfair Display', serif" : "inherit",
@@ -534,7 +588,7 @@ export function StandCalendar() {
                               fontSize: "8px",
                               lineHeight: 1.3,
                               fontWeight: 500,
-                              color: "#C8973E",
+                              color: KOMINKA_WHITE,
                               letterSpacing: "0.02em",
                             }}
                           >
@@ -546,7 +600,7 @@ export function StandCalendar() {
                           {cell.event.description && (
                             <span
                               style={{
-                                color: "rgba(200,151,62,0.6)",
+                                color: `${AINEZU}CC`,
                                 fontSize: "7px",
                                 lineHeight: 1.4,
                                 marginTop: "3px",
@@ -570,7 +624,7 @@ export function StandCalendar() {
           style={{
             height: "1px",
             marginTop: "16px",
-            background: "linear-gradient(90deg, transparent, rgba(200,151,62,0.2) 50%, transparent)",
+            background: `linear-gradient(90deg, transparent, ${KOMINKA_WHITE}33 50%, transparent)`,
           }}
         />
       </div>
@@ -580,7 +634,7 @@ export function StandCalendar() {
         <p className="text-xs tracking-[0.15em] text-haicha">読み込み中...</p>
       )}
       {error && (
-        <p className="text-xs text-red-400">{error}</p>
+        <p className="text-xs text-error">{error}</p>
       )}
 
       {/* ── 月移動ボタン ── */}
@@ -650,7 +704,7 @@ export function StandCalendar() {
         <button
           onClick={() => { void downloadInstagram(); }}
           disabled={downloading || loading}
-          className="flex-1 flex items-center justify-center gap-2 border border-gold/30 text-gold/70 hover:border-gold/60 hover:text-gold disabled:opacity-40 px-6 py-3.5 text-[11px] tracking-[0.2em] transition-all duration-300 group"
+          className="flex-1 flex items-center justify-center gap-2 border border-karekusa/40 text-karekusa hover:border-karekusa hover:bg-karekusa hover:text-white disabled:opacity-40 px-6 py-3.5 text-[11px] tracking-[0.2em] transition-all duration-300 group"
         >
           <svg
             width="14"
