@@ -143,20 +143,18 @@ export function StandCalendar() {
 
       const imgData = canvas.toDataURL("image/jpeg", 0.95);
       const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const pdfWidth = pdf.internal.pageSize.getWidth();   // 210mm
+      const pdfHeight = pdf.internal.pageSize.getHeight();  // 297mm
 
-      const imgRatio = canvas.width / canvas.height;
-      const pdfRatio = pdfWidth / pdfHeight;
+      // A4全面に背景色を塗る
+      pdf.setFillColor(95, 94, 74); // #5F5E4A
+      pdf.rect(0, 0, pdfWidth, pdfHeight, "F");
 
-      let drawWidth = pdfWidth;
-      let drawHeight = pdfWidth / imgRatio;
-      if (imgRatio < pdfRatio) {
-        drawHeight = pdfHeight;
-        drawWidth = pdfHeight * imgRatio;
-      }
-
-      const offsetX = (pdfWidth - drawWidth) / 2;
+      // カレンダーをA4幅いっぱいに配置し、上下中央に配置
+      const margin = 8; // 左右マージン8mm
+      const drawWidth = pdfWidth - margin * 2;
+      const drawHeight = drawWidth * (canvas.height / canvas.width);
+      const offsetX = margin;
       const offsetY = (pdfHeight - drawHeight) / 2;
 
       pdf.addImage(imgData, "JPEG", offsetX, offsetY, drawWidth, drawHeight);
