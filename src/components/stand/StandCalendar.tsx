@@ -293,7 +293,7 @@ export function StandCalendar() {
         <div
           style={{
             display: "flex",
-            alignItems: "flex-end",
+            alignItems: "center",
             justifyContent: "space-between",
             marginBottom: "16px",
           }}
