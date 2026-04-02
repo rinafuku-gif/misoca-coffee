@@ -80,6 +80,7 @@ export function StandCalendar() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false);
   const [direction, setDirection] = useState<1 | -1>(1); // 1=次月, -1=前月
   const [animKey, setAnimKey] = useState(0);
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -376,7 +377,7 @@ export function StandCalendar() {
             </span>
           </div>
 
-          {/* 右: Instagram情報 */}
+          {/* 右: Instagram QRコード */}
           <div
             style={{
               display: "flex",
@@ -386,31 +387,27 @@ export function StandCalendar() {
               maxWidth: "130px",
             }}
           >
-            {/* Instagramアイコン */}
             <div
               style={{
-                width: "60px",
-                height: "60px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: `${BG_DARK}`,
-                borderRadius: "8px",
-                border: `1px solid ${GOLD}44`,
+                width: "64px",
+                height: "64px",
+                borderRadius: "4px",
+                overflow: "hidden",
+                backgroundColor: "#FFFFFF",
+                padding: "2px",
               }}
             >
-              <svg
-                viewBox="0 0 40 40"
-                width="40"
-                height="40"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                {/* Instagramロゴ風SVG */}
-                <rect x="6" y="6" width="28" height="28" rx="8" stroke={GOLD} strokeWidth="2" />
-                <circle cx="20" cy="20" r="7" stroke={GOLD} strokeWidth="2" />
-                <circle cx="28.5" cy="11.5" r="1.5" fill={GOLD} />
-              </svg>
+              <Image
+                src="/images/instagram-qr.png"
+                alt="Instagram QRコード"
+                width={60}
+                height={60}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                }}
+              />
             </div>
             <div
               style={{
@@ -432,9 +429,9 @@ export function StandCalendar() {
                 textAlign: "right",
               }}
             >
-              最新の情報はInstagramにて
+              最新の情報はInstagramにて発信中
               <br />
-              発信中。フォローお願いします。
+              上記QRコードからご確認お願いします。
             </div>
           </div>
         </div>
@@ -684,11 +681,11 @@ export function StandCalendar() {
       </div>
 
       {/* ── ダウンロードボタン ── */}
-      <div className="flex flex-col sm:flex-row gap-3 w-full max-w-[640px]">
+      <div className="relative w-full max-w-[640px]">
         <button
-          onClick={() => { void downloadPDF(); }}
+          onClick={() => setShowDownloadMenu((v) => !v)}
           disabled={downloading || loading}
-          className="flex-1 flex items-center justify-center gap-2 bg-gold/90 hover:bg-gold disabled:opacity-40 text-white px-6 py-3.5 text-[11px] tracking-[0.2em] transition-all duration-300 group"
+          className="w-full flex items-center justify-center gap-2 bg-gold/90 hover:bg-gold disabled:opacity-40 text-white px-6 py-3.5 text-[11px] tracking-[0.2em] transition-all duration-300 group"
         >
           <svg
             width="14"
@@ -699,24 +696,25 @@ export function StandCalendar() {
           >
             <path d="M7 1v8M7 9L4 6M7 9l3-3M1 11v1a1 1 0 001 1h10a1 1 0 001-1v-1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          {downloading ? "生成中..." : "PDFダウンロード（A4）"}
+          {downloading ? "生成中..." : "カレンダーダウンロード"}
         </button>
-        <button
-          onClick={() => { void downloadInstagram(); }}
-          disabled={downloading || loading}
-          className="flex-1 flex items-center justify-center gap-2 border border-karekusa/40 text-karekusa hover:border-karekusa hover:bg-karekusa hover:text-white disabled:opacity-40 px-6 py-3.5 text-[11px] tracking-[0.2em] transition-all duration-300 group"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            fill="none"
-            className="transition-transform duration-300 group-hover:translate-y-0.5"
-          >
-            <path d="M7 1v8M7 9L4 6M7 9l3-3M1 11v1a1 1 0 001 1h10a1 1 0 001-1v-1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          {downloading ? "生成中..." : "Instagram用画像をダウンロード"}
-        </button>
+        {showDownloadMenu && !downloading && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-usuzumi/30 shadow-lg z-10 overflow-hidden">
+            <button
+              onClick={() => { setShowDownloadMenu(false); void downloadPDF(); }}
+              className="w-full px-6 py-3 text-[11px] tracking-[0.1em] text-haicha hover:bg-kominka-white transition-colors text-left"
+            >
+              PDF（A4 印刷用）
+            </button>
+            <div className="border-t border-usuzumi/20" />
+            <button
+              onClick={() => { setShowDownloadMenu(false); void downloadInstagram(); }}
+              className="w-full px-6 py-3 text-[11px] tracking-[0.1em] text-haicha hover:bg-kominka-white transition-colors text-left"
+            >
+              PNG（SNS投稿用）
+            </button>
+          </div>
+        )}
       </div>
     </motion.div>
   );
