@@ -249,12 +249,21 @@ export function Header() {
           </nav>
 
           {/* Desktop CTA */}
-          <Link
-            href="/experience"
-            className="hidden lg:inline-block px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-gold/90 hover:bg-gold text-white"
-          >
-            焙煎体験を予約する
-          </Link>
+          {pathname === "/experience" ? (
+            <a
+              href="#reservation"
+              className="hidden lg:inline-block px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-gold/90 hover:bg-gold text-white"
+            >
+              焙煎体験を予約する
+            </a>
+          ) : (
+            <Link
+              href="/experience#reservation"
+              className="hidden lg:inline-block px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-gold/90 hover:bg-gold text-white"
+            >
+              焙煎体験を予約する
+            </Link>
+          )}
 
           {/* Mobile Toggle - Hamburger morphing to X */}
           <button
@@ -350,13 +359,23 @@ export function Header() {
                   initial="closed"
                   animate="open"
                 >
-                  <Link
-                    href="/experience"
-                    className="block w-full text-center bg-gold hover:bg-gold-dark text-white py-3.5 text-sm font-medium tracking-wide transition-colors"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    焙煎体験を予約する
-                  </Link>
+                  {pathname === "/experience" ? (
+                    <a
+                      href="#reservation"
+                      className="block w-full text-center bg-gold hover:bg-gold-dark text-white py-3.5 text-sm font-medium tracking-wide transition-colors"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      焙煎体験を予約する
+                    </a>
+                  ) : (
+                    <Link
+                      href="/experience#reservation"
+                      className="block w-full text-center bg-gold hover:bg-gold-dark text-white py-3.5 text-sm font-medium tracking-wide transition-colors"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      焙煎体験を予約する
+                    </Link>
+                  )}
                 </motion.div>
 
                 {/* Nav Items */}

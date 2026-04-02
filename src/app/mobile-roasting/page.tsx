@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { PageHero } from "@/components/PageHero";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { MobileRoastingReservation } from "./MobileRoastingReservation";
 
 export const metadata: Metadata = {
   title: "出張焙煎体験",
@@ -217,6 +218,9 @@ export default function MobileRoastingPage() {
           </ScrollReveal>
         </div>
       </section>
+
+      {/* Reservation */}
+      <MobileRoastingReservation />
 
       {/* CTA */}
       <section className="py-24 md:py-32 overflow-hidden">
