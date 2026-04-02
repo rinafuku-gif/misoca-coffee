@@ -429,15 +429,13 @@ export function StandCalendar() {
             alignItems: "center",
             gap: "12px",
             marginBottom: "16px",
-            lineHeight: 1,
           }}
         >
           <div
             style={{
-              height: "1px",
+              height: "0px",
               flex: 1,
-              background: `${KOMINKA_WHITE}33`,
-              alignSelf: "center",
+              borderTop: `1px solid ${KOMINKA_WHITE}33`,
             }}
           />
           <span
@@ -447,19 +445,15 @@ export function StandCalendar() {
               fontWeight: 400,
               color: `${USUZUMI}CC`,
               whiteSpace: "nowrap",
-              lineHeight: 1,
-              padding: "0 4px",
-              position: "relative",
-              top: "-3px",
             }}
           >
             misoca coffee stand OPENDAY
           </span>
           <div
             style={{
-              height: "1px",
+              height: "0px",
               flex: 1,
-              background: `${KOMINKA_WHITE}33`,
+              borderTop: `1px solid ${KOMINKA_WHITE}33`,
             }}
           />
         </div>
