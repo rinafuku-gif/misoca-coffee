@@ -180,12 +180,12 @@ export default function StandPage() {
         </div>
       </section>
 
-      {/* 営業情報 */}
+      {/* 営業情報 + カレンダー */}
       <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
-              Info
+              Info &amp; Calendar
             </p>
             <h2 className="font-serif text-xl md:text-2xl text-center text-konsumi tracking-wider font-light mb-6">
               営業情報
@@ -194,49 +194,23 @@ export default function StandPage() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.2}>
-            <div className="bg-white p-10 md:p-14 rounded-sm text-center">
-              <p className="font-serif text-xl text-konsumi tracking-wider font-light mb-8">
+            <div className="text-center mb-16">
+              <p className="font-serif text-xl text-konsumi tracking-wider font-light mb-4">
                 毎週水曜日
               </p>
-
-              <div className="space-y-4 mb-10">
-                <p className="text-haicha leading-loose">
-                  8:00 〜 9:30 / 10:30 〜 16:00
-                </p>
-              </div>
-
-              <div className="w-16 h-px bg-gold mx-auto mb-8" />
-
-              <div className="space-y-2">
-                <p className="text-sm text-haicha leading-relaxed">
-                  見晴亭（上野原駅北口から徒歩すぐ）
-                </p>
-                <p className="text-xs text-haicha/60 leading-relaxed">
-                  〒409-0115 山梨県上野原市上野原
-                </p>
-              </div>
+              <p className="text-haicha leading-loose mb-6">
+                8:00 〜 9:30 / 10:30 〜 16:00
+              </p>
+              <p className="text-sm text-haicha leading-relaxed">
+                見晴亭（上野原駅北口から徒歩すぐ）
+              </p>
+              <p className="text-xs text-haicha/60 leading-relaxed">
+                〒409-0115 山梨県上野原市上野原
+              </p>
             </div>
           </ScrollReveal>
-        </div>
-      </section>
 
-      {/* 営業カレンダー */}
-      <section className="py-24 md:py-32 overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4 md:px-8">
-          <ScrollReveal>
-            <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
-              Calendar
-            </p>
-            <h2 className="font-serif text-xl md:text-2xl text-center text-konsumi tracking-wider font-light mb-6">
-              営業カレンダー
-            </h2>
-            <p className="text-center text-sm text-haicha mb-4">
-              青いセルが営業日です。営業時間は日によって変わることがあります。
-            </p>
-            <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
-          </ScrollReveal>
-
-          <ScrollReveal delay={0.2}>
+          <ScrollReveal delay={0.3}>
             <StandCalendar />
           </ScrollReveal>
         </div>
