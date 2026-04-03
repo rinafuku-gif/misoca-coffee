@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { CalendarSlot, ExperienceType } from "@/lib/google-calendar";
+import { GROUP_MAX_GUESTS } from "@/lib/group-reservation-constants";
 
 // ─── 型 ─────────────────────────────────────────────────────────────────────
 
@@ -14,21 +15,24 @@ interface TimeSlotPickerProps {
 
 // ─── 定数 ───────────────────────────────────────────────────────────────────
 
-const EXPERIENCE_TYPE_LABEL: Record<ExperienceType, { label: string; description: string; color: string }> = {
+const EXPERIENCE_TYPE_LABEL: Record<ExperienceType, { label: string; description: string; color: string; disabledColor: string }> = {
   "プライベート焙煎体験": {
     label: "プライベート",
     description: "完全貸し切り・1組限定",
     color: "border-gold/40 bg-white hover:border-gold hover:shadow-md",
+    disabledColor: "border-usuzumi/30 bg-usuzumi/5 cursor-not-allowed",
   },
   "グループ焙煎体験": {
     label: "グループ",
     description: "1名から参加OK",
     color: "border-konsumi/30 bg-white hover:border-konsumi hover:shadow-md",
+    disabledColor: "border-usuzumi/30 bg-usuzumi/5 cursor-not-allowed",
   },
   "出張焙煎体験": {
     label: "出張",
     description: "出張焙煎体験",
     color: "border-karekusa/30 bg-white hover:border-karekusa hover:shadow-md",
+    disabledColor: "border-usuzumi/30 bg-usuzumi/5 cursor-not-allowed",
   },
 };
 
@@ -121,57 +125,86 @@ export function TimeSlotPicker({ date, slots, onSelect, onBack }: TimeSlotPicker
           {slots.map((slot) => {
             const meta = EXPERIENCE_TYPE_LABEL[slot.experienceType];
             const badge = EXPERIENCE_TYPE_BADGE[slot.experienceType];
+            const isGroup = slot.experienceType === "グループ焙煎体験";
+            const isFull = isGroup && (slot.groupRemainingCapacity ?? GROUP_MAX_GUESTS) <= 0;
+            const remaining = isGroup ? (slot.groupRemainingCapacity ?? GROUP_MAX_GUESTS) : null;
 
             return (
               <motion.button
                 key={slot.eventId}
                 variants={itemVariants}
-                onClick={() => onSelect(slot)}
-                className={`w-full text-left px-5 py-4 rounded-sm border transition-all duration-300 ${meta.color}`}
+                onClick={() => !isFull && onSelect(slot)}
+                disabled={isFull}
+                className={`w-full text-left px-5 py-4 rounded-sm border transition-all duration-300 ${isFull ? meta.disabledColor : meta.color}`}
               >
                 <div className="flex items-center justify-between gap-3">
                   {/* 時間 */}
                   <div className="flex items-center gap-3">
                     <div>
-                      <p className="text-lg font-light text-sumi leading-none mb-1">
+                      <p className={`text-lg font-light leading-none mb-1 ${isFull ? "text-usuzumi" : "text-sumi"}`}>
                         {slot.startTime}
                         <span className="text-sm text-haicha mx-1">—</span>
                         {slot.endTime}
                       </p>
-                      <p className="text-xs text-haicha">{meta.description}</p>
+                      <p className="text-xs text-haicha">
+                        {isGroup
+                          ? isFull
+                            ? "満席"
+                            : `残り${remaining}名`
+                          : meta.description}
+                      </p>
                     </div>
                   </div>
 
                   {/* 体験種別バッジ + 矢印 */}
                   <div className="flex items-center gap-3 flex-shrink-0">
-                    <span
-                      className={`text-[10px] tracking-widest px-2.5 py-1 rounded-full hidden sm:inline-block ${badge}`}
-                    >
-                      {meta.label}
-                    </span>
-                    <svg
-                      className="w-4 h-4 text-haicha"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
+                    {isGroup && !isFull && remaining !== null && (
+                      <span className="text-[10px] text-konsumi tracking-wide hidden sm:inline-block">
+                        {remaining}/{GROUP_MAX_GUESTS}名
+                      </span>
+                    )}
+                    {isFull ? (
+                      <span className="text-[10px] tracking-widest px-2.5 py-1 rounded-full bg-usuzumi/20 text-usuzumi hidden sm:inline-block">
+                        満席
+                      </span>
+                    ) : (
+                      <span
+                        className={`text-[10px] tracking-widest px-2.5 py-1 rounded-full hidden sm:inline-block ${badge}`}
+                      >
+                        {meta.label}
+                      </span>
+                    )}
+                    {!isFull && (
+                      <svg
+                        className="w-4 h-4 text-haicha"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    )}
                   </div>
                 </div>
 
                 {/* スマホ: 体験種別バッジ */}
                 <div className="mt-2 sm:hidden">
-                  <span
-                    className={`text-[10px] tracking-widest px-2.5 py-1 rounded-full inline-block ${badge}`}
-                  >
-                    {meta.label}
-                  </span>
+                  {isFull ? (
+                    <span className="text-[10px] tracking-widest px-2.5 py-1 rounded-full inline-block bg-usuzumi/20 text-usuzumi">
+                      満席
+                    </span>
+                  ) : (
+                    <span
+                      className={`text-[10px] tracking-widest px-2.5 py-1 rounded-full inline-block ${badge}`}
+                    >
+                      {isGroup && remaining !== null ? `残り${remaining}名` : meta.label}
+                    </span>
+                  )}
                 </div>
               </motion.button>
             );

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isSlotAvailable, bookSlot, getSlotDateTime } from "@/lib/google-calendar";
+import { isSlotAvailable, bookSlot, getSlotDateTime, getGroupRemainingCapacity } from "@/lib/google-calendar";
 import {
   sendReservationConfirmation,
   sendReservationNotification,
@@ -98,6 +98,7 @@ export async function POST(request: NextRequest) {
   }
 
   const eventId = sanitizeString(body["eventId"]);
+  const isGroupExperience = sanitizeString(body["experienceType"]) === "グループ焙煎体験";
 
   // 二重予約防止: イベントがまだ予約可能か確認
   let available: boolean;
@@ -112,9 +113,33 @@ export async function POST(request: NextRequest) {
 
   if (!available) {
     return NextResponse.json(
-      { error: "申し訳ございません。この枠はすでに予約済みです" },
+      { error: isGroupExperience ? "申し訳ございません。この枠は満席です" : "申し訳ございません。この枠はすでに予約済みです" },
       { status: 409 }
     );
+  }
+
+  // グループ: 残り人数チェック（Stripeのwebhook経由でも念のため再確認）
+  if (isGroupExperience) {
+    let remaining: number | null;
+    try {
+      remaining = await getGroupRemainingCapacity(eventId);
+    } catch {
+      return NextResponse.json(
+        { error: "空き確認に失敗しました。しばらくしてから再度お試しください" },
+        { status: 503 }
+      );
+    }
+    if (remaining === null || numberOfGuests > remaining) {
+      return NextResponse.json(
+        {
+          error: remaining !== null && remaining > 0
+            ? `この枠の残り受付人数は${remaining}名です`
+            : "申し訳ございません。この枠は満席です",
+          remainingCapacity: remaining ?? 0,
+        },
+        { status: 409 }
+      );
+    }
   }
 
   // キャンセルトークン: Stripe決済フローではmetadataから渡される。直接予約の場合は新規生成

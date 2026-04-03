@@ -271,6 +271,8 @@ export async function sendReservationConfirmation(params: ReservationMailParams)
   const cancelUrl = `${baseUrl}/experience/cancel?eventId=${encodeURIComponent(params.eventId)}&token=${encodeURIComponent(params.cancellationToken)}`;
   const dateText = formatReservationDate(params.date, params.startTime, params.endTime);
 
+  const isGroup = params.experienceType === "グループ焙煎体験";
+
   const text = `
 ${params.name} 様
 
@@ -287,7 +289,17 @@ ${params.name} 様
 日時: ${dateText}
 お名前: ${params.name}（${params.nameKana}）
 人数: ${params.numberOfGuests}名
+${isGroup ? `
+━━━━━━━━━━━━━━━━━━━━━━━━
+  グループ体験について
+━━━━━━━━━━━━━━━━━━━━━━━━
 
+グループ焙煎体験は最小催行人数2名の体験です。
+開催日前日までに合計2名に満たない場合は、
+キャンセルとなる場合がございます。
+その際はメールにてご連絡いたします。
+
+` : ""}
 ━━━━━━━━━━━━━━━━━━━━━━━━
 
 ご不明な点がございましたら、

@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import type { CalendarSlot, ExperienceType } from "@/lib/google-calendar";
+import { GROUP_MAX_GUESTS } from "@/lib/group-reservation-constants";
 import { calculatePrice } from "@/lib/pricing";
 
 // ─── 型 ─────────────────────────────────────────────────────────────────────
@@ -199,6 +200,10 @@ export function ReservationForm({
   const [transportFeeError, setTransportFeeError] = useState<string | null>(null);
 
   const isOnsiteExperience = slot.experienceType === "出張焙煎体験";
+  const isGroupExperience = slot.experienceType === "グループ焙煎体験";
+  const groupRemaining = isGroupExperience
+    ? (slot.groupRemainingCapacity ?? GROUP_MAX_GUESTS)
+    : null;
 
   const fetchTransportFee = useCallback(async (location: string) => {
     if (!location.trim()) return;
@@ -508,27 +513,40 @@ export function ReservationForm({
         <div id="field-numberOfGuests">
           <FieldWrap label="来店人数" required>
             <div className="flex flex-wrap gap-2">
-              {(isOnsiteExperience ? GUEST_OPTIONS_ONSITE : GUEST_OPTIONS_DEFAULT).map((n) => (
-                <label
-                  key={n}
-                  className={`flex items-center justify-center gap-1 px-3 py-3 rounded-sm border cursor-pointer text-sm transition-all duration-200 min-w-[52px] ${
-                    values.numberOfGuests === n
-                      ? "border-gold bg-gold/5 text-gold"
-                      : "border-usuzumi/50 text-haicha hover:border-karekusa/40"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="numberOfGuests"
-                    value={n}
-                    checked={values.numberOfGuests === n}
-                    onChange={() => handleChange("numberOfGuests", n)}
-                    className="sr-only"
-                  />
-                  {n}名
-                </label>
-              ))}
+              {(isOnsiteExperience ? GUEST_OPTIONS_ONSITE : GUEST_OPTIONS_DEFAULT).map((n) => {
+                const numVal = Number(n);
+                const isDisabled = isGroupExperience && groupRemaining !== null && numVal > groupRemaining;
+                const isSelected = values.numberOfGuests === n;
+                return (
+                  <label
+                    key={n}
+                    className={`flex items-center justify-center gap-1 px-3 py-3 rounded-sm border text-sm transition-all duration-200 min-w-[52px] ${
+                      isDisabled
+                        ? "border-usuzumi/30 text-usuzumi/40 bg-usuzumi/5 cursor-not-allowed"
+                        : isSelected
+                        ? "border-gold bg-gold/5 text-gold cursor-pointer"
+                        : "border-usuzumi/50 text-haicha hover:border-karekusa/40 cursor-pointer"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="numberOfGuests"
+                      value={n}
+                      checked={isSelected}
+                      disabled={isDisabled}
+                      onChange={() => !isDisabled && handleChange("numberOfGuests", n)}
+                      className="sr-only"
+                    />
+                    {n}名
+                  </label>
+                );
+              })}
             </div>
+            {isGroupExperience && groupRemaining !== null && (
+              <p className="text-[11px] text-konsumi/70 mt-2 leading-relaxed">
+                この枠の残り受付人数: {groupRemaining}名
+              </p>
+            )}
             {isOnsiteExperience && (
               <p className="text-[11px] text-haicha/60 mt-2 leading-relaxed">
                 10名以上のご予約はLINEまたはお問い合わせよりご相談ください
