@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP, Noto_Serif_JP, Playfair_Display } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SiteShell } from "@/components/SiteShell";
@@ -61,16 +62,6 @@ export default function RootLayout({
   return (
     <html lang="ja" className={`${notoSans.variable} ${notoSerif.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
-        {gaId && (
-          <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');`,
-              }}
-            />
-          </>
-        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -105,6 +96,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <SiteShell>{children}</SiteShell>
+        {gaId && <GoogleAnalytics gaId={gaId} />}
         <Analytics />
         <SpeedInsights />
       </body>
