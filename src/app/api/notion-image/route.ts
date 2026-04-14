@@ -3,9 +3,32 @@ import { Client } from "@notionhq/client";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
+// 許可するオリジン（自ドメインのみ）
+const ALLOWED_ORIGINS = [
+  process.env.NEXT_PUBLIC_BASE_URL,
+  "https://misocacoffee.com",
+  "https://www.misocacoffee.com",
+  "http://localhost:3000",
+].filter((o): o is string => Boolean(o));
+
+function isAllowedRequest(request: NextRequest): boolean {
+  const origin = request.headers.get("origin") ?? "";
+  const referer = request.headers.get("referer") ?? "";
+  const combined = origin || referer;
+
+  // Origin/Referer 両方なし（curlなど）は拒否
+  if (!combined) return false;
+
+  return ALLOWED_ORIGINS.some((allowed) => combined.startsWith(allowed));
+}
+
 // Notion画像プロキシ: pageIdから画像データを直接返す（パススルー方式）
 // Next.js Image最適化と互換性を保つため、リダイレクトではなく画像データを返す
 export async function GET(request: NextRequest) {
+  if (!isAllowedRequest(request)) {
+    return new NextResponse("Forbidden", { status: 403 });
+  }
+
   const pageId = request.nextUrl.searchParams.get("pageId");
   const property = request.nextUrl.searchParams.get("property") || "画像";
 

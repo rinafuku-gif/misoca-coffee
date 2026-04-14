@@ -87,7 +87,6 @@ export async function POST(request: NextRequest) {
       // オーナーに注文通知メール
       try {
         await sendOrderNotification(orderData);
-        console.log("Order notification email sent to owner");
       } catch (emailError) {
         console.error("Failed to send order notification to owner:", emailError);
       }
@@ -96,15 +95,13 @@ export async function POST(request: NextRequest) {
       if (session.customer_details?.email) {
         try {
           await sendCustomerConfirmation(orderData);
-          console.log("Order confirmation email sent to customer");
         } catch (emailError) {
           console.error("Failed to send confirmation to customer:", emailError);
         }
       }
 
-      console.log("Payment succeeded:", {
+      console.log("Payment completed:", {
         sessionId: session.id,
-        customerEmail: session.customer_details?.email,
         amountTotal: session.amount_total,
       });
       break;

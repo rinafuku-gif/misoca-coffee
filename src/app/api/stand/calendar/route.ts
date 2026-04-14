@@ -130,8 +130,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ events: standEvents });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("Failed to fetch calendar:", message);
     return NextResponse.json(
-      { error: "Failed to fetch calendar", detail: message },
+      { error: "カレンダー情報の取得に失敗しました" },
       { status: 500 }
     );
   }

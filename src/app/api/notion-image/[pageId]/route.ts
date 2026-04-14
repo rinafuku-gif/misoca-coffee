@@ -3,6 +3,25 @@ import { Client } from "@notionhq/client";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
+// 許可するオリジン（自ドメインのみ）
+const ALLOWED_ORIGINS = [
+  process.env.NEXT_PUBLIC_BASE_URL,
+  "https://misocacoffee.com",
+  "https://www.misocacoffee.com",
+  "http://localhost:3000",
+].filter((o): o is string => Boolean(o));
+
+function isAllowedRequest(request: NextRequest): boolean {
+  const origin = request.headers.get("origin") ?? "";
+  const referer = request.headers.get("referer") ?? "";
+  const combined = origin || referer;
+
+  // Origin/Referer 両方なし（curlなど）は拒否
+  if (!combined) return false;
+
+  return ALLOWED_ORIGINS.some((allowed) => combined.startsWith(allowed));
+}
+
 // Notion画像プロキシ: /api/notion-image/[pageId]
 // クエリパラメータ不要。以下の順序で画像を自動検索:
 // 1. プロパティ「画像」（商品用）
@@ -10,9 +29,13 @@ const notion = new Client({ auth: process.env.NOTION_API_KEY });
 // 3. ページカバー（page.cover）
 // 4. ブロック画像（pageIdがブロックIDの場合）
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ pageId: string }> }
 ) {
+  if (!isAllowedRequest(request)) {
+    return new NextResponse("Forbidden", { status: 403 });
+  }
+
   const { pageId } = await params;
 
   if (!pageId) {

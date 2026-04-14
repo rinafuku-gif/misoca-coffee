@@ -39,8 +39,13 @@ interface DistanceMatrixResponse {
   status: string;
 }
 
-async function fetchTransportFeeFromMaps(location: string): Promise<number> {
-  if (isFreeArea(location)) return 0;
+interface TransportInfo {
+  fee: number;
+  distanceKm: number;
+}
+
+async function fetchTransportInfoFromMaps(location: string): Promise<TransportInfo> {
+  if (isFreeArea(location)) return { fee: 0, distanceKm: 0 };
 
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   if (!apiKey) {
@@ -77,7 +82,10 @@ async function fetchTransportFeeFromMaps(location: string): Promise<number> {
   }
 
   const oneWayKm = element.distance.value / 1000;
-  return calculateTransportFee(oneWayKm);
+  return {
+    fee: calculateTransportFee(oneWayKm),
+    distanceKm: Math.round(oneWayKm * 10) / 10,
+  };
 }
 
 const REQUIRED_FIELDS: (keyof CheckoutRequest)[] = [
@@ -216,40 +224,16 @@ export async function POST(request: NextRequest) {
   let verifiedTransportFee = 0;
   let verifiedDistance = 0;
   if (isOnsite && location) {
-    // 無料エリア判定
-    if (isFreeArea(location)) {
-      verifiedTransportFee = 0;
-    } else {
-      try {
-        verifiedTransportFee = await fetchTransportFeeFromMaps(location);
-        // distance の再取得（Google Maps APIから）
-        const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-        if (apiKey) {
-          const params = new URLSearchParams({
-            origins: GOOGLE_MAPS_ORIGIN,
-            destinations: location,
-            mode: "driving",
-            language: "ja",
-            key: apiKey,
-          });
-          const distRes = await fetch(
-            `https://maps.googleapis.com/maps/api/distancematrix/json?${params.toString()}`
-          );
-          if (distRes.ok) {
-            const distData = (await distRes.json()) as DistanceMatrixResponse;
-            const elem = distData.rows[0]?.elements[0];
-            if (elem?.status === "OK" && elem.distance) {
-              verifiedDistance = Math.round((elem.distance.value / 1000) * 10) / 10;
-            }
-          }
-        }
-      } catch (err) {
-        console.error("[reservation/checkout] 交通費計算失敗:", err);
-        return NextResponse.json(
-          { error: "交通費の計算に失敗しました。住所を確認してから再度お試しください" },
-          { status: 422 }
-        );
-      }
+    try {
+      const transport = await fetchTransportInfoFromMaps(location);
+      verifiedTransportFee = transport.fee;
+      verifiedDistance = transport.distanceKm;
+    } catch (err) {
+      console.error("[reservation/checkout] 交通費計算失敗:", err);
+      return NextResponse.json(
+        { error: "交通費の計算に失敗しました。住所を確認してから再度お試しください" },
+        { status: 422 }
+      );
     }
   }
 
