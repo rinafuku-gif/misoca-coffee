@@ -33,9 +33,10 @@ export async function POST(request: Request) {
     }
 
     // GAS Webhookでメール通知（失敗してもNotion保存は成功しているのでsuccessを返す）
-    if (process.env.GAS_WEBHOOK_URL) {
+    const gasWebhookUrl = process.env.GAS_WEBHOOK_URL?.trim();
+    if (gasWebhookUrl) {
       try {
-        await fetch(process.env.GAS_WEBHOOK_URL, {
+        await fetch(gasWebhookUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ type, name, email, phone, message }),

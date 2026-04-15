@@ -53,7 +53,7 @@ export async function sendOrderNotification(order: OrderNotification, overrideTo
     ? `〒${addr.postal_code || ""}\n  ${addr.state || ""}${addr.city || ""}${addr.line1 || ""}${addr.line2 ? "\n  " + addr.line2 : ""}`
     : "未入力";
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://misoca-coffee.vercel.app";
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL?.trim() || "https://misoca-coffee.vercel.app").replace(/\/$/, "");
   const giftSendUrl = order.isGiftTicket && order.customerEmail
     ? `${baseUrl}/api/admin/send-gift-ticket?session_id=${encodeURIComponent(order.sessionId)}&email=${encodeURIComponent(order.customerEmail)}&name=${encodeURIComponent(order.customerName || "")}`
     : null;
@@ -267,7 +267,7 @@ export async function sendReservationConfirmation(params: ReservationMailParams)
     return;
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://misoca-coffee.vercel.app";
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL?.trim() || "https://misoca-coffee.vercel.app").replace(/\/$/, "");
   const cancelUrl = `${baseUrl}/experience/cancel?eventId=${encodeURIComponent(params.eventId)}&token=${encodeURIComponent(params.cancellationToken)}`;
   const dateText = formatReservationDate(params.date, params.startTime, params.endTime);
 

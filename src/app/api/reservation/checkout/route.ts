@@ -240,12 +240,13 @@ export async function POST(request: NextRequest) {
   const totalAmount = pricing.totalAmount + verifiedTransportFee;
   const cancellationToken = crypto.randomUUID();
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL ||
+  const baseUrl = (
+    process.env.NEXT_PUBLIC_BASE_URL?.trim() ||
     (process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL.trim()}`
       : null) ||
-    "https://misoca-coffee.vercel.app";
+    "https://misoca-coffee.vercel.app"
+  ).replace(/\/$/, "");
 
   // Stripe Checkout Session を作成
   try {

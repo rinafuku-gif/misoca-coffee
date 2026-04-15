@@ -24,9 +24,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
-      || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : null)
-      || "https://misoca-coffee.vercel.app";
+    const baseUrl = (
+      process.env.NEXT_PUBLIC_BASE_URL?.trim()
+      || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL.trim()}` : null)
+      || "https://misoca-coffee.vercel.app"
+    ).replace(/\/$/, "");
 
     // サーバー側で正規価格を取得し、クライアントの価格は無視する
     const products = await getProducts();

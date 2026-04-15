@@ -3,21 +3,27 @@ import { Client } from "@notionhq/client";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
-// 許可するオリジン（自ドメインのみ）
+// 許可するオリジン（自ドメイン）。環境変数末尾の改行を除去
 const ALLOWED_ORIGINS = [
-  process.env.NEXT_PUBLIC_BASE_URL,
+  process.env.NEXT_PUBLIC_BASE_URL?.trim().replace(/\/$/, ""),
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL.trim()}` : undefined,
+  "https://misoca-coffee.vercel.app",
   "https://misocacoffee.com",
   "https://www.misocacoffee.com",
   "http://localhost:3000",
 ].filter((o): o is string => Boolean(o));
+
+// UUID（ハイフン有無両対応）の形式検証
+const UUID_REGEX = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$/i;
 
 function isAllowedRequest(request: NextRequest): boolean {
   const origin = request.headers.get("origin") ?? "";
   const referer = request.headers.get("referer") ?? "";
   const combined = origin || referer;
 
-  // Origin/Referer 両方なし（curlなど）は拒否
-  if (!combined) return false;
+  // Origin/Refererなし（Next.js Image Optimizer内部fetchなど）は許容。
+  // pageIdのUUID検証とNotion API側の存在検証で保護する
+  if (!combined) return true;
 
   return ALLOWED_ORIGINS.some((allowed) => combined.startsWith(allowed));
 }
@@ -34,6 +40,11 @@ export async function GET(request: NextRequest) {
 
   if (!pageId) {
     return NextResponse.json({ error: "pageId is required" }, { status: 400 });
+  }
+
+  // UUID形式チェック（ランダム入力によるNotion API叩きを抑止）
+  if (!UUID_REGEX.test(pageId)) {
+    return new NextResponse(null, { status: 404 });
   }
 
   try {
