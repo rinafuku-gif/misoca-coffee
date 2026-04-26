@@ -17,6 +17,10 @@ const CART_STORAGE_KEY = "misoca-coffee-cart";
 const FREE_SHIPPING_THRESHOLD = 5000;
 const SHIPPING_COST = 370;
 
+// 焙煎豆の販売を一時休止中（店主の関西滞在中）
+// 再開時はこのフラグを false にする
+const SHOP_PAUSED = true;
+
 const ROAST_FILTERS = ["全て", "浅煎り", "中煎り", "中深煎り", "深煎り"] as const;
 
 const fallbackProducts: Product[] = [
@@ -143,6 +147,7 @@ export default function ShopPage() {
 
   const addToCart = useCallback(
     (product: Product) => {
+      if (SHOP_PAUSED) return;
       setCart((prev) => {
         const existing = prev.find((item) => item.product.id === product.id);
         if (existing) {
@@ -200,7 +205,7 @@ export default function ShopPage() {
   });
 
   const handleCheckout = async () => {
-    if (cart.length === 0) return;
+    if (cart.length === 0 || SHOP_PAUSED) return;
     setCheckoutLoading(true);
     try {
       const res = await fetch("/api/checkout", {
@@ -240,15 +245,46 @@ export default function ShopPage() {
         image="/images/experience/coffee-beans-close.jpg"
       />
 
+      {/* Pause Notice — 焙煎豆販売の一時休止のお知らせ */}
+      {SHOP_PAUSED && (
+        <section className="bg-konsumi py-20 md:py-24 overflow-hidden">
+          <div className="max-w-2xl mx-auto px-6 md:px-8 text-center">
+            <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
+              Notice
+            </p>
+            <h2 className="font-serif text-xl md:text-2xl text-white tracking-wider font-light mb-10">
+              お知らせ
+            </h2>
+            <div className="w-8 h-px bg-gold/40 mx-auto mb-10" />
+            <div className="text-white/85 text-sm md:text-[15px] leading-[2.4] tracking-wide space-y-6">
+              <p>
+                いつも三十日珈琲をご利用いただき、ありがとうございます。
+                <br className="hidden md:inline" />
+                店主がしばらく関西に滞在することになり、
+                <br className="hidden md:inline" />
+                焙煎豆の通販を一時お休みさせていただきます。
+              </p>
+              <p>
+                上野原の焙煎所では、焙煎体験を引き続きお楽しみいただけます。
+                <br className="hidden md:inline" />
+                再開の時期は、改めてご案内いたします。
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Freshness Promise */}
-      <section className="bg-konsumi py-6 overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <p className="text-white/80 text-sm md:text-base tracking-wider font-light">
-            すべてスペシャルティグレード ／ 焙煎3日以内に発送 ／ 全国一律
-            ¥370（¥5,000以上で送料無料）
-          </p>
-        </div>
-      </section>
+      {!SHOP_PAUSED && (
+        <section className="bg-konsumi py-6 overflow-hidden">
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <p className="text-white/80 text-sm md:text-base tracking-wider font-light">
+              すべてスペシャルティグレード ／ 焙煎3日以内に発送 ／ 全国一律
+              ¥370（¥5,000以上で送料無料）
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* Bean Lineup */}
       <section className="py-36 md:py-52 overflow-hidden">
@@ -425,52 +461,58 @@ export default function ShopPage() {
                             </span>
                           </p>
 
-                          {product.inStock && (
-                            <motion.button
-                              onClick={(e) => { e.stopPropagation(); addToCart(product); }}
-                              whileTap={{ scale: 0.97 }}
-                              className={`relative px-5 py-2.5 text-xs tracking-[0.1em] transition-all duration-500 ${
-                                addedFeedback === product.id
-                                  ? "bg-konsumi text-white"
-                                  : "border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white"
-                              }`}
-                            >
-                              <AnimatePresence mode="wait">
-                                {addedFeedback === product.id ? (
-                                  <motion.span
-                                    key="added"
-                                    initial={{ opacity: 0, y: 5 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -5 }}
-                                    className="flex items-center gap-1"
-                                  >
-                                    <svg
-                                      className="w-3.5 h-3.5"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
+                          {SHOP_PAUSED ? (
+                            <span className="px-5 py-2.5 text-xs tracking-[0.1em] text-haicha/60 border border-karekusa/15">
+                              販売休止中
+                            </span>
+                          ) : (
+                            product.inStock && (
+                              <motion.button
+                                onClick={(e) => { e.stopPropagation(); addToCart(product); }}
+                                whileTap={{ scale: 0.97 }}
+                                className={`relative px-5 py-2.5 text-xs tracking-[0.1em] transition-all duration-500 ${
+                                  addedFeedback === product.id
+                                    ? "bg-konsumi text-white"
+                                    : "border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white"
+                                }`}
+                              >
+                                <AnimatePresence mode="wait">
+                                  {addedFeedback === product.id ? (
+                                    <motion.span
+                                      key="added"
+                                      initial={{ opacity: 0, y: 5 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      exit={{ opacity: 0, y: -5 }}
+                                      className="flex items-center gap-1"
                                     >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={1.5}
-                                        d="M5 13l4 4L19 7"
-                                      />
-                                    </svg>
-                                    追加しました
-                                  </motion.span>
-                                ) : (
-                                  <motion.span
-                                    key="add"
-                                    initial={{ opacity: 0, y: 5 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -5 }}
-                                  >
-                                    カートに入れる
-                                  </motion.span>
-                                )}
-                              </AnimatePresence>
-                            </motion.button>
+                                      <svg
+                                        className="w-3.5 h-3.5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={1.5}
+                                          d="M5 13l4 4L19 7"
+                                        />
+                                      </svg>
+                                      追加しました
+                                    </motion.span>
+                                  ) : (
+                                    <motion.span
+                                      key="add"
+                                      initial={{ opacity: 0, y: 5 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      exit={{ opacity: 0, y: -5 }}
+                                    >
+                                      カートに入れる
+                                    </motion.span>
+                                  )}
+                                </AnimatePresence>
+                              </motion.button>
+                            )
                           )}
                         </div>
                       </div>
@@ -830,17 +872,23 @@ export default function ShopPage() {
                     ¥{selectedProduct.price.toLocaleString()}
                     <span className="text-sm text-haicha/50 ml-2">/ {selectedProduct.unit}</span>
                   </p>
-                  {selectedProduct.inStock && (
-                    <motion.button
-                      onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }}
-                      whileTap={{ scale: 0.97 }}
-                      className="inline-flex items-center gap-2 px-7 py-3.5 text-xs tracking-[0.15em] border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white transition-all duration-500"
-                    >
-                      カートに入れる
-                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-                        <path d="M5 12h14M13 6l6 6-6 6" />
-                      </svg>
-                    </motion.button>
+                  {SHOP_PAUSED ? (
+                    <span className="inline-flex items-center px-7 py-3.5 text-xs tracking-[0.15em] text-haicha/60 border border-karekusa/15">
+                      販売休止中
+                    </span>
+                  ) : (
+                    selectedProduct.inStock && (
+                      <motion.button
+                        onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }}
+                        whileTap={{ scale: 0.97 }}
+                        className="inline-flex items-center gap-2 px-7 py-3.5 text-xs tracking-[0.15em] border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white transition-all duration-500"
+                      >
+                        カートに入れる
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                          <path d="M5 12h14M13 6l6 6-6 6" />
+                        </svg>
+                      </motion.button>
+                    )
                   )}
                 </div>
               </div>
@@ -1090,32 +1138,47 @@ export default function ShopPage() {
                       <span>¥{total.toLocaleString()}</span>
                     </div>
                   </div>
-                  <motion.button
-                    onClick={handleCheckout}
-                    disabled={checkoutLoading}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full bg-gold/90 hover:bg-gold disabled:opacity-50 text-white py-4 text-sm tracking-[0.15em] transition-all duration-500"
-                  >
-                    {checkoutLoading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <motion.span
-                          animate={{ rotate: 360 }}
-                          transition={{
-                            duration: 1,
-                            repeat: Infinity,
-                            ease: "linear",
-                          }}
-                          className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
-                        />
-                        処理中...
-                      </span>
-                    ) : (
-                      "ご購入手続きへ"
-                    )}
-                  </motion.button>
-                  <p className="text-xs text-haicha text-center mt-3">
-                    Stripeの安全な決済画面に移動します
-                  </p>
+                  {SHOP_PAUSED ? (
+                    <>
+                      <div className="w-full bg-haicha/20 text-haicha py-4 text-sm tracking-[0.15em] text-center">
+                        販売休止中
+                      </div>
+                      <p className="text-xs text-haicha text-center mt-3 leading-[1.8]">
+                        現在、焙煎豆の販売を一時休止しております。
+                        <br />
+                        再開までもう少しお待ちください。
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <motion.button
+                        onClick={handleCheckout}
+                        disabled={checkoutLoading}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full bg-gold/90 hover:bg-gold disabled:opacity-50 text-white py-4 text-sm tracking-[0.15em] transition-all duration-500"
+                      >
+                        {checkoutLoading ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <motion.span
+                              animate={{ rotate: 360 }}
+                              transition={{
+                                duration: 1,
+                                repeat: Infinity,
+                                ease: "linear",
+                              }}
+                              className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                            />
+                            処理中...
+                          </span>
+                        ) : (
+                          "ご購入手続きへ"
+                        )}
+                      </motion.button>
+                      <p className="text-xs text-haicha text-center mt-3">
+                        Stripeの安全な決済画面に移動します
+                      </p>
+                    </>
+                  )}
                 </div>
               )}
             </motion.div>
