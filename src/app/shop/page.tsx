@@ -245,6 +245,47 @@ export default function ShopPage() {
         image="/images/experience/coffee-beans-close.jpg"
       />
 
+      {/* New Arrival Banner — ゆずインフューズドコーヒー */}
+      <section className="bg-tsuchikabe py-12 md:py-16 border-b border-usuzumi/30">
+        <div className="max-w-4xl mx-auto px-6 md:px-8">
+          <ScrollReveal>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div>
+                <p className="font-[family-name:var(--font-display)] text-[11px] tracking-[0.5em] text-gold font-light mb-3 uppercase">
+                  New Arrival
+                </p>
+                <h2 className="font-serif text-lg md:text-xl text-konsumi tracking-wider font-light mb-3">
+                  新商品: 上野原ゆずインフューズドコーヒー
+                </h2>
+                <p className="text-sm text-haicha leading-[2] tracking-wide">
+                  山梨県上野原市の規格外ゆずを生豆に漬け込んでから焙煎した一杯。
+                  {SHOP_PAUSED && (
+                    <span className="block mt-1">
+                      焙煎豆の通販は休止中ですが、新商品の詳細ページは公開しています。
+                    </span>
+                  )}
+                </p>
+              </div>
+              <Link
+                href="/shop/uenohara-yuzu"
+                className="inline-flex items-center gap-3 border border-karekusa/30 text-karekusa text-xs tracking-[0.15em] px-7 py-3.5 hover:bg-karekusa hover:text-white transition-all duration-500 flex-shrink-0 min-h-[44px]"
+              >
+                商品ページを見る
+                <svg
+                  className="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </Link>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       {/* Pause Notice — 焙煎豆販売の一時休止のお知らせ */}
       {SHOP_PAUSED && (
         <section className="bg-konsumi py-20 md:py-24 overflow-hidden">

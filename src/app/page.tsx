@@ -305,7 +305,45 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── 5. Experience CTA ─── */}
+      {/* ─── 5. New Arrival ─── */}
+      <section className="bg-tsuchikabe py-36 md:py-52">
+        <div className="max-w-6xl mx-auto px-6 md:px-8">
+          <div className="flex flex-col md:flex-row gap-12 md:gap-20 items-center">
+            <ScrollReveal direction="left" className="w-full md:w-1/2">
+              <div className="relative aspect-[3/2] overflow-hidden">
+                <Image
+                  src="/images/about/scenery-1.jpg"
+                  alt="上野原のゆずを使ったインフューズドコーヒー"
+                  fill
+                  className="object-cover hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal direction="right" delay={0.2} className="w-full md:w-1/2">
+              <p className="font-[family-name:var(--font-display)] text-[11px] tracking-[0.5em] text-gold font-light mb-6 uppercase">
+                New Arrival
+              </p>
+              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6">
+                上野原のゆずから生まれた、もうひとつのコーヒー
+              </h2>
+              <div className="w-10 h-px bg-gold/40 mb-8" />
+              <p className="text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide mb-10">
+                山梨県上野原市の規格外ゆずを、コーヒー生豆に漬け込んでから焙煎した、紅茶のように楽しむ新しい一杯。
+              </p>
+              <Link
+                href="/shop/uenohara-yuzu"
+                className="inline-flex items-center gap-3 border border-karekusa/30 text-karekusa text-xs tracking-[0.15em] px-7 py-3.5 hover:bg-karekusa hover:text-white transition-all duration-500"
+              >
+                詳しく見る
+                <ArrowIcon />
+              </Link>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 6. Experience CTA ─── */}
       <section className="relative h-[70vh] md:h-[80vh] overflow-hidden">
         <Image
           src="/images/experience/roasting-hands.jpg"
@@ -333,7 +371,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── 6. Gallery ─── */}
+      {/* ─── 7. Gallery ─── */}
       <section className="py-28 md:py-40">
         <div className="max-w-6xl mx-auto px-6 md:px-8">
           <ScrollReveal>
@@ -368,7 +406,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── 7. Online Shop ─── */}
+      {/* ─── 8. Online Shop ─── */}
       <section className="py-36 md:py-52">
         <div className="max-w-6xl mx-auto px-6 md:px-8">
           <ScrollReveal>
@@ -421,7 +459,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── 8. Journal ─── */}
+      {/* ─── 9. Journal ─── */}
       <section className="py-36 md:py-52">
         <div className="max-w-6xl mx-auto px-6 md:px-8">
           <ScrollReveal>
@@ -489,7 +527,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── 9. Instagram ─── */}
+      {/* ─── 10. Instagram ─── */}
       <section className="py-32 md:py-48">
         <div className="max-w-4xl mx-auto px-6 md:px-8 text-center">
           <ScrollReveal>
