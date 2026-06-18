@@ -1,21 +1,46 @@
 import { Client } from "@notionhq/client";
+import { z } from "zod";
 
 const notion = new Client({
   auth: process.env.NOTION_API_KEY,
 });
 
+/**
+ * Notionレスポンスから組み立てたオブジェクトをスキーマで検証する。
+ * 形が想定と違う（例: Notion側でプロパティ名が変わって空データになった等）場合は、
+ * 静かに不正データを返さず、ログに残してnullを返す（呼び出し側でスキップ）。
+ * これにより「Notion側の変更を本番で壊れる前に検知できる」状態にする。
+ */
+function parseOrNull<T>(
+  schema: z.ZodType<T>,
+  raw: unknown,
+  label: string,
+): T | null {
+  const parsed = schema.safeParse(raw);
+  if (!parsed.success) {
+    console.error(
+      `[notion] ${label} の形が想定と違います（Notion側のプロパティ名変更の可能性）`,
+      parsed.error.issues,
+    );
+    return null;
+  }
+  return parsed.data;
+}
+
 const databaseId = process.env.NOTION_DATABASE_ID!;
 const journalDbId = process.env.NOTION_JOURNAL_DB_ID || "";
 
-export interface JournalPost {
-  id: string;
-  title: string;
-  category: string;
-  status: string;
-  date: string;
-  excerpt: string;
-  coverImage: string;
-}
+// スキーマを「型の真実の源」にする（手書きinterfaceを廃止し z.infer で型を導出）
+export const JournalPostSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  category: z.string(),
+  status: z.string(),
+  date: z.string(),
+  excerpt: z.string(),
+  coverImage: z.string(),
+});
+export type JournalPost = z.infer<typeof JournalPostSchema>;
 
 export async function getJournalPosts(): Promise<JournalPost[]> {
   if (!process.env.NOTION_API_KEY || !journalDbId) {
@@ -38,24 +63,27 @@ export async function getJournalPosts(): Promise<JournalPost[]> {
     ],
   });
 
-  return response.results.map((page: unknown) => {
-    const pageObj = page as Record<string, unknown>;
-    const props = pageObj["properties"] as Record<string, Record<string, unknown>>;
-    const pageId = pageObj["id"] as string;
+  return response.results
+    .map((page: unknown) => {
+      const pageObj = page as Record<string, unknown>;
+      const props = pageObj["properties"] as Record<string, Record<string, unknown>>;
+      const pageId = pageObj["id"] as string;
 
-    // カバー画像の取得: 1) プロパティ「カバー画像」 2) ページカバー（page.cover）
-    const coverImage = resolveJournalCoverImage(pageId, props, pageObj);
+      // カバー画像の取得: 1) プロパティ「カバー画像」 2) ページカバー（page.cover）
+      const coverImage = resolveJournalCoverImage(pageId, props, pageObj);
 
-    return {
-      id: pageId,
-      title: getTitle(props["タイトル"]),
-      category: getSelect(props["カテゴリ"]),
-      status: getSelect(props["ステータス"]),
-      date: getDate(props["公開日"]),
-      excerpt: getRichText(props["抜粋"]),
-      coverImage,
-    };
-  });
+      return {
+        id: pageId,
+        title: getTitle(props["タイトル"]),
+        category: getSelect(props["カテゴリ"]),
+        status: getSelect(props["ステータス"]),
+        date: getDate(props["公開日"]),
+        excerpt: getRichText(props["抜粋"]),
+        coverImage,
+      };
+    })
+    .map((raw) => parseOrNull(JournalPostSchema, raw, "ジャーナル記事"))
+    .filter((p): p is JournalPost => p !== null);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,15 +97,19 @@ export async function getJournalPostById(id: string): Promise<JournalPost | null
     const props = page["properties"] as Record<string, Record<string, unknown>>;
     const pageId = page["id"] as string;
 
-    return {
-      id: pageId,
-      title: getTitle(props["タイトル"]),
-      category: getSelect(props["カテゴリ"]),
-      status: getSelect(props["ステータス"]),
-      date: getDate(props["公開日"]),
-      excerpt: getRichText(props["抜粋"]),
-      coverImage: resolveJournalCoverImage(pageId, props, page),
-    };
+    return parseOrNull(
+      JournalPostSchema,
+      {
+        id: pageId,
+        title: getTitle(props["タイトル"]),
+        category: getSelect(props["カテゴリ"]),
+        status: getSelect(props["ステータス"]),
+        date: getDate(props["公開日"]),
+        excerpt: getRichText(props["抜粋"]),
+        coverImage: resolveJournalCoverImage(pageId, props, page),
+      },
+      "ジャーナル記事",
+    );
   } catch {
     return null;
   }
@@ -102,23 +134,25 @@ export async function getPageBlocks(pageId: string): Promise<NotionBlock[]> {
   return blocks;
 }
 
-export interface Product {
-  id: string;
-  name: string;
-  origin: string;
-  roast: string;
-  flavor: string;
-  price: number;
-  unit: string;
-  image: string;
-  inStock: boolean;
-  process: string;
-  variety: string;
-  region: string;
-  farm: string;
-  altitude: string;
-  description: string;
-}
+// スキーマを「型の真実の源」にする（手書きinterfaceを廃止し z.infer で型を導出）
+export const ProductSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  origin: z.string(),
+  roast: z.string(),
+  flavor: z.string(),
+  price: z.number(),
+  unit: z.string(),
+  image: z.string(),
+  inStock: z.boolean(),
+  process: z.string(),
+  variety: z.string(),
+  region: z.string(),
+  farm: z.string(),
+  altitude: z.string(),
+  description: z.string(),
+});
+export type Product = z.infer<typeof ProductSchema>;
 
 export async function getProducts(): Promise<Product[]> {
   if (!process.env.NOTION_API_KEY || !process.env.NOTION_DATABASE_ID) {
@@ -141,57 +175,62 @@ export async function getProducts(): Promise<Product[]> {
     ],
   });
 
-  return response.results.map((page) => {
-    const props = (page as Record<string, unknown>)["properties"] as Record<string, Record<string, unknown>>;
+  return response.results
+    .map((page) => {
+      const props = (page as Record<string, unknown>)["properties"] as Record<string, Record<string, unknown>>;
 
-    // 焙煎度合 is multi_select - join values
-    const roastLevels = getMultiSelect(props["焙煎度合"]);
+      // 焙煎度合 is multi_select - join values
+      const roastLevels = getMultiSelect(props["焙煎度合"]);
 
-    return {
-      id: (page as Record<string, unknown>)["id"] as string,
-      name: getTitle(props["名前"]),
-      origin: getSelect(props["エリア"]),
-      roast: roastLevels,
-      flavor: getRichText(props["フレーバー"]),
-      price: getNumber(props["100g豆売売価"]),
-      unit: "100g",
-      image: getProductImageUrl((page as Record<string, unknown>)["id"] as string, props["画像"]),
-      inStock: true, // Already filtered by EC販売ステータス = 販売中
-      process: getSelect(props["生産処理"]),
-      variety: getMultiSelect(props["品種"]),
-      region: getRichText(props["地域"]),
-      farm: getRichText(props["農園・WS"]),
-      altitude: getRichText(props["標高"]),
-      description: getRichText(props["コメント"]) || getRichText(props["テキスト"]),
-    };
-  });
+      return {
+        id: (page as Record<string, unknown>)["id"] as string,
+        name: getTitle(props["名前"]),
+        origin: getSelect(props["エリア"]),
+        roast: roastLevels,
+        flavor: getRichText(props["フレーバー"]),
+        price: getNumber(props["100g豆売売価"]),
+        unit: "100g",
+        image: getProductImageUrl((page as Record<string, unknown>)["id"] as string, props["画像"]),
+        inStock: true, // Already filtered by EC販売ステータス = 販売中
+        process: getSelect(props["生産処理"]),
+        variety: getMultiSelect(props["品種"]),
+        region: getRichText(props["地域"]),
+        farm: getRichText(props["農園・WS"]),
+        altitude: getRichText(props["標高"]),
+        description: getRichText(props["コメント"]) || getRichText(props["テキスト"]),
+      };
+    })
+    .map((raw) => parseOrNull(ProductSchema, raw, "商品"))
+    .filter((p): p is Product => p !== null);
 }
 
 // ---- 焙煎体験予約 DB --------------------------------------------------------
 
 const reservationDbId = process.env.NOTION_RESERVATION_DB_ID || "";
 
-export interface ReservationRecord {
-  eventId: string;
-  experienceType: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  name: string;
-  nameKana: string;
-  email: string;
-  phone: string;
-  address: string;
-  numberOfGuests: number;
-  transportation: string;
-  howFound: string;
-  roastingExperience: string;
-  favoriteCoffee: string;
-  coffeeDrinkingFrequency: string;
-  location?: string;
-  transportFee?: number;
-  transportDistance?: number;
-}
+// スキーマを「型の真実の源」にする（手書きinterfaceを廃止し z.infer で型を導出）
+export const ReservationRecordSchema = z.object({
+  eventId: z.string(),
+  experienceType: z.string(),
+  date: z.string(),
+  startTime: z.string(),
+  endTime: z.string(),
+  name: z.string(),
+  nameKana: z.string(),
+  email: z.string(),
+  phone: z.string(),
+  address: z.string(),
+  numberOfGuests: z.number(),
+  transportation: z.string(),
+  howFound: z.string(),
+  roastingExperience: z.string(),
+  favoriteCoffee: z.string(),
+  coffeeDrinkingFrequency: z.string(),
+  location: z.string().optional(),
+  transportFee: z.number().optional(),
+  transportDistance: z.number().optional(),
+});
+export type ReservationRecord = z.infer<typeof ReservationRecordSchema>;
 
 /**
  * 予約をNotionデータベースに保存する
@@ -199,6 +238,13 @@ export interface ReservationRecord {
 export async function saveReservation(record: ReservationRecord): Promise<void> {
   if (!process.env.NOTION_API_KEY || !reservationDbId) {
     return;
+  }
+
+  // 書き込み前に入力データを検証（不正な形のまま保存しない＝静かなデータ破損を防ぐ）
+  const validated = ReservationRecordSchema.safeParse(record);
+  if (!validated.success) {
+    console.error("[notion] 予約データの形が不正です", validated.error.issues);
+    throw new Error("Invalid reservation record");
   }
 
   await notion.pages.create({
