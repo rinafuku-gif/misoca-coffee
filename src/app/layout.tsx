@@ -57,7 +57,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  // env値に末尾改行・空白が混入してもインラインscriptを壊さないようtrimする
+  const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
 
   return (
     <html lang="ja" className={`${notoSans.variable} ${notoSerif.variable} ${playfair.variable}`} suppressHydrationWarning>
