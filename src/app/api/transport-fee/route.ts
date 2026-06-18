@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isFreeArea, calculateTransportFee } from "@/lib/pricing";
-import { sanitizeString } from "@/lib/validation";
+import { isFreeArea, calculateTransportFee } from "@/features/reservation/pricing";
+import { sanitizeString } from "@/shared/validation";
 
 const ORIGIN_ADDRESS = "山梨県大月市大月町大月1−14−15";
 

@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { PageHero } from "@/components/PageHero";
-import { ScrollReveal } from "@/components/ScrollReveal";
+import { PageHero } from "@/shared/ui/PageHero";
+import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 
 // --- 製法ステップ ---
 const processSteps = [

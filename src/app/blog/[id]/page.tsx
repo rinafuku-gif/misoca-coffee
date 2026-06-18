@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getJournalPostById, getPageBlocks } from "@/lib/notion";
-import type { NotionBlock } from "@/lib/notion";
-import { ScrollReveal } from "@/components/ScrollReveal";
+import { getJournalPostById, getPageBlocks } from "@/features/journal/notion";
+import type { NotionBlock } from "@/features/journal/notion";
+import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 
 type Props = {
   params: Promise<{ id: string }>;

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { PageHero } from "@/components/PageHero";
-import { ScrollReveal } from "@/components/ScrollReveal";
+import { PageHero } from "@/shared/ui/PageHero";
+import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 
 const inquiryTypes = [
   "焙煎体験の予約",

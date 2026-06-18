@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { sendGiftTicketEmailWithBody, buildGiftTicketEmailBody } from "@/lib/mail";
+import { sendGiftTicketEmailWithBody, buildGiftTicketEmailBody } from "@/shared/email/mail";
 
 function escapeHtml(str: string) {
   return str

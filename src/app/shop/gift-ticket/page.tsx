@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ScrollReveal } from "@/components/ScrollReveal";
+import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 
 const CART_STORAGE_KEY = "misoca-coffee-cart";
 

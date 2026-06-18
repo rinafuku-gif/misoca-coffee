@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar } from "./Calendar";
 import { TimeSlotPicker } from "./TimeSlotPicker";
 import { ReservationForm, type FormValues, type TransportFeeResult } from "./ReservationForm";
-import type { CalendarSlot } from "@/lib/google-calendar";
-import { calculatePrice } from "@/lib/pricing";
-import type { ExperienceType } from "@/lib/google-calendar";
+import type { CalendarSlot } from "@/features/reservation/google-calendar";
+import { calculatePrice } from "@/features/reservation/pricing";
+import type { ExperienceType } from "@/features/reservation/google-calendar";
 
 // ─── 型 ─────────────────────────────────────────────────────────────────────
 

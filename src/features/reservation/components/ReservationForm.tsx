@@ -2,9 +2,9 @@
 
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import type { CalendarSlot, ExperienceType } from "@/lib/google-calendar";
-import { GROUP_MAX_GUESTS } from "@/lib/group-reservation-constants";
-import { calculatePrice } from "@/lib/pricing";
+import type { CalendarSlot, ExperienceType } from "@/features/reservation/google-calendar";
+import { GROUP_MAX_GUESTS } from "@/features/reservation/group-reservation-constants";
+import { calculatePrice } from "@/features/reservation/pricing";
 
 // ─── 型 ─────────────────────────────────────────────────────────────────────
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ScrollReveal } from "@/components/ScrollReveal";
+import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 
 const CART_STORAGE_KEY = "misoca-coffee-cart";
 

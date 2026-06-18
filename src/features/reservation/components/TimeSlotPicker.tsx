@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import type { CalendarSlot, ExperienceType } from "@/lib/google-calendar";
-import { GROUP_MAX_GUESTS } from "@/lib/group-reservation-constants";
+import type { CalendarSlot, ExperienceType } from "@/features/reservation/google-calendar";
+import { GROUP_MAX_GUESTS } from "@/features/reservation/group-reservation-constants";
 
 // ─── 型 ─────────────────────────────────────────────────────────────────────
 

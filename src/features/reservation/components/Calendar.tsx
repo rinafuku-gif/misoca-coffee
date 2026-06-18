@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { CalendarSlot, ExperienceType } from "@/lib/google-calendar";
+import type { CalendarSlot, ExperienceType } from "@/features/reservation/google-calendar";
 
 // ─── 型 ─────────────────────────────────────────────────────────────────────
 

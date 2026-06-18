@@ -1,7 +1,7 @@
 "use client";
 
-import { ScrollReveal } from "@/components/ScrollReveal";
-import { ReservationFlow } from "@/components/reservation/ReservationFlow";
+import { ScrollReveal } from "@/shared/ui/ScrollReveal";
+import { ReservationFlow } from "@/features/reservation/components/ReservationFlow";
 
 export function MobileRoastingReservation() {
   return (

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { PageHero } from "@/components/PageHero";
-import { ScrollReveal } from "@/components/ScrollReveal";
+import { PageHero } from "@/shared/ui/PageHero";
+import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "コーヒーケータリング",

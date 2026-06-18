@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { PageHero } from "@/components/PageHero";
-import { ScrollReveal } from "@/components/ScrollReveal";
+import { PageHero } from "@/shared/ui/PageHero";
+import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import { ExperienceClientSections } from "./ExperienceClientSections";
 
 export const metadata: Metadata = {

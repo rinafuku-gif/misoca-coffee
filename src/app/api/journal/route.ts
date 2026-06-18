@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getJournalPosts } from "@/lib/notion";
+import { getJournalPosts } from "@/features/journal/notion";
 
 export const revalidate = 60;
 

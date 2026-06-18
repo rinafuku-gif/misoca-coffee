@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStripe } from "@/lib/stripe";
+import { getStripe } from "@/shared/payments/stripe";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");

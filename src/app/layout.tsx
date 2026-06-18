@@ -3,7 +3,7 @@ import { Noto_Sans_JP, Noto_Serif_JP, Playfair_Display } from "next/font/google"
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { SiteShell } from "@/components/SiteShell";
+import { SiteShell } from "@/shared/ui/SiteShell";
 import "./globals.css";
 
 const notoSans = Noto_Sans_JP({

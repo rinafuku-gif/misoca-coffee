@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { PageHero } from "@/components/PageHero";
-import { ScrollReveal } from "@/components/ScrollReveal";
-import type { JournalPost } from "@/lib/notion";
+import { PageHero } from "@/shared/ui/PageHero";
+import { ScrollReveal } from "@/shared/ui/ScrollReveal";
+import type { JournalPost } from "@/features/journal/notion";
 
 const categories = ["すべて", "上野原の暮らし", "コーヒーの知識", "産地レポート", "お知らせ"];
 

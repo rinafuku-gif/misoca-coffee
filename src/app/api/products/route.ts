@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getProducts } from "@/lib/notion";
+import { getProducts } from "@/features/shop/notion";
 
 export const dynamic = "force-dynamic";
 

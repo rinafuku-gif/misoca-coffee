@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { PageHero } from "@/components/PageHero";
-import { ScrollReveal } from "@/components/ScrollReveal";
-import { StandCalendar } from "@/components/stand/StandCalendar";
+import { PageHero } from "@/shared/ui/PageHero";
+import { ScrollReveal } from "@/shared/ui/ScrollReveal";
+import { StandCalendar } from "@/features/stand/components/StandCalendar";
 
 export const metadata: Metadata = {
   title: "コーヒースタンド | misoca coffee stand",

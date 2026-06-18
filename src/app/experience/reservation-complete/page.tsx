@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { getStripe } from "@/lib/stripe";
+import { getStripe } from "@/shared/payments/stripe";
 import { ReservationCompleteClient } from "./ReservationCompleteClient";
 
 export const metadata: Metadata = {

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { getStripe } from "@/lib/stripe";
-import { isSlotAvailable, getGroupRemainingCapacity } from "@/lib/google-calendar";
-import { calculatePrice, isValidExperienceType, isFreeArea, calculateTransportFee } from "@/lib/pricing";
-import { sanitizeString, isValidEmail } from "@/lib/validation";
+import { getStripe } from "@/shared/payments/stripe";
+import { isSlotAvailable, getGroupRemainingCapacity } from "@/features/reservation/google-calendar";
+import { calculatePrice, isValidExperienceType, isFreeArea, calculateTransportFee } from "@/features/reservation/pricing";
+import { sanitizeString, isValidEmail } from "@/shared/validation";
 
 interface CheckoutRequest {
   eventId: string;

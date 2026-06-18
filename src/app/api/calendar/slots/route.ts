@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAvailableSlots } from "@/lib/google-calendar";
+import { getAvailableSlots } from "@/features/reservation/google-calendar";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

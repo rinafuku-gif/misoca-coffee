@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isSlotAvailable, bookSlot, getSlotDateTime, getGroupRemainingCapacity } from "@/lib/google-calendar";
+import { isSlotAvailable, bookSlot, getSlotDateTime, getGroupRemainingCapacity } from "@/features/reservation/google-calendar";
 import {
   sendReservationConfirmation,
   sendReservationNotification,
-} from "@/lib/mail";
-import { saveReservation } from "@/lib/notion";
-import { sanitizeString, isValidEmail } from "@/lib/validation";
+} from "@/shared/email/mail";
+import { saveReservation } from "@/features/reservation/notion";
+import { sanitizeString, isValidEmail } from "@/shared/validation";
 
 interface ReservationRequest {
   eventId: string;

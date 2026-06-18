@@ -3,8 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { HeroSlideshow } from "@/components/HeroSlideshow";
-import { ScrollReveal } from "@/components/ScrollReveal";
+import { HeroSlideshow } from "@/shared/ui/HeroSlideshow";
+import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 
 /* ───────────────────────── Data ───────────────────────── */
 

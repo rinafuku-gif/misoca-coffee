@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStripe } from "@/lib/stripe";
-import { sendOrderNotification, sendCustomerConfirmation } from "@/lib/mail";
+import { getStripe } from "@/shared/payments/stripe";
+import { sendOrderNotification, sendCustomerConfirmation } from "@/shared/email/mail";
 import type Stripe from "stripe";
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;

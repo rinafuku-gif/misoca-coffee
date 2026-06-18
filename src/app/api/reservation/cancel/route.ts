@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cancelSlot } from "@/lib/google-calendar";
-import { getStripe } from "@/lib/stripe";
+import { cancelSlot } from "@/features/reservation/google-calendar";
+import { getStripe } from "@/shared/payments/stripe";
 import {
   sendCancellationConfirmation,
   sendCancellationNotification,
-} from "@/lib/mail";
-import { cancelReservation } from "@/lib/notion";
-import { sanitizeString } from "@/lib/validation";
+} from "@/shared/email/mail";
+import { cancelReservation } from "@/features/reservation/notion";
+import { sanitizeString } from "@/shared/validation";
 
 interface CancelRequest {
   eventId: string;

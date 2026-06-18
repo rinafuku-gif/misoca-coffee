@@ -4,8 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { ScrollReveal } from "@/components/ScrollReveal";
-import { ReservationFlow } from "@/components/reservation/ReservationFlow";
+import { ScrollReveal } from "@/shared/ui/ScrollReveal";
+import { ReservationFlow } from "@/features/reservation/components/ReservationFlow";
 
 export function ExperienceClientSections() {
   const ctaRef = useRef<HTMLDivElement>(null);

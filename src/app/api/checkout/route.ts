@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStripe } from "@/lib/stripe";
-import { getProducts } from "@/lib/notion";
+import { getStripe } from "@/shared/payments/stripe";
+import { getProducts } from "@/features/shop/notion";
 
 interface CartItem {
   id: string;
