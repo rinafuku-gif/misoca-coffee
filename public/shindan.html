@@ -2575,78 +2575,79 @@ function buildStoryA(dims, profiles, isNito, batchG, qa) {
     : '特定の好みに縛られず、バランスよく楽しみたいということ。';
 
   const p = profiles[0];
-  let story = `あなたのコーヒーについて、聞かせてもらいました。\n\n${pref}\n\nその言葉をもとに、今日の焙煎を組み立てます。\n\n`;
+  let story = `好みを、聞かせてもらいました。\n\n${pref}\n\nその言葉をもとに、今日の焙煎を組み立てます。\n\n`;
 
   if (isNito) {
     story += `酸味もコクも、どちらも捨てたくない——\nその気持ちに応えるために、今日は2回焼きます。\n\n`;
     story += `1本目は${profiles[0].profile.aimLabel}、ドロップ（豆を出す温度）${profiles[0].profile.dropTemp}℃ → ${profiles[0].profile.roastDepthStr}。\n`;
     story += `2本目は${profiles[1].profile.aimLabel}、ドロップ${profiles[1].profile.dropTemp}℃ → ${profiles[1].profile.roastDepthStr}。\n\n`;
-    story += `同じ豆で焙煎度を変えても、違う豆で2つの表情を作っても、あなたの自由です。\n\n`;
+    story += `同じ豆で焙煎度を変えても、違う豆で2つの表情を作っても、どちらでも。\n\n`;
   } else {
     story += `狙いは「${p.profile.aimLabel}」。\nドロップ温度（豆を出す温度）${p.profile.dropTemp}℃、${p.profile.roastDepthStr}の焙煎。\n`;
     story += `浅いほど酸味と香りが際立ち、深いほど甘みとコクが出ます。甘みは時間よりも「深さ（温度）」で決まります。\n\n`;
-    story += `投入前の窯温度（チャージ）${p.batchAdj.chargeTemp}℃（${batchG}gの量に合わせて補正済み）でスタート。\nDRUM（ドラム回転）D${p.profile.drum}で質感を整えながら、\nあなたが「これだ」と感じる一杯を目指します。\n\n`;
+    story += `投入前の窯温度（チャージ）${p.batchAdj.chargeTemp}℃（${batchG}gの量に合わせて補正済み）でスタート。\nDRUM（ドラム回転）D${p.profile.drum}で質感を整えながら、\n「これだ」と感じる一杯を目指します。\n\n`;
   }
 
-  story += `完璧な再現ではなく、あなたの好みへ向かう補助線として——\nこの一杯が、あなたの「好き」に少し近づけますように。`;
+  story += `完璧な再現ではなく、好みへ向かう補助線として——\nこの一杯が、少し近づけますように。`;
   return story;
 }
 
 function buildStoryB(dims, profiles, isNito, batchG, qb, memoText, hasMemo, knownCount) {
   function isKnown(v) { return v && v !== 'unknown'; }
 
+  // 句表は「体験断片」—— 文末の「あなたへ。」を持たない名詞・連用形の断片
   const tasteCoreMap = {
-    bright: '明るく華やかな味が好きなあなたへ。',
-    balanced: 'やさしく、やわらかいバランスが好きなあなたへ。',
-    sweet_deep: '甘く深いコクに惹かれるあなたへ。',
-    bitter_strong: '力強い香ばしさが好きなあなたへ。',
+    bright: '明るく華やかな味わい',
+    balanced: 'やさしくやわらかいバランス',
+    sweet_deep: '甘く深いコクのある一杯',
+    bitter_strong: '力強く香ばしい苦み',
   };
   function roastBalancePhraseB() {
     if (!qb.roastBalanceTouched || typeof qb.roastBalance !== 'number') return null;
-    if (qb.roastBalance <= 3) return '明るい酸味が似合いそうなあなたへ。';
-    if (qb.roastBalance >= 7) return 'コクと苦味のある深い味が似合いそうなあなたへ。';
-    return 'やわらかなバランスが似合いそうなあなたへ。';
+    if (qb.roastBalance <= 3) return '明るい酸味のある味わい';
+    if (qb.roastBalance >= 7) return 'コクと苦味のある深い味わい';
+    return 'やわらかなバランスの味わい';
   }
   const brewMap = {
-    drip: 'ハンドドリップで丁寧に飲むあなたへ。',
-    french: 'フレンチプレスで豆のオイルごと楽しむあなたへ。',
-    espresso: 'エスプレッソやモカポットで濃いめに飲むあなたへ。',
-    ice: 'アイスで、冷たいまま楽しむあなたへ。',
+    drip: 'ハンドドリップでゆっくりと',
+    french: 'フレンチプレスで豆のオイルごと',
+    espresso: 'エスプレッソやモカポットで濃いめに',
+    ice: 'アイスで冷たいまま',
   };
   const addinsMap = {
-    black: 'ブラックで飲むあなたへ。',
-    milk: 'ミルクを加えてやわらかく飲むあなたへ。',
-    sugar_milk: '砂糖とミルクを入れて、甘くほっとする一杯が好きなあなたへ。',
+    black: 'ブラックでそのまま',
+    milk: 'ミルクを加えてやわらかく',
+    sugar_milk: '砂糖とミルクを入れて甘くほっと',
   };
   const sceneMap = {
-    morning: '朝、目を覚ます時間のあなたへ。',
-    work: '仕事や集中したい時間のあなたへ。',
-    aftermeal: '食後、一息つく時間のあなたへ。',
-    relax: '夜、くつろぐ時間のあなたへ。',
+    morning: '朝、目を覚ます時間に',
+    work: '仕事や集中したい時間に',
+    aftermeal: '食後、一息つく時間に',
+    relax: '夜、くつろぐ時間に',
   };
 
-  let story = 'この豆は、あなたのために焼きました。\n\n';
+  let story = 'この豆は、その人のために焼きました。\n\n';
 
   if (knownCount === 0) {
-    story += 'まだ知らないことの方が多いけれど、\nそれでもあなたに一杯を選ぶとしたら——\nだれにでも寄り添う、中煎りのまろやかさを選びました。\n\n';
-    story += '知るほど、あなたに近づけます。\n\n';
+    story += 'まだ知らないことの方が多いけれど、\nそれでも一杯を選ぶとしたら——\nだれにでも寄り添う、中煎りのまろやかさを選びました。\n\n';
+    story += '知るほど、もっと近づけます。\n\n';
   } else {
     // 知っていることだけで綴る（unknownは出さない）
-    const lines = [];
-    if (isKnown(qb.tasteCore) && tasteCoreMap[qb.tasteCore]) lines.push(tasteCoreMap[qb.tasteCore]);
-    else { const ph = roastBalancePhraseB(); if (ph) lines.push(ph); }
-    if (isKnown(qb.brewMethod) && brewMap[qb.brewMethod]) lines.push(brewMap[qb.brewMethod]);
-    if (isKnown(qb.addins) && addinsMap[qb.addins]) lines.push(addinsMap[qb.addins]);
-    if (isKnown(qb.scene) && sceneMap[qb.scene]) lines.push(sceneMap[qb.scene]);
+    const fragments = [];
+    if (isKnown(qb.tasteCore) && tasteCoreMap[qb.tasteCore]) fragments.push(tasteCoreMap[qb.tasteCore]);
+    else { const ph = roastBalancePhraseB(); if (ph) fragments.push(ph); }
+    if (isKnown(qb.brewMethod) && brewMap[qb.brewMethod]) fragments.push(brewMap[qb.brewMethod]);
+    if (isKnown(qb.addins) && addinsMap[qb.addins]) fragments.push(addinsMap[qb.addins]);
+    if (isKnown(qb.scene) && sceneMap[qb.scene]) fragments.push(sceneMap[qb.scene]);
 
-    if (lines.length > 0) {
-      story += lines.join('\n') + '\n\n';
+    if (fragments.length > 0) {
+      story += fragments.join('、') + '——\nそんな横顔を思い浮かべながら、焼きました。\n\n';
     }
 
     if (hasMemo) {
       story += `「${memoText}」\n\nその言葉もそっと持って、この豆を選びました。\n\n`;
     } else {
-      story += '想像しながら、あなたに合う一杯を選びました。\n\n';
+      story += '想像しながら、できる限り寄り添う一杯を選びました。\n\n';
     }
 
     if (knownCount < 4) {
@@ -2656,12 +2657,12 @@ function buildStoryB(dims, profiles, isNito, batchG, qb, memoText, hasMemo, know
 
   const p = profiles[0];
   if (isNito) {
-    story += `酸味も、コクも、どちらもあなたに届けたくて、今回は2種類焼きました。\n1杯目は${profiles[0].profile.aimLabel}（ドロップ温度${profiles[0].profile.dropTemp}℃・${profiles[0].profile.roastDepthStr}）、\n2杯目は${profiles[1].profile.aimLabel}（ドロップ温度${profiles[1].profile.dropTemp}℃・${profiles[1].profile.roastDepthStr}）。\nドロップ温度とは、豆を窯から出すときの温度で、焙煎の深さを決めます。\n\n`;
+    story += `酸味も、コクも、どちらも届けたくて、今回は2種類焼きました。\n1杯目は${profiles[0].profile.aimLabel}（ドロップ温度${profiles[0].profile.dropTemp}℃・${profiles[0].profile.roastDepthStr}）、\n2杯目は${profiles[1].profile.aimLabel}（ドロップ温度${profiles[1].profile.dropTemp}℃・${profiles[1].profile.roastDepthStr}）。\nドロップ温度とは、豆を窯から出すときの温度で、焙煎の深さを決めます。\n\n`;
   } else {
     story += `選んだのは「${p.profile.aimLabel}」。\nドロップ温度（豆を窯から出すときの温度）${p.profile.dropTemp}℃、${p.profile.roastDepthStr}の焙煎です。\n浅いほど酸味と香りが、深いほど甘みとコクが出ます。\n甘みは焼く時間よりも「深さ（ドロップ温度）」で決まります。\n\n`;
   }
 
-  story += `あなたが飲むその時間が、すこしあたたかくなりますように。`;
+  story += `手に届いた頃には、すこしあたたかくなっていますように。`;
   return story;
 }
 
