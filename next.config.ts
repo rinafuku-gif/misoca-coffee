@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  rewrites: async () => [
+    {
+      source: "/shindan",
+      destination: "/shindan.html",
+    },
+  ],
   redirects: async () => [
     {
       source: "/menu",
