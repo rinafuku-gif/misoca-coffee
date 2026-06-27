@@ -804,12 +804,39 @@
   .card-sig-val { font-size: 12px; color: var(--color-haicha); }
   .card-seed { font-size: 11px; line-height: 1.85; color: var(--color-haicha); letter-spacing: 0.02em; }
   @media print {
-    body > *:not(#card-modal) { display: none !important; }
-    #card-modal { position: static !important; display: block !important; inset: auto !important; background: none !important; padding: 0 !important; overflow: visible !important; }
-    .card-modal-actions { display: none !important; }
-    .card-print { width: 105mm !important; min-height: 140mm; box-shadow: none !important; border-radius: 0 !important; padding: 14mm 12mm !important; margin: 0 !important; }
+    /* ── カード印刷モード（デフォルト） ── */
+    body:not(.printing-profile) > *:not(#card-modal) { display: none !important; }
+    body:not(.printing-profile) #card-modal { position: static !important; display: block !important; inset: auto !important; background: none !important; padding: 0 !important; overflow: visible !important; }
+    body:not(.printing-profile) .card-modal-actions { display: none !important; }
+    body:not(.printing-profile) .card-print { width: 105mm !important; min-height: 140mm; box-shadow: none !important; border-radius: 0 !important; padding: 14mm 12mm !important; margin: 0 !important; }
+    body:not(.printing-profile) #card-modal { }
     @page { size: A6 portrait; margin: 6mm; }
+
+    /* ── プロファイル印刷モード ── */
+    body.printing-profile > *:not(#profile-print-area) { display: none !important; }
+    body.printing-profile #profile-print-area { display: block !important; }
+    body.printing-profile #card-modal { display: none !important; }
+    @page { size: A4 portrait; margin: 12mm; }
+    body.printing-profile .profile-print-header { margin-bottom: 8mm; border-bottom: 1px solid #ccc; padding-bottom: 4mm; }
+    body.printing-profile .profile-print-title { font-size: 16px; font-weight: bold; color: #333; letter-spacing: 0.05em; }
+    body.printing-profile .profile-print-meta { font-size: 11px; color: #666; margin-top: 4px; }
+    body.printing-profile .profile-print-section { margin-bottom: 6mm; }
+    body.printing-profile .profile-print-section-label { font-size: 10px; color: #888; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 0.5px solid #ddd; padding-bottom: 2px; margin-bottom: 4px; }
+    body.printing-profile .profile-print-kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 6mm; margin-bottom: 4mm; }
+    body.printing-profile .profile-print-kv { font-size: 11px; color: #333; }
+    body.printing-profile .profile-print-kv-label { font-size: 9px; color: #888; display: block; }
+    body.printing-profile .profile-print-kv-value { font-size: 12px; font-weight: 600; color: #222; }
+    body.printing-profile .profile-print-steps table { width: 100%; border-collapse: collapse; font-size: 10px; }
+    body.printing-profile .profile-print-steps th { background: #f5f5f0; padding: 3px 5px; text-align: left; border: 0.5px solid #ddd; font-size: 9px; color: #555; }
+    body.printing-profile .profile-print-steps td { padding: 3px 5px; border: 0.5px solid #eee; vertical-align: top; color: #333; }
+    body.printing-profile .profile-print-steps tr:nth-child(even) td { background: #fafaf8; }
+    body.printing-profile .profile-print-bottom-row td { background: #fffbf0 !important; font-weight: 600; }
+    body.printing-profile .profile-print-drop-row td { background: #f0f5f0 !important; font-weight: 600; }
+    body.printing-profile .profile-print-note { font-size: 9px; color: #888; margin-top: 3mm; line-height: 1.6; }
   }
+
+  /* プロファイル印刷エリア（画面では非表示） */
+  #profile-print-area { display: none; }
 
   /* ─── 物語カード ─── */
   .story-card {
@@ -1458,6 +1485,10 @@
         <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         焙煎アプローチをコピー
       </button>
+      <button class="copy-btn" id="save-pdf-btn" onclick="saveProfilePDF()">
+        <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3m0 12l-4-4m4 4l4-4"/><path d="M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17"/></svg>
+        プロファイルをPDFで保存
+      </button>
     </div>
 
     <span class="result-label">Story</span>
@@ -1486,7 +1517,7 @@
         <div class="glossary-list">
           <div class="glossary-term">
             <span class="glossary-term-name">ボトム（折り返し点）</span>
-            <span class="glossary-term-desc">生豆を入れた直後、冷たい豆が窯の熱を奪って豆温度が一度下がり、下がりきって再び上がりに転じる最低点。投入後60〜80秒あたりで来ます。この温度と到達時間が、その後の温度の上がり方（味）を決める最初の分かれ道です。三十日珈琲の実際の焙煎では投入量によらず約100℃・60〜80秒でほぼ一定でした。</span>
+            <span class="glossary-term-desc">生豆を入れた直後、冷たい豆が窯の熱を奪って豆温度が一度下がり、下がりきって再び上がりに転じる最低点。投入後60〜80秒あたりで来ます。この温度と到達時間が、その後の温度の上がり方（味）を決める最初の分かれ道です。三十日珈琲ではBT（豆温度計）を見てボトムを確認します。IBTSはボトム付近でノイズが大きいため折り返し点の判断に使えません。実際の焙煎771回のBT中央値は投入量によらず約100℃・60〜80秒でほぼ一定でした【実測】。</span>
           </div>
           <hr class="glossary-divider">
           <div class="glossary-term">
@@ -1496,7 +1527,7 @@
           <hr class="glossary-divider">
           <div class="glossary-term">
             <span class="glossary-term-name">BT（豆温度計）</span>
-            <span class="glossary-term-desc">窯の中に直接差し込む棒状の温度計。大量に焼くほど精度が上がりますが、250g 以下の少量では豆がプローブを覆わないため不正確になります。少量の場合は IBTS だけを見て操作してください。</span>
+            <span class="glossary-term-desc">窯の中に直接差し込む棒状の温度計。三十日珈琲ではボトム（折り返し点）の確認にBTを使います（250g・350g・500g とも約100℃で安定【実測】）。ただし焙煎の中盤は豆がプローブを覆いきれず数値がブレる場合があります。その場合は IBTS と合わせて確認してください。</span>
           </div>
           <hr class="glossary-divider">
           <div class="glossary-term">
@@ -1548,6 +1579,8 @@
   </footer>
 
 </div>
+
+<div id="profile-print-area"><!-- JSで生成 --></div>
 
 <div class="card-modal" id="card-modal">
   <div class="card-modal-inner">
@@ -2083,13 +2116,13 @@ function buildSteps(profile, batch, batchAdj, dims) {
           : `落ち着いた予熱（${chargeTemp}℃）でスタート。じっくり熱を入れて甘みとコク寄りの土台を作る`
       },
       {
-        ibts: `約${targetBottom}℃（ボトム）`,
+        ibts: `BT（豆温度計）約${targetBottom}℃（ボトム）※IBTS参考値 約${targetBottom + 6}℃`,
         time: '投入後60〜80秒',
         power: `P${p_charge}`,
         fan: `F${f_charge}`,
         drum: `D${drum}`,
         phase: 'ボトム（折り返し）',
-        aim: `豆温度が下がりきって折り返す最低点。ここからの上がり方（ROR）が味を決める一番のチェックポイント。狙いは約${targetBottom}℃。※三十日珈琲の基準は約100℃。今回は味に合わせた実験的な狙い。`
+        aim: `豆温度が下がりきって折り返す最低点。ここからの上がり方（ROR）が味を決める一番のチェックポイント。狙いはBT（豆温度計）約${targetBottom}℃。IBTSは折り返し前後でノイズが大きいためボトムの確認にはBTを使います。※三十日珈琲はBT約100℃を基準に予熱設定。今回は味に合わせた実験的な狙い。`
       },
       {
         ibts: '豆の温度（IBTS＝赤外線の温度計）120℃',
@@ -2205,12 +2238,12 @@ function buildSummaryItems(profile, batchG, batchAdj) {
     {
       label: '投入前の窯温度（チャージ）',
       value: `豆の温度（IBTS＝赤外線の温度計）${chargeTemp}℃`,
-      reason: `高めだと短時間で焼けて酸味と香りが立ち、低めだとゆっくり焼けて甘みとコクが出ます（投入温度＝酸味と質感の最大の決め手）。今回は${chargeDirectionPhrase}。${batchG}gの量に合わせて温度を補正済みです。${ambientNote}気温が高い日は生豆が温かいため予熱を下げ、寒い日は上げて、同じボトム${targetBottom}℃に着地させます。この予熱は、上のボトム（折り返し点）が目標温度に着地するように設定しています。焼く量が増えるほど冷たい生豆が多く入りボトムが落ちるので、予熱を高めに補正します。【理論ベース・現場未検証】係数は初期値。焙煎担当の実焙煎で校正します。実データでは季節によるボトム差は最大2℃程度。`
+      reason: `高めだと短時間で焼けて酸味と香りが立ち、低めだとゆっくり焼けて甘みとコクが出ます（投入温度＝酸味と質感の最大の決め手）。今回は${chargeDirectionPhrase}。${batchG}gの量に合わせて温度を補正済みです。${ambientNote}気温が高い日は生豆が温かいため予熱を下げ、寒い日は上げて、BT（豆温度計）でボトム約${targetBottom}℃に着地させます。この予熱は、ボトム（折り返し点）がBT目標温度に着地するように設定しています。焼く量が増えるほど冷たい生豆が多く入りボトムが落ちるので、予熱を高めに補正します。【理論ベース・現場未検証】係数は初期値。焙煎担当の実焙煎で校正します。実データでは季節によるボトム差は最大2℃程度。`
     },
     {
       label: '目標ボトム温度（折り返し点）',
-      value: `約${targetBottom}℃（投入後60〜80秒）※実験的提案`,
-      reason: `投入後に豆温度が下がりきって折り返す最低点。ここからの温度の上がり方（初期ROR）が味を決めます。高いほど酸味と香りが立ち（HTST方向）、低いほど甘みとコクが出ます（LTLT方向）。三十日珈琲の実際の焙煎データ771回では、投入量によらずボトムは約100℃・到達は60〜80秒でほぼ一定でした（実測）。今回の97〜103℃の振り分けは、その100℃を基準に味の方向へ少し動かす【理論ベースの実験的提案】です。実際にこの通りの味になるかは現場での検証が必要です。狙いより低ければ次回チャージを+数℃、高ければ−数℃。`
+      value: `BT（豆温度計）約${targetBottom}℃（投入後60〜80秒）※実験的提案`,
+      reason: `投入後に豆温度が下がりきって折り返す最低点。ここからの温度の上がり方（初期ROR）が味を決めます。高いほど酸味と香りが立ち（HTST方向）、低いほど甘みとコクが出ます（LTLT方向）。三十日珈琲はBT（豆温度計）を見てボトムを合わせます。IBTSはボトム付近でノイズが大きく折り返し点の確認に使えません【実測】。三十日珈琲の実際の焙煎データ771回では、BT中央値は250g=100.3℃・350g=99.6℃・500g=98.5℃と投入量によらずほぼ100℃・到達は60〜80秒でほぼ一定でした（実測）。同じ瞬間のIBTS換算値は約+6〜9℃高くなります（実測中央値+5.8℃）。今回の97〜103℃の振り分けは、100℃を基準に味の方向へ少し動かす【理論ベースの実験的提案】です。狙いより低ければ次回チャージを+数℃、高ければ−数℃。`
     },
     {
       label: 'DRUM（ドラム回転）',
@@ -2255,7 +2288,7 @@ function buildResultHTML(profiles, isNito, mode, tweak) {
   html += `
     <div style="background:var(--color-tsuchikabe);border-left:2px solid var(--color-gold-muted);padding:12px 16px;margin-bottom:24px;font-size:11px;color:var(--color-haicha);line-height:1.8;letter-spacing:0.02em;">
       これは味の採点ではなく、理論ベースの焙煎アプローチ提案です。実際の数値は焙煎担当の実焙煎で校正します。<br>
-      <span style="color:var(--color-usuzumi);">【実測】=771回の焙煎データ（ボトム100℃・到達60-80秒）／【理論】=甘みは焙煎度が主レバー（§11-4）・HTST=酸/LTLT=甘みコク・焙煎度が深いほど総時間が伸びる物理的方向性（§12はバッチ別時間帯を規定：250g推測7〜9分・350g公式8〜10分・500g公式9〜11分）／【現場体感(Ryo)・現場未検証】=中深≈10分のアンカー／【理論ベース・現場未検証】=ボトム可変係数・POWER/FAN骨格・総時間係数＝後藤さん実焙煎で校正前提</span>
+      <span style="color:var(--color-usuzumi);">【実測】=771回の焙煎データ（BTボトム約100℃・到達60-80秒 / IBTSは折り返し不安定・ボトム確認不可）／【理論】=甘みは焙煎度が主レバー（§11-4）・HTST=酸/LTLT=甘みコク・焙煎度が深いほど総時間が伸びる物理的方向性（§12はバッチ別時間帯を規定：250g推測7〜9分・350g公式8〜10分・500g公式9〜11分）／【現場体感(Ryo)・現場未検証】=中深≈10分のアンカー／【理論ベース・現場未検証】=ボトム可変係数・POWER/FAN骨格・総時間係数＝後藤さん実焙煎で校正前提</span>
     </div>
   `;
 
@@ -2344,10 +2377,10 @@ function buildSingleProfileHTML(p, variant) {
       <div class="bean-why">${bs.why}</div>
       <div class="bean-note">【理論】産地ごとの味の傾向（一般的な評価）にもとづく方向性です。実際の在庫や生豆の状態は焙煎所でご相談ください。「味の採点」ではなく「向かう方向」の目安です。</div>
     </div>
-    ${showBtNote ? `<div class="bt-note visible">※ ${batchG}g は350g未満です。もう一つの温度計（BT＝豆に挿す方）がプローブを覆わず正確に測れません。<strong>豆の温度（IBTS＝赤外線の温度計）だけを見て操作してください。</strong></div>` : ''}
+    ${showBtNote ? `<div class="bt-note visible">※ ${batchG}g は350g未満です。<strong>ボトム（折り返し点）はBT（豆温度計）で約${batchG <= 250 ? 100 : 100}℃を確認してください。</strong>焙煎中盤はBTがブレる場合があるため、中盤〜1ハゼ以降はIBTS（赤外線の温度計）を主に参照してください。</div>` : ''}
     <span class="result-label">操作ステップ（${batchG}gバッチ）</span>
     <div class="step-table-guide">
-      豆の温度（IBTS＝赤外線で測る温度計）を見ながら、各温度になったら表の通りに合わせます。時間は目安です。<br>
+      ボトム（折り返し点）はBT（豆温度計）で確認します。中盤〜ドロップはIBTS（赤外線の温度計）を見ながら、各温度になったら表の通りに合わせます。時間は目安です。<br>
       <span class="step-table-legend">POWER（火力）/ FAN（排気）/ DRUM（ドラム回転）</span>
     </div>
     <div class="step-cards">
@@ -2395,7 +2428,7 @@ function buildSingleProfileHTML(p, variant) {
       「乾かす → 色づき → 仕上げ」の3段階で進めます。前半（乾かす）で水分をとばし、中盤（色づき）で香り・甘みの骨格を作り、後半（仕上げ）で酸味・甘み・コクの最終バランスを決めます（焙煎の3フェーズ理論）。
     </div>
     <div class="time-note">
-      ※ 時間は目安です。実際は豆の温度（IBTS＝赤外線の温度計）と温度の上がり方を見ながら操作します。Aillioは時計ではなく温度計で焙煎する機械です。${showBtNote ? '<br>※ 350g未満はもう一つの温度計（BT＝豆に挿す方）が不正確になります。豆の温度（IBTS＝赤外線の温度計）のみを参照してください。' : ''}
+      ※ 時間は目安です。ボトムはBT（豆温度計）で、中盤〜ドロップはIBTS（赤外線の温度計）の上がり方を見ながら操作します。Aillioは時計ではなく温度計で焙煎する機械です。${showBtNote ? '<br>※ 350g未満は焙煎中盤にBTがブレる場合があります。ボトムの折り返し確認はBT、その後はIBTSを主に参照してください。' : ''}
     </div>
   `;
   return html;
@@ -2672,7 +2705,7 @@ function buildStoryB(dims, profiles, isNito, batchG, qb, memoText, hasMemo, know
 function buildApproachText(profiles, isNito, batchG, tweak) {
   let text = '【三十日珈琲 焙煎プロファイル】\n';
   text += `バッチ: ${batchG}g\n`;
-  text += '※ 用語説明：IBTS＝窯に内蔵された赤外線の温度計 / BT＝豆に直接差す温度計（350g未満は不正確）\n';
+  text += '※ 用語説明：IBTS＝窯に内蔵された赤外線の温度計 / BT＝豆に直接差す温度計（ボトム確認に使用・中盤は350g未満でブレる場合あり）\n';
   text += '※ POWER（火力）P1〜P9 / FAN（排気）F1〜F9 / DRUM（ドラム回転）D1〜D9\n\n';
 
   if (isNito) {
@@ -2698,10 +2731,10 @@ function buildApproachText(profiles, isNito, batchG, tweak) {
     text += `精製方法の方向: ${bs.processDir}\n`;
     text += `理由: ${bs.why}\n`;
     text += `※ 産地の一般的な味の傾向にもとづく方向性です。実際の在庫・生豆の状態は焙煎所でご相談ください。\n`;
-    text += '\n■ 操作ステップ（豆の温度＝IBTS基準）\n';
+    text += '\n■ 操作ステップ（ボトム＝BT基準 / 中盤〜ドロップ＝IBTS基準）\n';
     text += '　乾かす → 色づき → 仕上げ の3段階で焼く。前半で水分をとばし、後半で香り・甘み・コクを作る。\n';
-    text += '※ 時間は目安。実際は豆の温度（IBTS＝赤外線の温度計）の上がり方を見て操作します。\n\n';
-    const cols = ['豆の温度（IBTS）','時間目安','POWER（火力）','FAN（排気）','DRUM（回転）','工程','ポイント'];
+    text += '※ 時間は目安。ボトムはBT（豆温度計）で確認、中盤〜ドロップはIBTS（赤外線の温度計）を見て操作します。\n\n';
+    const cols = ['豆の温度','時間目安','POWER（火力）','FAN（排気）','DRUM（回転）','工程','ポイント'];
     const widths = [26, 8, 14, 10, 12, 20, 36];
     text += cols.map((h, i) => h.padEnd(widths[i])).join('') + '\n';
     text += cols.map((h, i) => '-'.repeat(widths[i]-1).padEnd(widths[i])).join('') + '\n';
@@ -2711,7 +2744,7 @@ function buildApproachText(profiles, isNito, batchG, tweak) {
       text += [ibtsShort, s.time, s.power, s.fan, s.drum, s.phase, s.aim].map((v, i) => (v||'').padEnd(widths[i])).join('') + '\n';
     });
     text += '\n甘みは仕上げ時間（DTR）を延ばすより、ドロップ温度（焙煎の深さ）で決まります（MDPI Beverages 2020）。\n';
-    if (batchG < 350) text += '※ 350g未満はBT（豆に挿す温度計）が不正確。豆の温度（IBTS＝赤外線の温度計）のみ参照。\n';
+    if (batchG < 350) text += '※ 350g未満は焙煎中盤にBTがブレる場合あり。ボトム確認はBT、中盤〜ドロップはIBTSを主に参照。\n';
     text += '\n';
   });
 
@@ -2992,6 +3025,7 @@ function showResult(profiles, isNito, mode, tweak, story, batchG) {
 
   window._approachText = buildApproachText(profiles, isNito, batchG, tweak);
   window._storyText = story;
+  window._profileDataForPrint = { profiles, isNito, batchG, mode };
 }
 
 // ============================================================
@@ -3018,6 +3052,94 @@ function copyStory() {
       btn.innerHTML = `<svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>物語をコピー`;
     }, 2000);
   });
+}
+
+// ============================================================
+// PDF保存（プロファイル実務票）
+// ============================================================
+function saveProfilePDF() {
+  const profileData = window._profileDataForPrint;
+  if (!profileData) return;
+
+  const { profiles, isNito, batchG, mode } = profileData;
+  const now = new Date();
+  const dateStr = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日';
+  const modeLabel = mode === 'B' ? '贈り物用' : '自分用';
+
+  function buildProfileSection(p, label) {
+    const { profile, batchAdj, stepsData, summaryItems } = p;
+    const { steps } = stepsData;
+    const { targetBottom, dropTemp, drum, roastDepthStr, directionStr, aimLabel } = profile;
+    const { chargeTemp } = batchAdj;
+    const ibtsBottom = targetBottom + 6;
+
+    const kvRows = [
+      ['狙い', aimLabel],
+      ['焙煎度', roastDepthStr],
+      ['焙煎方向', directionStr],
+      ['ドロップ温度（IBTS）', dropTemp + '℃'],
+      ['チャージ温度（IBTS）', chargeTemp + '℃'],
+      ['DRUM（回転）', 'D' + drum],
+      ['ボトム目標（BT）', '約' + targetBottom + '℃（参考IBTS：約' + ibtsBottom + '℃）'],
+    ].map(([k, v]) => `<div class="profile-print-kv"><span class="profile-print-kv-label">${k}</span><span class="profile-print-kv-value">${v}</span></div>`).join('');
+
+    const stepRows = steps.map((s, i) => {
+      const isBottom = s.phase.includes('ボトム');
+      const isDrop = s.isDrop;
+      const rowClass = isBottom ? 'profile-print-bottom-row' : isDrop ? 'profile-print-drop-row' : '';
+      const tempDisplay = s.ibts
+        .replace('豆の温度（IBTS＝赤外線の温度計）', '')
+        .replace('豆の温度（IBTS）', '');
+      return `<tr class="${rowClass}"><td>${tempDisplay}</td><td>${s.time || '—'}</td><td>${s.power}</td><td>${s.fan}</td><td>${s.drum}</td><td>${s.phase}</td><td>${s.aim}</td></tr>`;
+    }).join('');
+
+    return `
+      ${label ? `<div style="font-weight:bold;font-size:13px;margin:4mm 0 2mm;color:#333;">${label}</div>` : ''}
+      <div class="profile-print-section">
+        <div class="profile-print-section-label">プロファイル設定値</div>
+        <div class="profile-print-kv-grid">${kvRows}</div>
+      </div>
+      <div class="profile-print-section profile-print-steps">
+        <div class="profile-print-section-label">操作ステップ（ボトム＝BT基準 / 中盤〜ドロップ＝IBTS基準）</div>
+        <table>
+          <thead><tr><th>豆の温度</th><th>時間目安</th><th>火力</th><th>排気</th><th>回転</th><th>工程</th><th>ポイント</th></tr></thead>
+          <tbody>${stepRows}</tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  let content = `
+    <div class="profile-print-header">
+      <div class="profile-print-title">三十日珈琲 焙煎プロファイル</div>
+      <div class="profile-print-meta">焙煎日：${dateStr}　バッチ：${batchG}g　モード：${modeLabel}${isNito ? '（二兎焙煎）' : ''}</div>
+    </div>
+  `;
+
+  if (isNito) {
+    content += buildProfileSection(profiles[0], '1本目：明るく、華やかに');
+    content += buildProfileSection(profiles[1], '2本目：深く、丸く');
+  } else {
+    content += buildProfileSection(profiles[0], '');
+  }
+
+  content += `
+    <div class="profile-print-note">
+      ※ ボトムはBT（豆温度計）で確認。中盤〜ドロップはIBTS（赤外線の温度計）を参照。IBTSはボトム付近でノイズが大きいためボトム確認に使えません【実測】。<br>
+      ※ 時間は目安。実際は温度の上がり方を見ながら操作します。<br>
+      ※ 数値は理論ベース提案。後藤さんとの実焙煎で校正します。
+    </div>
+  `;
+
+  const printEl = document.getElementById('profile-print-area');
+  printEl.innerHTML = content;
+
+  document.body.classList.add('printing-profile');
+  window.addEventListener('afterprint', function cleanup() {
+    document.body.classList.remove('printing-profile');
+    window.removeEventListener('afterprint', cleanup);
+  });
+  window.print();
 }
 
 // ============================================================
