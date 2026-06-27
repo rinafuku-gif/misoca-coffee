@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
           value: [
             "default-src 'self'",
             "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://js.stripe.com",
-            "connect-src 'self' https://api.stripe.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com",
+            "connect-src 'self' https://api.stripe.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://api.open-meteo.com https://get.geojs.io",
             "frame-src https://js.stripe.com https://www.google.com",
             "font-src 'self' https://fonts.gstatic.com",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
@@ -38,7 +38,7 @@ const nextConfig: NextConfig = {
         { key: "X-Frame-Options", value: "SAMEORIGIN" },
         { key: "X-Content-Type-Options", value: "nosniff" },
         { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-        { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self)" },
       ],
     },
     {

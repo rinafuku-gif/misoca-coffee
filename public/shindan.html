@@ -3024,38 +3024,64 @@ function copyStory() {
 // リセット
 // ============================================================
 // ============================================================
-// 現在地気温取得（Open-Meteo / navigator.geolocation）
+// 現在地気温取得（Open-Meteo / navigator.geolocation → IP-geoフォールバック）
 // ============================================================
+function fetchAmbientByIP(mode) {
+  var msgEl = document.getElementById('ambient-msg-' + mode);
+  var inputEl = document.getElementById('roomTemp-' + mode);
+  if (!msgEl || !inputEl) return;
+  msgEl.textContent = 'おおよその地域から気温を取得中...';
+  fetch('https://get.geojs.io/v1/ip/geo.json')
+    .then(function(r) { return r.json(); })
+    .then(function(geo) {
+      var lat = parseFloat(geo.latitude);
+      var lon = parseFloat(geo.longitude);
+      if (isNaN(lat) || isNaN(lon)) throw new Error('no coords');
+      return fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat.toFixed(4) + '&longitude=' + lon.toFixed(4) + '&current=temperature_2m');
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var t2m = data && data.current && typeof data.current.temperature_2m === 'number'
+        ? data.current.temperature_2m : null;
+      if (t2m === null) throw new Error('no data');
+      inputEl.value = Math.round(t2m);
+      msgEl.textContent = '※おおよその地域から推定した外気温の目安です。焙煎所の室温に調整してください。';
+    })
+    .catch(function() {
+      msgEl.textContent = '気温を自動取得できませんでした。室温を手動で入力してください。';
+    });
+}
+
 function fetchAmbientTemp(mode) {
-  const msgEl = document.getElementById('ambient-msg-' + mode);
-  const inputEl = document.getElementById('roomTemp-' + mode);
+  var msgEl = document.getElementById('ambient-msg-' + mode);
+  var inputEl = document.getElementById('roomTemp-' + mode);
   if (!msgEl || !inputEl) return;
   if (!navigator.geolocation) {
-    msgEl.textContent = '手動で室温を入力してください（このブラウザは位置情報に対応していません）。';
+    fetchAmbientByIP(mode);
     return;
   }
   msgEl.textContent = '位置情報を取得中...';
   navigator.geolocation.getCurrentPosition(
     function(pos) {
-      const lat = pos.coords.latitude.toFixed(4);
-      const lon = pos.coords.longitude.toFixed(4);
+      var lat = pos.coords.latitude.toFixed(4);
+      var lon = pos.coords.longitude.toFixed(4);
       fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m')
         .then(function(r) { return r.json(); })
         .then(function(data) {
-          const t2m = data && data.current && typeof data.current.temperature_2m === 'number'
+          var t2m = data && data.current && typeof data.current.temperature_2m === 'number'
             ? data.current.temperature_2m : null;
           if (t2m === null) throw new Error('no data');
           inputEl.value = Math.round(t2m);
           msgEl.textContent = '※これは外気温の目安です。焙煎所の室温に調整してください。';
         })
         .catch(function() {
-          msgEl.textContent = '気温の取得に失敗しました。手動で室温を入力してください。';
+          fetchAmbientByIP(mode);
         });
     },
     function() {
-      msgEl.textContent = '手動で室温を入力してください（位置情報が許可されていません）。';
+      fetchAmbientByIP(mode);
     },
-    { timeout: 8000 }
+    { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 }
   );
 }
 
