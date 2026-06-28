@@ -2069,25 +2069,48 @@ function buildSteps(profile, batch, batchAdj, dims) {
     phaseDesignNote = `バランス重視のフェーズ設計（DTR ${dtrPctDisp}%目安）。甘みは焙煎度（ドロップ温度）が主レバーです（Weckx et al. 2020、査読）。各フェーズのバランスを保ち、万人に届く丸さを目指します。【査読】仕上げの方向。`;
   }
 
-  // POWER骨格（250g基準: 序盤P5→120℃P5→160℃P4→190℃P4→1ハゼ後P3）
-  // HTST寄りはDry高め（+0.5段）、LTLT寄りは低め（-0.5段）
+  // ============================================================
+  // POWER骨格（味方向別カーブ設計 — §16-7参照）
+  // 【理論ベース・現場未検証】後藤さん校正前提
+  //
+  // htst = (acid+floral) - (body+sweet)
+  //   酸/floral系: htst≥2, バランス: htst≈0, 甘み/コク系: htst≤-2, 苦み: bitter↑
+  //
+  // 序盤(charge/120)の係数を0.3→1.0に引き上げ（旧0.3では±3clamp時に±0.9→丸め消失）
+  // htst_clamp±3で±3段の差が確実に出る。P範囲1-9は維持。
+  // 190℃帯にもhtstを反映（旧=powerShiftのみで味無関係）。係数0.5は段数で±1〜2段。
+  // 1ハゼ後P3維持は全方向共通定石（Crash/Flick回避）。崩さない。
+  // ============================================================
   const htst_clamp = Math.max(-3, Math.min(3, htst));
   function clampP(p) { return Math.max(1, Math.min(9, Math.round(p))); }
 
-  const p_charge  = clampP(5 + htst_clamp * 0.3 + powerShift);
-  const p_120     = clampP(5 + htst_clamp * 0.3 + powerShift);
-  const p_160     = clampP(4 + htst_clamp * 0.2 + powerShift);
-  const p_190     = clampP(4 + powerShift);
-  const p_1crack  = clampP(4 + powerShift);
-  const p_dev     = clampP(3 + powerShift);
+  const p_charge  = clampP(5 + htst_clamp * 1.0 + powerShift); // 旧0.3→1.0。htst±3で±3段差
+  const p_120     = clampP(5 + htst_clamp * 1.0 + powerShift); // 序盤は同方向継続
+  const p_160     = clampP(4 + htst_clamp * 0.5 + powerShift); // 中盤は係数0.5→±1〜2段
+  const p_190     = clampP(4 + htst_clamp * 0.5 + powerShift); // 旧=htst不使用→修正
+  const p_1crack  = clampP(3 + powerShift);                     // 旧P4→P3（定石: 1ハゼ前に1段下げ完了済み想定）
+  const p_dev     = clampP(3 + powerShift);                     // Development維持
 
-  // FAN骨格
-  const f_charge = 2;
-  const f_120    = 3;
-  const f_160    = htst >= 1 ? 3 : 2;
-  const f_190    = htst >= 1 ? 3 : 3;
-  const f_1crack = 4;
-  const f_dev    = 4;
+  // ============================================================
+  // FAN骨格（味方向別傾き設計 — §16-7参照）
+  // 【理論ベース・現場未検証】後藤さん校正前提
+  //
+  // F1〜3帯: 対流補助で加熱（強めると対流が増す）
+  // F4〜5帯: 排気ブレーキで意味が逆転（強めると煙・水蒸気を逃す=冷却方向）
+  //
+  // 序盤のF2/F3差: 酸/floral系はF3で対流を活かし香りを立てる方向
+  //               甘み/コク系はF2でしっとり熱を入れる方向（旧f_120=3固定→修正）
+  // 1ハゼ後(f_1crack/f_dev): htst（酸floral→F4〜5, バランス→F4, 甘み→F3〜4）+苦み補正
+  //   htst*0.5=酸寄りで+1段, バランスで±0, 甘み寄りで-1段。bitter≥1.5でさらに+1段。
+  //   clamp F3〜F5で過剰排気と不足を防ぐ。
+  // ============================================================
+  const f_charge = 2;                                             // 全方向共通（投入直後）
+  const f_120    = htst >= 0 ? 3 : 2;                           // 酸/floral・バランス系F3、甘み/コク系(htst<0)F2
+  const f_160    = htst >= 0 ? 3 : 2;                           // 同方向継続
+  const f_190    = 3;                                             // Maillard後半: 全方向中立
+  const f_1crack = Math.max(3, Math.min(5, 4 + Math.round(htst * 0.5) + (_bitter >= 1.5 ? 1 : 0)));
+  // 内訳: htst=+2→+1段(F5), htst=0→F4, htst=-2→-1段(F3), bitter≥1.5でさらに+1段
+  const f_dev    = f_1crack;                                     // 1ハゼ後維持（旧=4固定）
 
   // 時間文字列
   function fmtTime(min) {
@@ -2131,7 +2154,9 @@ function buildSteps(profile, batch, batchAdj, dims) {
         fan: `F${f_120}`,
         drum: `D${drum}`,
         phase: '乾かす（水分とばし）',
-        aim: `POWER（火力）P${p_120}、FAN（排気）F${f_120}。豆の水分をとばしながら内部に熱を入れる`
+        aim: htst >= 1
+          ? `POWER（火力）P${p_120}・FAN（排気）F${f_120}。酸味・香り方向のためやや高い火力で熱を入れ、F${f_120}の対流補助で香り成分を活かす【理論ベース・現場未検証】`
+          : `POWER（火力）P${p_120}・FAN（排気）F${f_120}。甘み・コク方向のためおだやかな火力でじっくり乾燥させ、F${f_120}で熱を逃しすぎずしっとり熱を入れる【理論ベース・現場未検証】`
       },
       {
         ibts: '豆の温度（IBTS）160℃（色が変わる頃）',
@@ -2141,8 +2166,8 @@ function buildSteps(profile, batch, batchAdj, dims) {
         drum: `D${drum}`,
         phase: '色づき',
         aim: htst >= 1
-          ? `POWER（火力）P${p_160}にやや高めに保つ。香り・風味をはっきり出す段階`
-          : `POWER（火力）P${p_160}でゆっくり色づかせて甘みの骨格を作る段階`
+          ? `POWER（火力）P${p_160}・FAN（排気）F${f_160}。酸味・香り方向のためやや高めの火力を維持し香り・風味をはっきり出す段階【理論ベース・現場未検証】`
+          : `POWER（火力）P${p_160}・FAN（排気）F${f_160}。甘み・コク方向のためおだやかな火力でゆっくり色づかせ、甘みの骨格を作る段階【理論ベース・現場未検証】`
       },
       {
         ibts: '豆の温度（IBTS）190℃',
@@ -2151,7 +2176,9 @@ function buildSteps(profile, batch, batchAdj, dims) {
         fan: `F${f_190}`,
         drum: `D${drum}`,
         phase: '色づき後半',
-        aim: `1ハゼ（豆がパチッと弾ける合図）に向けて安定して温度を上げる。POWER（火力）P${p_190}。※ここから1ハゼまでの30〜60秒でPOWERを1〜2段下げ、温度の上昇を緩やかにする（急落＝Crash・急再昇温＝Flick回避のため）【実践経験則 §16-3】`
+        aim: htst >= 1
+          ? `1ハゼに向けて安定して温度を上げる。POWER（火力）P${p_190}（酸味・香り方向でやや高め）。FAN（排気）F${f_190}（中立維持）。※ここから1ハゼまでの30〜60秒でPOWERを1〜2段下げ、温度の上昇を緩やかにする（Crash・Flick回避）【実践経験則 §16-3】`
+          : `1ハゼに向けて安定して温度を上げる。POWER（火力）P${p_190}（甘み・コク方向でおだやか）。FAN（排気）F${f_190}（中立維持）。※ここから1ハゼまでの30〜60秒でPOWERを1〜2段下げる（Crash・Flick回避）【実践経験則 §16-3】`
       },
       {
         ibts: '豆の温度（IBTS）～200℃（1ハゼ）',
@@ -2160,7 +2187,11 @@ function buildSteps(profile, batch, batchAdj, dims) {
         fan: `F${f_1crack}`,
         drum: `D${drum}`,
         phase: '1ハゼ（パチッと弾ける）',
-        aim: `FAN（排気）F${f_1crack}に上げて煙・水蒸気を逃す。1ハゼ＝豆がパチッと弾ける音の合図`
+        aim: htst >= 1
+          ? `FAN（排気）F${f_1crack}に上げて煙・水蒸気を逃す。酸味・香り方向のため排気をやや多めに。1ハゼ＝豆がパチッと弾ける音の合図【理論ベース・現場未検証】`
+          : _bitter >= 1.5
+            ? `FAN（排気）F${f_1crack}に上げて煙・水蒸気を逃す。苦み・深め方向のため排気を強めにとりDevelopmentをしっかり進める。1ハゼ＝豆がパチッと弾ける音の合図【理論ベース・現場未検証】`
+            : `FAN（排気）F${f_1crack}に上げて煙・水蒸気を逃す。甘み・コク方向のため排気はバランスを保つ。1ハゼ＝豆がパチッと弾ける音の合図【理論ベース・現場未検証】`
       },
       {
         ibts: `豆の温度（IBTS）${dropTemp}℃（ドロップ）`,
