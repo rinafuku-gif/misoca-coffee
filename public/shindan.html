@@ -781,9 +781,9 @@
   .chain-closing { font-family: var(--font-serif); font-size: 14px; line-height: 2.0; color: var(--color-konsumi); letter-spacing: 0.03em; margin: 0; }
   .card-cta-btn { display: block; width: 100%; margin-top: 20px; padding: 15px; background: var(--color-gold); color: var(--color-kominka-white); border: none; border-radius: 2px; font-family: var(--font-serif); font-size: 14px; letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.2s; }
   .card-cta-btn:hover { opacity: 0.88; }
-  .card-modal { position: fixed; inset: 0; z-index: 1000; display: none; align-items: flex-start; justify-content: center; background: rgba(42,42,42,0.55); padding: 32px 16px; overflow: auto; }
+  .card-modal { position: fixed; inset: 0; z-index: 1000; display: none; align-items: flex-start; justify-content: center; background: rgba(42,42,42,0.55); padding: 32px 16px; overflow: hidden; }
   .card-modal.visible { display: flex; }
-  .card-modal-inner { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .card-modal-inner { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; max-width: 400px; overflow-y: auto; max-height: calc(100svh - 64px); -webkit-overflow-scrolling: touch; }
   .card-modal-actions { display: flex; gap: 10px; }
   .card-print { width: 340px; box-sizing: border-box; background: var(--color-kominka-white); padding: 32px 28px; box-shadow: 0 12px 40px rgba(42,42,42,0.25); border-radius: 3px; display: flex; flex-direction: column; margin: 0 auto; }
   .card-wordmark { font-family: var(--font-serif); font-size: 16px; color: var(--color-gold); letter-spacing: 0.1em; }
@@ -3135,10 +3135,15 @@ function saveProfilePDF() {
   printEl.innerHTML = content;
 
   document.body.classList.add('printing-profile');
-  window.addEventListener('afterprint', function cleanup() {
+  var _profilePrintTimer = null;
+  function _cleanupProfilePrint() {
     document.body.classList.remove('printing-profile');
-    window.removeEventListener('afterprint', cleanup);
-  });
+    window.removeEventListener('afterprint', _cleanupProfilePrint);
+    if (_profilePrintTimer) { clearTimeout(_profilePrintTimer); _profilePrintTimer = null; }
+  }
+  window.addEventListener('afterprint', _cleanupProfilePrint);
+  // iOS Safari では afterprint が発火しないことがある。5秒後に強制クリーンアップ
+  _profilePrintTimer = setTimeout(_cleanupProfilePrint, 5000);
   window.print();
 }
 
