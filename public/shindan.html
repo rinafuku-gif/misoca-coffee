@@ -2076,19 +2076,23 @@ function buildSteps(profile, batch, batchAdj, dims) {
   // htst = (acid+floral) - (body+sweet)
   //   酸/floral系: htst≥2, バランス: htst≈0, 甘み/コク系: htst≤-2, 苦み: bitter↑
   //
-  // 序盤(charge/120)の係数を0.3→1.0に引き上げ（旧0.3では±3clamp時に±0.9→丸め消失）
-  // htst_clamp±3で±3段の差が確実に出る。P範囲1-9は維持。
-  // 190℃帯にもhtstを反映（旧=powerShiftのみで味無関係）。係数0.5は段数で±1〜2段。
+  // 2026-06-27 係数調整（1.0→0.5、base=5.5、floor=P4）:
+  //   旧係数1.0では htst±3clamp時に最大6段差（P8 vs P2）→ 実焙煎上極端。
+  //   新係数0.5＋base5.5: htst=+3→P7, htst=0→P6, htst=-3→P4（±3段差→1〜2段差）。
+  //   下限ガード(floor=P4)でpowerShift(-1〜-3)干渉時も実用下限P4を維持。
+  //   160℃/190℃: 係数0.33→htst=+3→P5, htst=0→P4, htst=-3→P3（過激変化を抑制）。
   // 1ハゼ後P3維持は全方向共通定石（Crash/Flick回避）。崩さない。
   // ============================================================
   const htst_clamp = Math.max(-3, Math.min(3, htst));
   function clampP(p) { return Math.max(1, Math.min(9, Math.round(p))); }
 
-  const p_charge  = clampP(5 + htst_clamp * 1.0 + powerShift); // 旧0.3→1.0。htst±3で±3段差
-  const p_120     = clampP(5 + htst_clamp * 1.0 + powerShift); // 序盤は同方向継続
-  const p_160     = clampP(4 + htst_clamp * 0.5 + powerShift); // 中盤は係数0.5→±1〜2段
-  const p_190     = clampP(4 + htst_clamp * 0.5 + powerShift); // 旧=htst不使用→修正
-  const p_1crack  = clampP(3 + powerShift);                     // 旧P4→P3（定石: 1ハゼ前に1段下げ完了済み想定）
+  // 序盤: base=5.5, 係数=0.5, floor=P4。htst=+3→P7, htst=0→P6, htst=-3→P4
+  const p_charge  = Math.max(4, Math.min(9, Math.round(5.5 + htst_clamp * 0.5 + powerShift))); // 旧1.0→0.5、floor P4
+  const p_120     = Math.max(4, Math.min(9, Math.round(5.5 + htst_clamp * 0.5 + powerShift))); // 同上
+  // 中盤: base=4.0, 係数=0.33, floor=P3。htst=+3→P5, htst=0→P4, htst=-3→P3
+  const p_160     = Math.max(3, Math.min(9, Math.round(4.0 + htst_clamp * 0.33 + powerShift))); // 旧0.5→0.33
+  const p_190     = Math.max(3, Math.min(9, Math.round(4.0 + htst_clamp * 0.33 + powerShift))); // 同上
+  const p_1crack  = clampP(3 + powerShift);                     // 定石: 1ハゼ前に下げ完了済み
   const p_dev     = clampP(3 + powerShift);                     // Development維持
 
   // ============================================================
