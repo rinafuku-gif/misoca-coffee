@@ -36,6 +36,128 @@
       .misoca-cms-credit a:hover {
         text-decoration: underline;
       }
+
+      /* ============================================================
+         三十日珈琲 CMS — スマホ最適化 & ログイン画面ブランディング
+         Decap CMS の管理画面をスマホで見やすくする（PC表示は非変更）。
+         ログインロゴのサイズ調整は全幅共通で適用。
+         Decap はハッシュ付きクラス名のため [class*="..."] 部分一致で安定的に狙う。
+         ============================================================ */
+
+      /* --- ログイン画面: ブランドロゴのサイズ・中央寄せ（全幅共通） ---
+         Decap は logo_url をログイン画面で 300x200 / object-fit:fill に強制するため、
+         横長ロゴ(810:300)がそのままだと歪む。natural比を保って小さめに収める。 */
+      [class*="CustomIconWrapper"] {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+      }
+      [class*="CustomIconWrapper"] img,
+      [class*="StyledAuthenticationPage"] img[alt="Logo"] {
+        width: auto !important;
+        height: auto !important;
+        max-width: 200px !important;
+        max-height: 80px !important;
+        object-fit: contain !important;
+        display: block !important;
+        margin: 0 auto 8px !important;
+      }
+
+      /* --- スマホ幅（〜799px）: 編集画面のレスポンシブ最適化 --- */
+      @media (max-width: 799px) {
+        html,
+        body {
+          max-width: 100% !important;
+          overflow-x: hidden !important;
+        }
+        #nc-root {
+          max-width: 100% !important;
+        }
+
+        /* 横スクロールの元凶: EditorContainer の min-width:800px + position:absolute */
+        [class*="EditorContainer"] {
+          min-width: 0 !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          left: 0 !important;
+          right: 0 !important;
+        }
+        [class*="ToolbarContainer"] {
+          min-width: 0 !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          padding: 0 8px !important;
+          box-sizing: border-box !important;
+        }
+        div[class*="-Editor"]:not([class*="Container"]):not([class*="Toggle"]) {
+          min-width: 0 !important;
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+
+        /* 編集ペインを全幅に、ライブプレビュー(右ペイン)はスマホでは非表示 */
+        .SplitPane {
+          position: static !important;
+          min-width: 0 !important;
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+        .SplitPane .Pane1 {
+          width: 100% !important;
+          max-width: 100% !important;
+          min-width: 0 !important;
+        }
+        .SplitPane .Pane2,
+        .SplitPane .Resizer {
+          display: none !important;
+        }
+        [class*="ControlPaneContainer"] {
+          min-width: 0 !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          box-sizing: border-box !important;
+          padding-bottom: 56px !important;
+        }
+        /* プレビュー非表示に伴い、プレビュー/スクロール同期の丸トグルは無効化されるため隠す */
+        [class*="EditorToggle"] {
+          display: none !important;
+        }
+
+        /* トップバー: 1行に収め、タイトルの縦積み(1文字ずつ折返し)を解消 */
+        [class*="ToolbarSectionBackLink"] {
+          flex: 1 1 auto !important;
+          min-width: 0 !important;
+          overflow: hidden !important;
+        }
+        [class*="ToolbarSectionBackLink"] a {
+          min-width: 0 !important;
+          overflow: hidden !important;
+        }
+        [class*="ToolbarSectionBackLink"] a div {
+          min-width: 0 !important;
+          max-width: 100% !important;
+          white-space: nowrap !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+        }
+        [class*="ToolbarSectionMain"],
+        [class*="ToolbarSectionMeta"] {
+          flex: 0 0 auto !important;
+        }
+        /* スマホでは冗長な導線(ライブで見る・サイトURLリンク)を隠し、公開ボタン+アカウントを優先 */
+        [class*="PreviewButtonContainer"],
+        [class*="AppHeaderSiteLink"] {
+          display: none !important;
+        }
+        /* タップ領域 44px 以上 */
+        [class*="ToolbarContainer"] button,
+        [class*="ToolbarContainer"] a[class*="Button"] {
+          min-height: 44px !important;
+        }
+      }
     </style>
   </head>
   <body>
