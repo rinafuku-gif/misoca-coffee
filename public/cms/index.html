@@ -46,7 +46,7 @@
 
       /* --- ログイン画面: ブランドロゴのサイズ・中央寄せ（全幅共通） ---
          Decap は logo_url をログイン画面で 300x200 / object-fit:fill に強制するため、
-         横長ロゴ(810:300)がそのままだと歪む。natural比を保って小さめに収める。 */
+         正方形ロゴ(512:512)がそのままだと歪む。natural比を保って小さめに収める。 */
       [class*="CustomIconWrapper"] {
         display: flex !important;
         justify-content: center !important;
@@ -59,8 +59,8 @@
       [class*="StyledAuthenticationPage"] img[alt="Logo"] {
         width: auto !important;
         height: auto !important;
-        max-width: 200px !important;
-        max-height: 80px !important;
+        max-width: 140px !important;
+        max-height: 140px !important;
         object-fit: contain !important;
         display: block !important;
         margin: 0 auto 8px !important;
