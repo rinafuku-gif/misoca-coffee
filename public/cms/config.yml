@@ -27,6 +27,12 @@ site_url: https://misoca-coffee.vercel.app
 display_url: https://misoca-coffee.vercel.app
 logo_url: /images/about/open-sign.jpg
 
+# 管理画面（ログイン画面除く）を日本語化する。
+# 反映には public/cms/index.html 側で decap-cms-locales の "ja" を
+# CMS.registerLocale() で明示登録する対応が必要（後述コメント参照）。
+# 未登録のロケールを指定した場合は自動でenへフォールバックする仕様のため。
+locale: "ja"
+
 media_folder: "public/images"
 public_folder: "/images"
 # 既存画像は public/images/about, /experience, /catering など複数のサブフォルダに

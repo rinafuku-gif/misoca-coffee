@@ -39,6 +39,17 @@
     </style>
   </head>
   <body>
+    <!-- 日本語ロケール登録のため、decap-cms.js の自動初期化(CMS.init())を一旦止める。
+         理由: decap-cms(オールインワンバンドル)のエントリは既定で "en" ロケールのみを
+         CMS.registerLocale('en', en) で登録しており、config.yml の locale: 'ja' を
+         指定しただけでは "ja" が未登録のため自動的に en へフォールバックしてしまう
+         （decaporg/decap-cms の packages/decap-cms/src/index.js 参照）。
+         このフラグを立てておくと自動初期化がスキップされ、下の module script で
+         明示的に ja ロケールを登録してから CMS.init() を呼べるようになる。 -->
+    <script>
+      window.CMS_MANUAL_INIT = true;
+    </script>
+
     <!-- Decap CMSの本体。config.ymlは <base href> により /cms/config.yml から読み込まれる。
          バージョンは範囲指定(^3.0.0)ではなく実バージョンに固定し、SRI(Subresource Integrity)で
          配信元(unpkg.com)からの改ざん・差し替えを検知できるようにしている。
@@ -49,6 +60,19 @@
       integrity="sha384-K+E/B3QG3FJrtRXoyUjME4ilx71pYGyrvAVxYvd/p0zCPuXsc3eoEuSzUW3Ke63V"
       crossorigin="anonymous"
     ></script>
+
+    <!-- decap-cms-locales の日本語辞書(ESM)をCDNから取得して登録し、その後にCMSを初期化する。
+         script-src は /cms 配下のCSPで https://unpkg.com のみ許可しているため、同一オリジン
+         (unpkg.com)のESMを type="module" の静的importで読み込む。
+         バージョンは decap-cms.js 側の慣例に合わせて固定(3.7.0)。この辞書ファイルには
+         他モジュールへのimportが無く単一のオブジェクトをexportするのみ(内容確認済み)。
+         module script は常にdeferred相当で実行されるため、直前の同期スクリプトである
+         decap-cms.js の実行(window.CMS の代入)が先に完了していることが保証される。 -->
+    <script type="module">
+      import ja from "https://unpkg.com/decap-cms-locales@3.7.0/dist/esm/ja/index.js";
+      window.CMS.registerLocale("ja", ja);
+      window.CMS.init();
+    </script>
 
     <!-- 制作クレジット（Ryo指定のHTML相当。CMS管理画面側にのみ表示・サイト本体には掲出しない） -->
     <div class="misoca-cms-credit">
