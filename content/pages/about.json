@@ -1,0 +1,66 @@
+{
+  "seo": {
+    "title": "三十日珈琲について",
+    "description": "三十日珈琲のストーリー。築300年の古民家を拠点に、コーヒーを入口とした「暮らしの体験」を届ける焙煎所。コーヒーと暮らす。古くて新しい、みんなの焙煎所。"
+  },
+  "hero": {
+    "title": "ABOUT",
+    "subtitle": "三十日珈琲について",
+    "image": "/images/about/open-sign.jpg"
+  },
+  "brandStory": {
+    "eyebrow": "Brand Story",
+    "headingLine1": "コーヒーと暮らす。",
+    "headingLine2": "古くて新しい、みんなの焙煎所。",
+    "paragraphs": [
+      "一杯の先に、体験がある。場所がある。人がいる。",
+      "三十日珈琲は、コーヒーを「飲む」だけでなく「つくる」「届ける」「つながる」体験を通じて、日常にもうひとつの居場所をつくる焙煎所です。",
+      "コーヒーを入口に、暮らしそのものを体験として届けたい。それが三十日珈琲の願いです。"
+    ],
+    "image": "/images/about/house-garden.jpg",
+    "imageAlt": "古民家の庭"
+  },
+  "thePlace": {
+    "eyebrow": "The Place",
+    "heading": "築300年の古民家",
+    "intro": [
+      "山梨県上野原市。東京から約1時間の里山に、築300年を超える古民家があります。",
+      "太い梁、土壁、障子から差す自然光── この場所でしか生まれない空気の中で、焙煎機の音と、コーヒーの香りが広がります。"
+    ],
+    "images": [
+      { "src": "/images/about/kominka-interior-1.jpg", "alt": "古民家の内観" },
+      { "src": "/images/about/kominka-interior-2.jpg", "alt": "古民家の内装" }
+    ],
+    "closingLine1": "この場所は、代替できない。",
+    "closingLine2": "だからこそ、ここに来る理由になる。"
+  },
+  "thePeople": {
+    "eyebrow": "The People",
+    "heading": "つくる人たち",
+    "image": "/images/about/founders.jpg",
+    "imageAlt": "共同代表 稲福良祐（左）と後藤伸啓（右）。焙煎機Aillio Bulletの前で",
+    "paragraph1": "**後藤伸啓**（兵庫県出身・東京都在住）と**稲福良祐**（大阪府出身・山梨県在住）。関西出身の二人が、多拠点居住サービスADDressを通じて上野原で出会い、2023年11月に三十日珈琲を立ち上げました。",
+    "paragraph2": "後藤はスペシャルティコーヒーの世界に惹かれ、「自分の場所をつくって、そこから価値を届けたい」という想いを温めていた人。稲福はADDress上野原A邸の家守として暮らすなか、古民家の空きスペースに可能性を感じていた人。二人とも焙煎なんてしたこともなかったけれど、「やってみないと始まらない」と意気投合して、長屋門の一室から始めました。",
+    "paragraph3": "「30日に一度、会いに来てほしい」── コーヒー豆がおいしく飲める約1ヶ月という時間にのせて、ゆっくりと関係をつくっていきたい。日常とは違う「もうひとつの大切な場所」になれたら。それが、三十日珈琲という名前に込めた想いです。",
+    "_note": "paragraph1の**強調**記法は太字表示（人名2箇所）を保つための最小限markdown。BoldTextコンポーネントが解釈する。"
+  },
+  "sceneryUenohara": {
+    "eyebrow": "Scenery",
+    "heading": "上野原の風景",
+    "images": [
+      { "src": "/images/about/scenery-1.jpg", "alt": "上野原の風景" },
+      { "src": "/images/about/scenery-2.jpg", "alt": "上野原の自然" }
+    ],
+    "bodyLine1": "四季折々の山並み、澄んだ空気、鳥のさえずり。",
+    "bodyLine2": "この風景のなかで飲むコーヒーは、どこよりも特別です。"
+  },
+  "cta": {
+    "heading": "三十日珈琲を体験する",
+    "bodyLine1": "焙煎体験、コーヒースタンド、オンラインショップ。",
+    "bodyLine2": "あなたに合った入口から、三十日珈琲に出会ってください。",
+    "experienceLabel": "焙煎体験を予約する",
+    "experienceHref": "/experience",
+    "shopLabel": "オンラインショップへ",
+    "shopHref": "/shop"
+  }
+}

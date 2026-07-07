@@ -1,0 +1,911 @@
+# ============================================================================
+# 三十日珈琲 公式サイト — Decap CMS 設定 (Phase A)
+# 対象: 直書きされていたテキスト・価格表示・画像パスを編集可能にする。
+# 対象外: Notion連携コンテンツ（商品・ジャーナル・予約・問い合わせ）、
+#         予約金額の計算定数（pricing.ts / group-reservation-constants.ts）。
+# ============================================================================
+
+# --- DecapBridge (https://decapbridge.com/) 本番接続 ---
+# DecapBridgeダッシュボードが生成した設定をそのまま使用（2026-07-07接続）。
+backend:
+  name: git-gateway
+  repo: rinafuku-gif/misoca-coffee
+  branch: main
+  identity_url: https://auth.decapbridge.com/sites/f5ac45d0-3858-42dc-9912-18a5e7664d7b
+  gateway_url: https://gateway.decapbridge.com
+  commit_messages:
+    create: 'Create {{collection}} "{{slug}}" – {{author-name}} <{{author-login}}> via DecapBridge'
+    update: 'Update {{collection}} "{{slug}}" – {{author-name}} <{{author-login}}> via DecapBridge'
+    delete: 'Delete {{collection}} "{{slug}}" – {{author-name}} <{{author-login}}> via DecapBridge'
+    uploadMedia: 'Upload "{{path}}" – {{author-name}} <{{author-login}}> via DecapBridge'
+    deleteMedia: 'Delete "{{path}}" – {{author-name}} <{{author-login}}> via DecapBridge'
+    openAuthoring: 'Message {{message}} – {{author-name}} <{{author-login}}> via DecapBridge'
+  logo_url: https://decapbridge.com/decapcms-with-bridge.svg
+  site_url: https://misoca-coffee.vercel.app
+
+site_url: https://misoca-coffee.vercel.app
+display_url: https://misoca-coffee.vercel.app
+logo_url: /images/about/open-sign.jpg
+
+media_folder: "public/images"
+public_folder: "/images"
+# 既存画像は public/images/about, /experience, /catering など複数のサブフォルダに
+# 分かれているため、メディアライブラリの一覧に出ない場合がある。
+# その場合は画像フィールドの「URLを挿入」から /images/xxx/yyy.jpg のパスを直接入力すれば
+# 既存画像をそのまま参照できる。新規アップロードは public/images/ 直下に保存される。
+# （Phase Bのビジュアル編集で、ページごとのサブフォルダ選択UIに改善予定）
+
+collections:
+  - name: "pages"
+    label: "サイトページ"
+    files:
+      # ============================================================ HOME
+      - name: "home"
+        label: "トップページ"
+        file: "content/pages/home.json"
+        fields:
+          - label: "ヒーロー（スライドショー）"
+            name: hero
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し1行目", name: headingLine1, widget: string }
+              - { label: "見出し2行目", name: headingLine2, widget: string }
+              - { label: "サブテキスト1行目", name: subtitleLine1, widget: string }
+              - { label: "サブテキスト2行目", name: subtitleLine2, widget: string }
+              - { label: "メインボタンのラベル", name: primaryCtaLabel, widget: string }
+              - label: "メインボタンのリンク先"
+                name: primaryCtaHref
+                widget: select
+                options:
+                  - { label: "トップ", value: "/" }
+                  - { label: "焙煎体験", value: "/experience" }
+                  - { label: "ケータリング", value: "/catering" }
+                  - { label: "コーヒースタンド", value: "/stand" }
+                  - { label: "三十日珈琲について", value: "/about" }
+                  - { label: "アクセス", value: "/access" }
+                  - { label: "FAQ", value: "/faq" }
+                  - { label: "出張焙煎体験", value: "/mobile-roasting" }
+                  - { label: "オンラインショップ", value: "/shop" }
+                  - { label: "ジャーナル一覧", value: "/blog" }
+                  - { label: "お問い合わせ", value: "/contact" }
+              - { label: "サブボタンのラベル", name: secondaryCtaLabel, widget: string }
+              - label: "サブボタンのリンク先"
+                name: secondaryCtaHref
+                widget: select
+                options:
+                  - { label: "トップ", value: "/" }
+                  - { label: "焙煎体験", value: "/experience" }
+                  - { label: "ケータリング", value: "/catering" }
+                  - { label: "コーヒースタンド", value: "/stand" }
+                  - { label: "三十日珈琲について", value: "/about" }
+                  - { label: "アクセス", value: "/access" }
+                  - { label: "FAQ", value: "/faq" }
+                  - { label: "出張焙煎体験", value: "/mobile-roasting" }
+                  - { label: "オンラインショップ", value: "/shop" }
+                  - { label: "ジャーナル一覧", value: "/blog" }
+                  - { label: "お問い合わせ", value: "/contact" }
+              - label: "スライド画像（6枚）"
+                name: slides
+                widget: list
+                fields:
+                  - { label: "画像", name: src, widget: image }
+                  - { label: "代替テキスト（画像の説明）", name: alt, widget: string }
+
+          - label: "Our Story セクション"
+            name: ourStory
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "ブロック1（古民家について）"
+                name: block1
+                widget: object
+                fields:
+                  - { label: "画像", name: image, widget: image }
+                  - { label: "画像の代替テキスト", name: imageAlt, widget: string }
+                  - { label: "タイトル", name: title, widget: string }
+                  - label: "本文（段落ごと）"
+                    name: paragraphs
+                    widget: list
+                    field: { label: "段落", name: paragraph, widget: text }
+              - label: "ブロック2（三十日珈琲の想い）"
+                name: block2
+                widget: object
+                fields:
+                  - { label: "画像", name: image, widget: image }
+                  - { label: "画像の代替テキスト", name: imageAlt, widget: string }
+                  - { label: "タイトル", name: title, widget: string }
+                  - label: "本文（段落ごと）"
+                    name: paragraphs
+                    widget: list
+                    field: { label: "段落", name: paragraph, widget: text }
+                  - { label: "ボタンのラベル", name: ctaLabel, widget: string }
+                  - label: "ボタンのリンク先"
+                    name: ctaHref
+                    widget: select
+                    options:
+                      - { label: "トップ", value: "/" }
+                      - { label: "焙煎体験", value: "/experience" }
+                      - { label: "ケータリング", value: "/catering" }
+                      - { label: "コーヒースタンド", value: "/stand" }
+                      - { label: "三十日珈琲について", value: "/about" }
+                      - { label: "アクセス", value: "/access" }
+                      - { label: "FAQ", value: "/faq" }
+                      - { label: "出張焙煎体験", value: "/mobile-roasting" }
+                      - { label: "オンラインショップ", value: "/shop" }
+                      - { label: "ジャーナル一覧", value: "/blog" }
+                      - { label: "お問い合わせ", value: "/contact" }
+
+          - label: "ブランドステートメント（帯テキスト）"
+            name: brandStatement
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "1行目", name: line1, widget: string }
+              - { label: "2行目", name: line2, widget: string }
+
+          - label: "Services セクション（3つの体験）"
+            name: services
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "体験カード（3件）"
+                name: items
+                widget: list
+                fields:
+                  - { label: "タイトル", name: title, widget: string }
+                  - { label: "説明文（改行はそのまま反映されます）", name: text, widget: text }
+                  - { label: "画像", name: image, widget: image }
+                  - label: "リンク先"
+                    name: href
+                    widget: select
+                    options:
+                      - { label: "焙煎体験", value: "/experience" }
+                      - { label: "ケータリング", value: "/catering" }
+                      - { label: "出張焙煎体験", value: "/mobile-roasting" }
+                      - { label: "コーヒースタンド", value: "/stand" }
+                      - { label: "三十日珈琲について", value: "/about" }
+                  - { label: "ボタンのラベル", name: cta, widget: string }
+
+          - label: "New Arrival セクション"
+            name: newArrival
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "画像", name: image, widget: image }
+              - { label: "画像の代替テキスト", name: imageAlt, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "本文", name: body, widget: text }
+              - { label: "ボタンのラベル", name: ctaLabel, widget: string }
+              - { label: "ボタンのリンク先（商品ページURL）", name: ctaHref, widget: string }
+
+          - label: "Experience CTA セクション（大きな写真の帯）"
+            name: experienceCta
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "画像", name: image, widget: image }
+              - { label: "画像の代替テキスト", name: imageAlt, widget: string }
+              - { label: "本文1行目", name: bodyLine1, widget: string }
+              - { label: "本文2行目", name: bodyLine2, widget: string }
+              - { label: "ボタンのラベル", name: ctaLabel, widget: string }
+              - label: "ボタンのリンク先"
+                name: ctaHref
+                widget: select
+                options:
+                  - { label: "焙煎体験", value: "/experience" }
+                  - { label: "ケータリング", value: "/catering" }
+                  - { label: "出張焙煎体験", value: "/mobile-roasting" }
+
+          - label: "Gallery セクション"
+            name: gallery
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "写真（6枚）"
+                name: images
+                widget: list
+                fields:
+                  - { label: "画像", name: src, widget: image }
+                  - { label: "代替テキスト（画像の説明）", name: alt, widget: string }
+
+          - label: "Online Shop セクション（見出しのみ・商品はNotion連携）"
+            name: onlineShop
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "ボタンのラベル", name: ctaLabel, widget: string }
+              - { label: "ボタンのリンク先", name: ctaHref, widget: string }
+
+          - label: "Journal セクション（見出しのみ・記事はNotion連携）"
+            name: journal
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "ボタンのラベル", name: ctaLabel, widget: string }
+              - { label: "ボタンのリンク先", name: ctaHref, widget: string }
+
+          - label: "Instagram セクション"
+            name: instagram
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "本文1行目", name: bodyLine1, widget: string }
+              - { label: "本文2行目", name: bodyLine2, widget: string }
+              - { label: "表示するアカウント名", name: handle, widget: string }
+              - { label: "リンク先URL", name: href, widget: string }
+
+      # ====================================================== EXPERIENCE
+      - name: "experience"
+        label: "焙煎体験ページ"
+        file: "content/pages/experience.json"
+        fields:
+          - label: "SEO設定（検索結果に表示される情報）"
+            name: seo
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "ページタイトル", name: title, widget: string }
+              - { label: "説明文", name: description, widget: text }
+
+          - label: "ページ上部（ヒーロー）"
+            name: hero
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: title, widget: string }
+              - { label: "サブタイトル", name: subtitle, widget: string }
+              - { label: "説明文", name: description, widget: string }
+              - { label: "背景画像", name: image, widget: image }
+
+          - label: "直予約バナー"
+            name: directBookingBanner
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "テキスト", name: text, widget: string }
+
+          - label: "プラン・料金"
+            name: pricing
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "サブ見出し", name: subheading, widget: string }
+              - label: "プライベートプラン（価格はpricing.tsと連動のため編集不可）"
+                name: personalPlan
+                widget: object
+                fields:
+                  - { label: "バッジ文言", name: badge, widget: string }
+                  - { label: "英字ラベル", name: eyebrow, widget: string }
+                  - { label: "プラン名", name: title, widget: string }
+                  - { label: "価格の注記", name: priceNote, widget: string }
+                  - label: "特徴リスト"
+                    name: features
+                    widget: list
+                  - { label: "ボタンのラベル", name: ctaLabel, widget: string }
+              - label: "グループプラン（価格はpricing.tsと連動のため編集不可）"
+                name: groupPlan
+                widget: object
+                fields:
+                  - { label: "英字ラベル", name: eyebrow, widget: string }
+                  - { label: "プラン名", name: title, widget: string }
+                  - { label: "価格の注記", name: priceNote, widget: string }
+                  - label: "特徴リスト"
+                    name: features
+                    widget: list
+                  - { label: "ボタンのラベル", name: ctaLabel, widget: string }
+              - { label: "補足1（1行目）", name: footnote1Line1, widget: string }
+              - label: "補足1（2行目・PCでは1行目と続けて1行表示、スマホのみ改行されます）"
+                name: footnote1Line2
+                widget: string
+              - { label: "補足2", name: footnote2, widget: text }
+
+          - label: "体験の流れ"
+            name: flow
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "サブ見出し", name: subheading, widget: string }
+              - label: "ステップ（5件）"
+                name: steps
+                widget: list
+                fields:
+                  - { label: "番号", name: num, widget: string }
+                  - { label: "タイトル", name: title, widget: string }
+                  - { label: "説明文", name: text, widget: text }
+                  - { label: "画像", name: image, widget: image }
+
+          - label: "体験の風景ギャラリー"
+            name: gallery
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "写真（6枚）"
+                name: images
+                widget: list
+                field: { label: "画像", name: image, widget: image }
+
+          - label: "アクセス情報"
+            name: access
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "電車でお越しの方"
+                name: trainCard
+                widget: object
+                fields:
+                  - { label: "タイトル", name: title, widget: string }
+                  - { label: "項目リスト", name: items, widget: list }
+              - label: "お車でお越しの方"
+                name: carCard
+                widget: object
+                fields:
+                  - { label: "タイトル", name: title, widget: string }
+                  - { label: "項目リスト", name: items, widget: list }
+
+      # ========================================================= CATERING
+      - name: "catering"
+        label: "ケータリングページ"
+        file: "content/pages/catering.json"
+        fields:
+          - label: "SEO設定"
+            name: seo
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "ページタイトル", name: title, widget: string }
+              - { label: "説明文", name: description, widget: text }
+
+          - label: "ページ上部（ヒーロー）"
+            name: hero
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: title, widget: string }
+              - { label: "サブタイトル", name: subtitle, widget: string }
+              - { label: "説明文", name: description, widget: string }
+              - { label: "背景画像", name: image, widget: image }
+
+          - label: "コンセプト"
+            name: concept
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し1行目", name: headingLine1, widget: string }
+              - { label: "見出し2行目", name: headingLine2, widget: string }
+              - { label: "本文", name: body, widget: text }
+
+          - label: "3つの特徴"
+            name: features
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "特徴（3件）"
+                name: items
+                widget: list
+                fields:
+                  - { label: "タイトル", name: title, widget: string }
+                  - { label: "説明文", name: text, widget: text }
+
+          - label: "プラン・料金（LINE相談ベースの表示価格）"
+            name: plans
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "ボタンのラベル", name: ctaLabel, widget: string }
+              - { label: "ボタンのリンク先（LINE URL）", name: ctaHref, widget: string }
+              - label: "プラン（S/M/L）"
+                name: items
+                widget: list
+                fields:
+                  - { label: "ラベル（S/M/L）", name: label, widget: string }
+                  - { label: "プラン名", name: name, widget: string }
+                  - { label: "価格", name: price, widget: string }
+                  - { label: "キャンペーン文言（任意）", name: campaign, widget: string, required: false }
+                  - { label: "おすすめ表示にする", name: featured, widget: boolean, required: false, default: false }
+                  - { label: "対象人数", name: description, widget: string }
+                  - { label: "補足（任意）", name: note, widget: string, required: false }
+                  - { label: "含まれるもの", name: includes, widget: list }
+
+          - label: "大規模プラン"
+            name: largePlans
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し", name: heading, widget: string }
+              - label: "プラン（LL/MAX）"
+                name: items
+                widget: list
+                fields:
+                  - { label: "プラン名", name: name, widget: string }
+                  - { label: "対象人数", name: capacity, widget: string }
+                  - { label: "価格", name: price, widget: string }
+
+          - label: "料金欄の補足"
+            name: planFootnotes
+            widget: list
+            field: { label: "補足行", name: line, widget: string }
+
+          - label: "ご注文の流れ"
+            name: orderFlow
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "ステップ（4件）"
+                name: steps
+                widget: list
+                fields:
+                  - { label: "番号", name: num, widget: string }
+                  - { label: "タイトル", name: title, widget: string }
+                  - { label: "説明文", name: text, widget: text }
+
+          - label: "対応エリア"
+            name: serviceArea
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "エリア一覧", name: areas, widget: list }
+              - { label: "補足", name: footnote, widget: string }
+
+          - label: "よくあるご質問"
+            name: faq
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "Q&A（4件）"
+                name: items
+                widget: list
+                fields:
+                  - { label: "質問", name: q, widget: string }
+                  - { label: "回答", name: a, widget: text }
+
+          - label: "ケータリングのご相談CTA"
+            name: cta
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "本文1行目", name: bodyLine1, widget: string }
+              - { label: "本文2行目", name: bodyLine2, widget: string }
+              - { label: "LINEボタンのラベル", name: lineLabel, widget: string }
+              - { label: "LINEボタンのリンク先", name: lineHref, widget: string }
+              - { label: "電話ボタンのラベル", name: telLabel, widget: string }
+              - { label: "電話番号リンク（tel:から始まる）", name: telHref, widget: string }
+              - { label: "補足", name: footnote, widget: string }
+
+      # ============================================================ STAND
+      - name: "stand"
+        label: "コーヒースタンドページ"
+        file: "content/pages/stand.json"
+        fields:
+          - label: "SEO設定"
+            name: seo
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "ページタイトル", name: title, widget: string }
+              - { label: "説明文", name: description, widget: text }
+
+          - label: "ページ上部（ヒーロー）"
+            name: hero
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: title, widget: string }
+              - { label: "サブタイトル", name: subtitle, widget: string }
+              - { label: "説明文", name: description, widget: string }
+              - { label: "背景画像", name: image, widget: image }
+
+          - label: "スタンドについて"
+            name: aboutStand
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し1行目", name: headingLine1, widget: string }
+              - { label: "見出し2行目", name: headingLine2, widget: string }
+              - label: "本文（段落ごと）"
+                name: paragraphs
+                widget: list
+                field: { label: "段落", name: paragraph, widget: text }
+              - { label: "画像", name: image, widget: image }
+              - { label: "画像の代替テキスト", name: imageAlt, widget: string }
+
+          - label: "ギャラリー写真（大）"
+            name: galleryBanner
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "画像", name: image, widget: image }
+              - { label: "画像の代替テキスト", name: imageAlt, widget: string }
+
+          - label: "メニュー"
+            name: menu
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "メニュー項目"
+                name: items
+                widget: list
+                fields:
+                  - { label: "商品名", name: name, widget: string }
+                  - { label: "価格", name: price, widget: string }
+                  - { label: "注記", name: note, widget: string }
+              - { label: "補足（箇条書き）", name: footnotes, widget: list }
+              - { label: "補足2", name: note2, widget: string }
+
+          - label: "営業情報"
+            name: info
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "営業日", name: days, widget: string }
+              - { label: "営業時間", name: hours, widget: string }
+              - { label: "場所", name: location, widget: string }
+              - { label: "住所", name: address, widget: string }
+
+          - label: "最新情報をチェック"
+            name: followUs
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "本文1行目", name: bodyLine1, widget: string }
+              - { label: "本文2行目", name: bodyLine2, widget: string }
+              - { label: "Instagramボタンのラベル", name: igLabel, widget: string }
+              - { label: "InstagramリンクURL", name: igHref, widget: string }
+              - { label: "ショップボタンのラベル", name: shopLabel, widget: string }
+              - { label: "ショップリンク先", name: shopHref, widget: string }
+
+          - label: "見晴亭からの景色アーカイブ"
+            name: sceneryArchive
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "サブ見出し", name: subheading, widget: string }
+              - label: "月ごとの写真"
+                name: photos
+                widget: list
+                fields:
+                  - { label: "年月表記", name: month, widget: string }
+                  - { label: "画像", name: src, widget: image }
+
+          - label: "焙煎体験への導線CTA"
+            name: roastingCta
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "本文1行目", name: bodyLine1, widget: string }
+              - { label: "本文2行目", name: bodyLine2, widget: string }
+              - { label: "ボタンのラベル", name: ctaLabel, widget: string }
+              - { label: "ボタンのリンク先", name: ctaHref, widget: string }
+
+      # ============================================================= ABOUT
+      - name: "about"
+        label: "三十日珈琲についてページ"
+        file: "content/pages/about.json"
+        fields:
+          - label: "SEO設定"
+            name: seo
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "ページタイトル", name: title, widget: string }
+              - { label: "説明文", name: description, widget: text }
+
+          - label: "ページ上部（ヒーロー）"
+            name: hero
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: title, widget: string }
+              - { label: "サブタイトル", name: subtitle, widget: string }
+              - { label: "背景画像", name: image, widget: image }
+
+          - label: "ブランドストーリー"
+            name: brandStory
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し1行目", name: headingLine1, widget: string }
+              - { label: "見出し2行目", name: headingLine2, widget: string }
+              - label: "本文（段落ごと）"
+                name: paragraphs
+                widget: list
+                field: { label: "段落", name: paragraph, widget: text }
+              - { label: "画像", name: image, widget: image }
+              - { label: "画像の代替テキスト", name: imageAlt, widget: string }
+
+          - label: "築300年の古民家"
+            name: thePlace
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "導入文（段落ごと）"
+                name: intro
+                widget: list
+                field: { label: "段落", name: paragraph, widget: text }
+              - label: "写真（2枚）"
+                name: images
+                widget: list
+                fields:
+                  - { label: "画像", name: src, widget: image }
+                  - { label: "代替テキスト", name: alt, widget: string }
+              - { label: "結びの一文1行目", name: closingLine1, widget: string }
+              - { label: "結びの一文2行目", name: closingLine2, widget: string }
+
+          - label: "つくる人たち"
+            name: thePeople
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "画像", name: image, widget: image }
+              - { label: "画像の代替テキスト", name: imageAlt, widget: string }
+              - label: "本文1（人名は **太字** で囲むと強調表示されます）"
+                name: paragraph1
+                widget: text
+              - { label: "本文2", name: paragraph2, widget: text }
+              - { label: "本文3", name: paragraph3, widget: text }
+
+          - label: "上野原の風景"
+            name: sceneryUenohara
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "写真（2枚）"
+                name: images
+                widget: list
+                fields:
+                  - { label: "画像", name: src, widget: image }
+                  - { label: "代替テキスト", name: alt, widget: string }
+              - { label: "本文1行目", name: bodyLine1, widget: string }
+              - { label: "本文2行目", name: bodyLine2, widget: string }
+
+          - label: "三十日珈琲を体験するCTA"
+            name: cta
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "本文1行目", name: bodyLine1, widget: string }
+              - { label: "本文2行目", name: bodyLine2, widget: string }
+              - { label: "焙煎体験ボタンのラベル", name: experienceLabel, widget: string }
+              - { label: "焙煎体験ボタンのリンク先", name: experienceHref, widget: string }
+              - { label: "ショップボタンのラベル", name: shopLabel, widget: string }
+              - { label: "ショップボタンのリンク先", name: shopHref, widget: string }
+
+      # ============================================================ ACCESS
+      - name: "access"
+        label: "アクセスページ"
+        file: "content/pages/access.json"
+        fields:
+          - label: "SEO設定"
+            name: seo
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "ページタイトル", name: title, widget: string }
+              - { label: "説明文", name: description, widget: text }
+
+          - label: "ページ上部（ヒーロー）"
+            name: hero
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: title, widget: string }
+              - { label: "サブタイトル", name: subtitle, widget: string }
+              - { label: "説明文", name: description, widget: string }
+              - { label: "背景画像", name: image, widget: image }
+
+          - label: "住所・連絡先"
+            name: addressBlock
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "店舗名", name: name, widget: string }
+              - { label: "郵便番号・住所", name: postalAddress, widget: string }
+              - { label: "予約についての注記", name: reservationNote, widget: string }
+              - { label: "電話番号（表示用）", name: tel, widget: string }
+              - { label: "電話番号リンク（tel:から始まる）", name: telHref, widget: string }
+              - { label: "メールアドレス", name: email, widget: string }
+              - { label: "メールリンク（mailto:から始まる）", name: emailHref, widget: string }
+              - label: "Googleマップ埋め込みURL（変更時は要注意・URLの形式を保つこと）"
+                name: mapEmbedUrl
+                widget: string
+
+          - label: "交通手段"
+            name: transportation
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "電車でお越しの方"
+                name: trainCard
+                widget: object
+                fields:
+                  - { label: "タイトル", name: title, widget: string }
+                  - { label: "項目リスト", name: items, widget: list }
+              - label: "お車でお越しの方"
+                name: carCard
+                widget: object
+                fields:
+                  - { label: "タイトル", name: title, widget: string }
+                  - { label: "項目リスト", name: items, widget: list }
+
+          - label: "風景写真の帯"
+            name: scenery
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "画像", name: image, widget: image }
+              - { label: "画像の代替テキスト", name: imageAlt, widget: string }
+              - { label: "本文1行目", name: bodyLine1, widget: string }
+              - { label: "本文2行目", name: bodyLine2, widget: string }
+
+      # =============================================================== FAQ
+      - name: "faq"
+        label: "FAQページ"
+        file: "content/pages/faq.json"
+        fields:
+          - label: "SEO設定"
+            name: seo
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "ページタイトル", name: title, widget: string }
+              - { label: "説明文", name: description, widget: text }
+          - label: "質問カテゴリ"
+            name: categories
+            widget: list
+            fields:
+              - { label: "カテゴリ名", name: title, widget: string }
+              - label: "Q&A"
+                name: items
+                widget: list
+                fields:
+                  - { label: "質問", name: q, widget: string }
+                  - { label: "回答", name: a, widget: text }
+
+      # ================================================= MOBILE ROASTING
+      - name: "mobile-roasting"
+        label: "出張焙煎体験ページ"
+        file: "content/pages/mobile-roasting.json"
+        fields:
+          - label: "SEO設定"
+            name: seo
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "ページタイトル", name: title, widget: string }
+              - { label: "説明文", name: description, widget: text }
+
+          - label: "ページ上部（ヒーロー）"
+            name: hero
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: title, widget: string }
+              - { label: "サブタイトル", name: subtitle, widget: string }
+              - { label: "説明文", name: description, widget: string }
+              - { label: "背景画像", name: image, widget: image }
+
+          - label: "コンセプト"
+            name: concept
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し1行目", name: headingLine1, widget: string }
+              - { label: "見出し2行目", name: headingLine2, widget: string }
+              - { label: "本文", name: body, widget: text }
+
+          - label: "お持ちするもの"
+            name: whatWeBring
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "項目（3件）"
+                name: items
+                widget: list
+                fields:
+                  - { label: "タイトル", name: title, widget: string }
+                  - { label: "説明文", name: text, widget: text }
+
+          - label: "こんなシーンに"
+            name: suitableFor
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - { label: "画像", name: image, widget: image }
+              - { label: "画像の代替テキスト", name: imageAlt, widget: string }
+              - label: "項目（4件）"
+                name: items
+                widget: list
+                fields:
+                  - { label: "タイトル", name: title, widget: string }
+                  - { label: "説明文", name: text, widget: text }
+
+          - label: "料金（基本料金・追加料金はpricing.tsと連動のため編集不可）"
+            name: pricing
+            widget: object
+            collapsed: true
+            fields:
+              - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
+              - { label: "見出し", name: heading, widget: string }
+              - label: "基本料金の説明"
+                name: basePlan
+                widget: object
+                fields:
+                  - { label: "タイトル", name: title, widget: string }
+                  - { label: "対象人数", name: note, widget: string }
+                  - { label: "価格の注記", name: priceNote, widget: string }
+              - label: "追加料金の説明"
+                name: additionalPlan
+                widget: object
+                fields:
+                  - { label: "タイトル", name: title, widget: string }
+                  - { label: "対象人数", name: note, widget: string }
+                  - { label: "価格の注記", name: priceNote, widget: string }
+              - label: "大人数・特別プラン（価格を含め編集可能）"
+                name: largeGroupPlan
+                widget: object
+                fields:
+                  - { label: "タイトル", name: title, widget: string }
+                  - { label: "対象人数", name: note, widget: string }
+                  - { label: "価格（「要相談」等）", name: price, widget: string }
+              - { label: "補足", name: footnote, widget: text }
+              - { label: "対応エリア見出し", name: areaHeading, widget: string }
+              - { label: "対応エリア一覧", name: areas, widget: list }
+              - { label: "対応エリア補足", name: areaFootnote, widget: string }

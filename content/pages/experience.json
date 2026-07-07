@@ -1,0 +1,119 @@
+{
+  "seo": {
+    "title": "焙煎体験予約",
+    "description": "築300年の古民家で、自分だけのコーヒーを焙煎する体験。Aillio Bullet R1 V2で生豆の選別から焙煎、ドリップまで約90分。公式サイトからの直予約が最もお得です。"
+  },
+  "hero": {
+    "title": "EXPERIENCE",
+    "subtitle": "焙煎体験",
+    "description": "築300年の古民家で、自分だけのコーヒーを焙煎する。",
+    "image": "/images/experience/roasting-hands.jpg"
+  },
+  "directBookingBanner": {
+    "text": "じゃらんやSOW Experience経由より、公式サイトからの直予約が最もお得です"
+  },
+  "pricing": {
+    "eyebrow": "Plans & Pricing",
+    "heading": "プラン・料金",
+    "subheading": "じゃらん・SOW Experience経由よりお得な公式サイト限定価格",
+    "personalPlan": {
+      "badge": "Best Value",
+      "eyebrow": "Personal",
+      "title": "焙煎体験（直予約）",
+      "priceNote": "（税込 / 1組・2名まで）",
+      "features": [
+        "完全予約制・プライベート空間",
+        "所要約90分・マンツーマン指導",
+        "テイスティング",
+        "焙煎豆お持ち帰り（約400g）",
+        "ご希望の日時をリクエスト"
+      ],
+      "ctaLabel": "このプランを予約する"
+    },
+    "groupPlan": {
+      "eyebrow": "Group",
+      "title": "グループ焙煎体験",
+      "priceNote": "（税込 / 1名）",
+      "features": [
+        "1名から参加OK",
+        "所要約90分",
+        "テイスティング",
+        "焙煎豆お持ち帰り",
+        "開催日程は予約枠を確認"
+      ],
+      "ctaLabel": "空き状況を問い合わせる"
+    },
+    "footnote1Line1": "※ SOW Experience・anatae経由は¥11,000/組（2名まで）。",
+    "footnote1Line2": "公式サイトからの直予約が最もお得です。",
+    "footnote2": "焙煎体験（直予約）── ご希望の日時をリクエストしていただく完全プライベート制です。\nグループ焙煎体験 ── 三十日珈琲が開放した予約枠に、おひとりから参加できます。空き状況はお問い合わせください。",
+    "_note": "priceは予約金額の計算定数(pricing.ts BASE_PRICE)と直結するためCMS対象外。コンポーネント側にハードコードしている。"
+  },
+  "flow": {
+    "eyebrow": "Flow",
+    "heading": "体験の流れ",
+    "subheading": "所要約90分",
+    "steps": [
+      {
+        "num": "01",
+        "title": "古民家へようこそ",
+        "text": "焙煎士がお迎え。まずはウェルカムコーヒーでひと息。築300年の空間に身を委ねてください。",
+        "image": "/images/about/open-sign.jpg"
+      },
+      {
+        "num": "02",
+        "title": "生豆を選ぶ",
+        "text": "エチオピア、グアテマラ、ブラジル──産地の異なる生豆からお好みを選んでいただきます。",
+        "image": "/images/experience/bean-selection.jpg"
+      },
+      {
+        "num": "03",
+        "title": "焙煎する",
+        "text": "Aillio Bullet R1 V2で自分の手で焙煎。焙煎士がマンツーマンでサポートします。",
+        "image": "/images/experience/roasting-hands.jpg"
+      },
+      {
+        "num": "04",
+        "title": "テイスティング",
+        "text": "自分で焙煎した豆をその場でドリップ。味わいの違いをじっくり楽しみます。",
+        "image": "/images/experience/tasting.jpg"
+      },
+      {
+        "num": "05",
+        "title": "お持ち帰り",
+        "text": "焙煎した豆はお土産に。プライベート体験では約400g（250g×2回焙煎）、グループ体験では人数に応じた量をお持ち帰りいただけます。",
+        "image": "/images/experience/takeaway-bags.jpg"
+      }
+    ]
+  },
+  "gallery": {
+    "eyebrow": "Gallery",
+    "heading": "体験の風景",
+    "images": [
+      "/images/experience/gallery-1.jpg",
+      "/images/experience/gallery-2.jpg",
+      "/images/experience/gallery-3.jpg",
+      "/images/experience/gallery-4.jpg",
+      "/images/experience/gallery-5.jpg",
+      "/images/experience/gallery-6.jpg"
+    ]
+  },
+  "access": {
+    "eyebrow": "Access",
+    "heading": "アクセス",
+    "trainCard": {
+      "title": "電車でお越しの方",
+      "items": [
+        "JR中央本線「上野原」駅",
+        "新宿から約65分（中央特快利用）",
+        "高尾から約16分"
+      ]
+    },
+    "carCard": {
+      "title": "お車でお越しの方",
+      "items": [
+        "中央自動車道「上野原IC」から約10分",
+        "駐車場あり（無料・6台）"
+      ]
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "seo": {
+    "title": "出張焙煎体験",
+    "description": "三十日珈琲の出張焙煎体験。焙煎機と生豆を持って、あなたの場所へ伺います。企業研修、チームビルディング、ワークショップに最適。"
+  },
+  "hero": {
+    "title": "MOBILE ROASTING",
+    "subtitle": "出張焙煎体験",
+    "description": "焙煎所の体験を、あなたの場所へ。",
+    "image": "/images/experience/roaster-machine.jpg"
+  },
+  "concept": {
+    "eyebrow": "Concept",
+    "headingLine1": "焙煎所の体験を、",
+    "headingLine2": "あなたの場所へ",
+    "body": "焙煎士が焙煎機と生豆を持って、あなたの場所へ伺います。生豆の選別から焙煎、テイスティングまで──古民家で行っている焙煎体験を、そのままお届けするサービスです。"
+  },
+  "whatWeBring": {
+    "eyebrow": "What We Bring",
+    "heading": "お持ちするもの",
+    "items": [
+      { "title": "焙煎機", "text": "手回し焙煎機を持参。実際に焙煎の工程を体験していただけます。" },
+      { "title": "生豆", "text": "厳選したスペシャルティグレードの生豆を複数種ご用意。産地の違いを体感。" },
+      { "title": "器具一式", "text": "ドリッパー、ケトル、スケール等、テイスティングに必要な器具をすべて持参します。" }
+    ]
+  },
+  "suitableFor": {
+    "eyebrow": "Suitable For",
+    "heading": "こんなシーンに",
+    "image": "/images/experience/roaster-machine.jpg",
+    "imageAlt": "出張焙煎体験の様子",
+    "items": [
+      { "title": "企業研修", "text": "コーヒー焙煎を通じた五感の体験で、クリエイティビティを刺激します。" },
+      { "title": "チームビルディング", "text": "焙煎からテイスティングまでの共同作業が、自然なコミュニケーションを生みます。" },
+      { "title": "地域イベント", "text": "マルシェや文化祭に。参加者が自分で焙煎する体験型コンテンツとして。" },
+      { "title": "ワークショップ", "text": "コーヒーの座学と実技を組み合わせた、学びのある時間をお届けします。" }
+    ]
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "heading": "料金",
+    "basePlan": { "title": "基本料金", "note": "2名様まで", "priceNote": "（税込）" },
+    "additionalPlan": { "title": "追加料金", "note": "3名様目以降、1名あたり", "priceNote": "（税込 / 人）" },
+    "largeGroupPlan": { "title": "大人数・特別プラン", "note": "10名様以上やカスタム内容", "price": "要相談" },
+    "footnote": "※ 交通費は別途ご相談。所要時間は約90〜120分が目安です。\n※ 電源（家庭用コンセント）と作業スペース（テーブル1台分）をご用意ください。",
+    "areaHeading": "対応エリア",
+    "areas": ["山梨県 上野原市（全域）", "山梨県 大月市（市内中心部・近隣）", "相模原市 緑区（藤野エリア周辺）"],
+    "areaFootnote": "※ 上記以外の近隣エリアもご相談ください",
+    "_note": "basePlan/additionalPlanのpriceは予約金額の計算定数(pricing.ts BASE_PRICE/EXTRA_PRICE_PER_PERSON)と直結するためCMS対象外。コンポーネント側にハードコードしている。largeGroupPlanの「要相談」は計算に使われないため編集対象。"
+  }
+}

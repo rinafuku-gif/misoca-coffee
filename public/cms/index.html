@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <!-- 相対パス（config.yml 等）の解決基準を /cms/ に固定する。
+         これにより /cms でも /cms/ でもトレイリングスラッシュに関わらず正しく動作する。 -->
+    <base href="/cms/" />
+    <title>三十日珈琲 コンテンツ管理 | 制作：株式会社S.E.ネットワーク</title>
+    <style>
+      /* Decap CMSのデフォルトロゴ・配色を三十日珈琲ブランドに寄せる最小限のカスタムCSS。
+         過剰なテーマ改造はせず、ログイン画面の見出しと隅の制作クレジットのみ調整する。 */
+      #nc-root {
+        min-height: 100vh;
+      }
+      .misoca-cms-credit {
+        position: fixed;
+        right: 12px;
+        bottom: 10px;
+        z-index: 50;
+        font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", sans-serif;
+        font-size: 11px;
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 999px;
+        padding: 5px 12px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        pointer-events: none;
+      }
+      .misoca-cms-credit a {
+        pointer-events: auto;
+        color: #6b6b6b;
+        text-decoration: none;
+      }
+      .misoca-cms-credit a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Decap CMSの本体。config.ymlは <base href> により /cms/config.yml から読み込まれる。
+         バージョンは範囲指定(^3.0.0)ではなく実バージョンに固定し、SRI(Subresource Integrity)で
+         配信元(unpkg.com)からの改ざん・差し替えを検知できるようにしている。
+         バージョンを上げる場合はSRIハッシュの再計算が必要
+         （`curl -sL <URL> | openssl dgst -sha384 -binary | openssl base64 -A`）。 -->
+    <script
+      src="https://unpkg.com/decap-cms@3.14.1/dist/decap-cms.js"
+      integrity="sha384-K+E/B3QG3FJrtRXoyUjME4ilx71pYGyrvAVxYvd/p0zCPuXsc3eoEuSzUW3Ke63V"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- 制作クレジット（Ryo指定のHTML相当。CMS管理画面側にのみ表示・サイト本体には掲出しない） -->
+    <div class="misoca-cms-credit">
+      <p style="margin: 0">
+        <a href="https://senetwork.co.jp/" target="_blank" rel="noreferrer noopener"
+          >制作：株式会社S.E.ネットワーク</a
+        >
+      </p>
+    </div>
+  </body>
+</html>

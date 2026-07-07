@@ -4,68 +4,24 @@ import Image from "next/image";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import { StandCalendar } from "@/features/stand/components/StandCalendar";
+import content from "@content/pages/stand.json";
 
 export const metadata: Metadata = {
-  title: "コーヒースタンド | misoca coffee stand",
-  description:
-    "暮らしのそばに、景色とおいしいコーヒーを。見晴亭（上野原駅北口から徒歩すぐ）で毎週水曜日営業。ハンドドリップコーヒーと自家焙煎豆の購入ができます。",
+  title: content.seo.title,
+  description: content.seo.description,
 };
 
-const menuItems = [
-  {
-    name: "ハンドドリップコーヒー",
-    price: "¥500",
-    note: "Hot",
-  },
-  {
-    name: "本日のコーヒー",
-    price: "¥300",
-    note: "水曜 8:00〜9:30 限定5杯",
-  },
-  {
-    name: "オーツミルクラテ",
-    price: "¥800",
-    note: "Hot",
-  },
-  {
-    name: "オーツミルク単品",
-    price: "¥400",
-    note: "Hot",
-  },
-];
-
-const sceneryPhotos = [
-  { month: "2026年3月", src: "/images/stand/scenery-2026-03.jpg" },
-  { month: "2026年2月", src: "/images/stand/scenery-2026-02.jpg" },
-  { month: "2026年1月", src: "/images/stand/scenery-2026-01.jpg" },
-  { month: "2025年12月", src: "/images/stand/scenery-2025-12.jpg" },
-  { month: "2025年11月", src: "/images/stand/scenery-2025-11.jpg" },
-  { month: "2025年10月", src: "/images/stand/scenery-2025-10.jpg" },
-  { month: "2025年9月", src: "/images/stand/scenery-2025-09.jpg" },
-  { month: "2025年8月", src: "/images/stand/scenery-2025-08.jpg" },
-  { month: "2025年7月", src: "/images/stand/scenery-2025-07.jpg" },
-  { month: "2025年6月", src: "/images/stand/scenery-2025-06.jpg" },
-  { month: "2025年5月", src: "/images/stand/scenery-2025-05.jpg" },
-  { month: "2025年4月", src: "/images/stand/scenery-2025-04.jpg" },
-  { month: "2025年3月", src: "/images/stand/scenery-2025-03.jpg" },
-  { month: "2025年2月", src: "/images/stand/scenery-2025-02.jpg" },
-  { month: "2025年1月", src: "/images/stand/scenery-2025-01.jpg" },
-  { month: "2024年12月", src: "/images/stand/scenery-2024-12.jpg" },
-  { month: "2024年11月", src: "/images/stand/scenery-2024-11.jpg" },
-  { month: "2024年10月", src: "/images/stand/scenery-2024-10.jpg" },
-  { month: "2024年9月", src: "/images/stand/scenery-2024-09.jpg" },
-  { month: "2024年8月", src: "/images/stand/scenery-2024-08.jpg" },
-  { month: "2024年7月", src: "/images/stand/scenery-2024-07.jpg" },
-];
-
 export default function StandPage() {
+  const { hero, aboutStand, galleryBanner, menu, info, followUs, sceneryArchive, roastingCta } =
+    content;
+
   return (
     <>
       <PageHero
-        title="COFFEE STAND"
-        subtitle="コーヒースタンド"
-        description="暮らしのそばに、景色とおいしいコーヒーを。"
-        image="/images/stand/stand-1.jpg"
+        title={hero.title}
+        subtitle={hero.subtitle}
+        description={hero.description}
+        image={hero.image}
       />
 
       {/* About the Stand */}
@@ -74,32 +30,30 @@ export default function StandPage() {
           <div className="flex flex-col md:flex-row gap-10 md:gap-20 items-center">
             <ScrollReveal direction="left" className="w-full md:w-1/2">
               <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
-                misoca coffee stand
+                {aboutStand.eyebrow}
               </p>
               <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6 leading-[1.5]">
-                暮らしのそばに、
+                {aboutStand.headingLine1}
                 <br />
-                景色とおいしいコーヒーを。
+                {aboutStand.headingLine2}
               </h2>
               <div className="w-16 h-px bg-gold mb-10" />
-              <p className="text-haicha leading-loose mb-6">
-                見晴亭（上野原駅北口から徒歩すぐ）で営業中。
-                ハンドドリップコーヒーと自家焙煎豆の購入ができます。
-              </p>
-              <p className="text-haicha leading-loose mb-6">
-                景色を眺めてゆったりコーヒーを楽しめる、
-                ホッと一息つけるコーヒースタンドです。
-              </p>
-              <p className="text-haicha leading-loose">
-                珈琲初心者さんも常連さんも、電車の待ち時間などでも、
-                お気軽にお立ち寄りください。
-              </p>
+              {aboutStand.paragraphs.map((p, i) => (
+                <p
+                  key={i}
+                  className={`text-haicha leading-loose ${
+                    i < aboutStand.paragraphs.length - 1 ? "mb-6" : ""
+                  }`}
+                >
+                  {p}
+                </p>
+              ))}
             </ScrollReveal>
             <ScrollReveal direction="right" delay={0.2} className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] rounded-sm overflow-hidden">
                 <Image
-                  src="/images/stand/stand-morning-mist.jpg"
-                  alt="朝霧と朝日の風景"
+                  src={aboutStand.image}
+                  alt={aboutStand.imageAlt}
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-1000 ease-out"
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -116,8 +70,8 @@ export default function StandPage() {
           <ScrollReveal>
             <div className="relative aspect-video rounded-sm overflow-hidden">
               <Image
-                src="/images/stand/stand-summer-lake.jpg"
-                alt="夏の緑と湖の景色"
+                src={galleryBanner.image}
+                alt={galleryBanner.imageAlt}
                 fill
                 className="object-cover"
                 sizes="100vw"
@@ -132,16 +86,16 @@ export default function StandPage() {
         <div className="max-w-4xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
-              Menu
+              {menu.eyebrow}
             </p>
             <h2 className="font-serif text-xl md:text-2xl text-center text-konsumi tracking-wider font-light mb-6">
-              メニュー
+              {menu.heading}
             </h2>
             <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
           </ScrollReveal>
 
           <div className="space-y-0">
-            {menuItems.map((item, i) => (
+            {menu.items.map((item, i) => (
               <ScrollReveal key={item.name} direction="up" delay={i * 0.1}>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-8 border-b border-usuzumi/30">
                   <div>
@@ -160,20 +114,13 @@ export default function StandPage() {
 
           <ScrollReveal delay={0.3}>
             <div className="mt-12 space-y-2">
-              <p className="text-sm text-haicha leading-relaxed">
-                ※ アイスはすべて +¥50
-              </p>
-              <p className="text-sm text-haicha leading-relaxed">
-                ※ オーツミルク変更 +¥50
-              </p>
-              <p className="text-sm text-haicha leading-relaxed">
-                ※ 砂糖・ミルクの標準提供はございません
-              </p>
-              <p className="text-sm text-haicha leading-relaxed">
-                ※ 自家焙煎豆の販売もしています（100g ¥800〜 / 種類により変動）
-              </p>
+              {menu.footnotes.map((line) => (
+                <p key={line} className="text-sm text-haicha leading-relaxed">
+                  {line}
+                </p>
+              ))}
               <p className="text-xs text-haicha/60 mt-4">
-                季節や仕入れ状況により、メニュー・価格が変わる場合があります。
+                {menu.note2}
               </p>
             </div>
           </ScrollReveal>
@@ -185,10 +132,10 @@ export default function StandPage() {
         <div className="max-w-4xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
-              Info &amp; Calendar
+              {info.eyebrow}
             </p>
             <h2 className="font-serif text-xl md:text-2xl text-center text-konsumi tracking-wider font-light mb-6">
-              営業情報
+              {info.heading}
             </h2>
             <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
           </ScrollReveal>
@@ -196,16 +143,16 @@ export default function StandPage() {
           <ScrollReveal delay={0.2}>
             <div className="text-center mb-16">
               <p className="font-serif text-xl text-konsumi tracking-wider font-light mb-4">
-                毎週水曜日
+                {info.days}
               </p>
               <p className="text-haicha leading-loose mb-6">
-                8:00 〜 9:30 / 10:30 〜 16:00
+                {info.hours}
               </p>
               <p className="text-sm text-haicha leading-relaxed">
-                見晴亭（上野原駅北口から徒歩すぐ）
+                {info.location}
               </p>
               <p className="text-xs text-haicha/60 leading-relaxed">
-                〒409-0113 山梨県上野原市新田1053-3
+                {info.address}
               </p>
             </div>
           </ScrollReveal>
@@ -221,33 +168,33 @@ export default function StandPage() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <ScrollReveal>
             <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
-              Follow Us
+              {followUs.eyebrow}
             </p>
             <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6">
-              最新情報をチェック
+              {followUs.heading}
             </h2>
             <div className="w-16 h-px bg-gold mx-auto mb-10" />
             <p className="text-haicha leading-loose mb-12">
-              営業日や新しい豆の入荷情報は、Instagramでお知らせしています。
+              {followUs.bodyLine1}
               <br />
-              ご来店前にぜひご確認ください。
+              {followUs.bodyLine2}
             </p>
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="https://www.instagram.com/misoca_coffeestand"
+                href={followUs.igHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block bg-gold/90 hover:bg-gold text-white px-8 py-4 text-xs tracking-[0.2em] transition-all duration-500"
               >
-                @misoca_coffeestand をフォロー
+                {followUs.igLabel}
               </a>
               <Link
-                href="/shop"
+                href={followUs.shopHref}
                 className="inline-block border border-karekusa/30 text-karekusa hover:bg-karekusa hover:text-white px-8 py-4 text-xs tracking-[0.2em] transition-all duration-500"
               >
-                オンラインショップへ
+                {followUs.shopLabel}
               </Link>
             </div>
           </ScrollReveal>
@@ -259,19 +206,19 @@ export default function StandPage() {
         <div className="max-w-5xl mx-auto px-4 md:px-8">
           <ScrollReveal>
             <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
-              Scenery
+              {sceneryArchive.eyebrow}
             </p>
             <h2 className="font-serif text-xl md:text-2xl text-center text-konsumi tracking-wider font-light mb-6">
-              見晴亭からの景色
+              {sceneryArchive.heading}
             </h2>
             <p className="text-center text-sm text-haicha mb-4">
-              毎朝、同じ場所から撮り続けている景色
+              {sceneryArchive.subheading}
             </p>
             <div className="w-16 h-px bg-gold mx-auto mb-16 md:mb-20" />
           </ScrollReveal>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-            {sceneryPhotos.map((photo, i) => (
+            {sceneryArchive.photos.map((photo, i) => (
               <ScrollReveal key={photo.month} direction="up" delay={i * 0.1}>
                 <div className="relative">
                   <div className="relative aspect-[3/4] rounded-sm overflow-hidden">
@@ -298,24 +245,24 @@ export default function StandPage() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <ScrollReveal>
             <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light text-center mb-6 uppercase">
-              misoca coffee
+              {roastingCta.eyebrow}
             </p>
             <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6">
-              焙煎体験もやっています
+              {roastingCta.heading}
             </h2>
             <div className="w-16 h-px bg-gold mx-auto mb-10" />
             <p className="text-haicha leading-loose mb-12">
-              三十日珈琲では、築300年の古民家での焙煎体験も行っています。
+              {roastingCta.bodyLine1}
               <br />
-              コーヒースタンドとはまた違った、特別な時間をお過ごしください。
+              {roastingCta.bodyLine2}
             </p>
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
             <Link
-              href="/experience"
+              href={roastingCta.ctaHref}
               className="inline-block bg-gold/90 hover:bg-gold text-white px-8 py-4 text-xs tracking-[0.2em] transition-all duration-500"
             >
-              焙煎体験を予約する
+              {roastingCta.ctaLabel}
             </Link>
           </ScrollReveal>
         </div>

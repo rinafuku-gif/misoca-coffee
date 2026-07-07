@@ -4,20 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import homeContent from "@content/pages/home.json";
 
-interface Slide {
-  src: string;
-  alt: string;
-}
-
-const slides: Slide[] = [
-  { src: "/images/hero/hero-roaster-machine.jpg", alt: "焙煎機" },
-  { src: "/images/hero/hero-interior-atmosphere.jpg", alt: "古民家の情緒ある空間" },
-  { src: "/images/hero/hero-roasting-output.jpg", alt: "焙煎豆の出来上がり" },
-  { src: "/images/hero/hero-group-watching.jpg", alt: "焙煎体験の様子" },
-  { src: "/images/about/scenery-1.jpg", alt: "上野原の風景" },
-  { src: "/images/about/scenery-2.jpg", alt: "焙煎所のある里山" },
-];
+const { hero } = homeContent;
+const slides = hero.slides;
 
 const SLIDE_DURATION = 6000;
 
@@ -89,8 +79,8 @@ export function HeroSlideshow() {
               transition={{ duration: 1.2, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="font-serif text-2xl md:text-4xl lg:text-5xl font-light text-white leading-[1.6] tracking-wider mb-12"
             >
-              <span className="block">コーヒーと暮らす。</span>
-              <span className="block mt-2 md:mt-3">古くて新しい、みんなの焙煎所。</span>
+              <span className="block">{hero.headingLine1}</span>
+              <span className="block mt-2 md:mt-3">{hero.headingLine2}</span>
             </motion.h1>
 
             <motion.div
@@ -100,10 +90,10 @@ export function HeroSlideshow() {
               className="mb-16"
             >
               <p className="text-sm md:text-base text-white/70 leading-[2] tracking-[0.1em] font-light">
-                築300年の古民家で、自分だけのコーヒーを焙煎する。
+                {hero.subtitleLine1}
               </p>
               <p className="text-sm md:text-base text-white/55 leading-[2] tracking-[0.1em] font-light mt-1">
-                山梨県上野原市から届ける、体験とスペシャルティコーヒー。
+                {hero.subtitleLine2}
               </p>
             </motion.div>
 
@@ -114,19 +104,19 @@ export function HeroSlideshow() {
               className="flex flex-col sm:flex-row items-start gap-4"
             >
               <Link
-                href="/experience"
+                href={hero.primaryCtaHref}
                 className="inline-flex items-center gap-3 border border-white/40 text-white text-xs tracking-[0.2em] px-8 py-4 hover:bg-white/15 transition-all duration-500"
               >
-                <span>焙煎体験を予約する</span>
+                <span>{hero.primaryCtaLabel}</span>
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
               </Link>
               <Link
-                href="/shop"
+                href={hero.secondaryCtaHref}
                 className="inline-flex items-center gap-3 border border-white/25 text-white/70 text-xs tracking-[0.2em] px-8 py-4 hover:bg-white/10 hover:text-white transition-all duration-500"
               >
-                <span>コーヒー豆を購入する</span>
+                <span>{hero.secondaryCtaLabel}</span>
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>

@@ -5,41 +5,15 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { HeroSlideshow } from "@/shared/ui/HeroSlideshow";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
+import homeContent from "@content/pages/home.json";
 
 /* ───────────────────────── Data ───────────────────────── */
+/* services / galleryImages は content/pages/home.json（Decap CMSで編集可能）から取得する。
+   fallbackProducts / fallbackJournals は Notion連携APIの初期表示用フォールバックのため
+   CMS化スコープ外（Notion側が正）。 */
 
-const services = [
-  {
-    title: "焙煎体験",
-    text: "生豆を選び、自分の手で焙煎する。\n築300年の古民家で、五感を開く時間。",
-    image: "/images/experience/bean-sorting.jpg",
-    href: "/experience",
-    cta: "体験を詳しく見る",
-  },
-  {
-    title: "コーヒーケータリング",
-    text: "スペシャルティコーヒーを、保温ポットでお届け。\nポットひとつで、そこがカフェになる。",
-    image: "/images/catering/hand-drip.jpg",
-    href: "/catering",
-    cta: "ケータリングを見る",
-  },
-  {
-    title: "出張焙煎体験",
-    text: "焙煎所の体験を、あなたの場所へ。\n企業研修やイベントに、焙煎士が伺います。",
-    image: "/images/experience/roaster-machine.jpg",
-    href: "/mobile-roasting",
-    cta: "出張焙煎を見る",
-  },
-];
-
-const galleryImages = [
-  { src: "/images/experience/roaster-machine.jpg", alt: "Aillio Bullet焙煎機" },
-  { src: "/images/about/scenery-1.jpg", alt: "コーヒー生豆の麻袋" },
-  { src: "/images/about/exterior-window.jpg", alt: "窓辺のドリッパーとカップ" },
-  { src: "/images/about/interior-shelf.jpg", alt: "焙煎所の棚" },
-  { src: "/images/about/scenery-2.jpg", alt: "焙煎機クローズアップ" },
-  { src: "/images/about/open-sign.jpg", alt: "古民家の外観" },
-];
+const { services, gallery } = homeContent;
+const galleryImages = gallery.images;
 
 const fallbackJournals = [
   {
@@ -153,10 +127,10 @@ export default function Home() {
           <ScrollReveal>
             <div className="text-center mb-28 md:mb-36">
               <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
-                Our Story
+                {homeContent.ourStory.eyebrow}
               </p>
               <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
-                コーヒーがつないだ、人と場所。
+                {homeContent.ourStory.heading}
               </h2>
             </div>
           </ScrollReveal>
@@ -166,8 +140,8 @@ export default function Home() {
             <ScrollReveal direction="left" className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
-                  src="/images/about/house-exterior.jpg"
-                  alt="築300年の古民家 母屋全景"
+                  src={homeContent.ourStory.block1.image}
+                  alt={homeContent.ourStory.block1.imageAlt}
                   fill
                   className="object-cover hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -176,15 +150,19 @@ export default function Home() {
             </ScrollReveal>
             <ScrollReveal direction="right" delay={0.2} className="w-full md:w-1/2">
               <h3 className="font-serif text-lg md:text-xl text-konsumi tracking-wider font-light mb-6">
-                築300年の古民家から
+                {homeContent.ourStory.block1.title}
               </h3>
               <div className="w-10 h-px bg-gold/40 mb-8" />
-              <p className="text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide mb-6">
-                住まいのサブスクサービス「ADDress」での出会いをきっかけに、山梨県上野原市にある築300年の古民家に辿り着きました。
-              </p>
-              <p className="text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide">
-                太い梁、土壁、障子から差し込む光── この場所でしか生まれない空気の中で、長屋門の一室に小さな焙煎所を開きました。
-              </p>
+              {homeContent.ourStory.block1.paragraphs.map((p, i) => (
+                <p
+                  key={i}
+                  className={`text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide ${
+                    i < homeContent.ourStory.block1.paragraphs.length - 1 ? "mb-6" : ""
+                  }`}
+                >
+                  {p}
+                </p>
+              ))}
             </ScrollReveal>
           </div>
 
@@ -193,8 +171,8 @@ export default function Home() {
             <ScrollReveal direction="right" className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
-                  src="/images/about/open-sign.jpg"
-                  alt="三十日珈琲の看板"
+                  src={homeContent.ourStory.block2.image}
+                  alt={homeContent.ourStory.block2.imageAlt}
                   fill
                   className="object-cover hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -203,20 +181,24 @@ export default function Home() {
             </ScrollReveal>
             <ScrollReveal direction="left" delay={0.2} className="w-full md:w-1/2">
               <h3 className="font-serif text-lg md:text-xl text-konsumi tracking-wider font-light mb-6">
-                ただの焙煎所ではなく
+                {homeContent.ourStory.block2.title}
               </h3>
               <div className="w-10 h-px bg-gold/40 mb-8" />
-              <p className="text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide mb-6">
-                コーヒーを「飲む」だけでなく、「つくる」「届ける」「つながる」体験を通じて、日常にもうひとつの居場所をつくりたい。
-              </p>
-              <p className="text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide mb-10">
-                30日に一度、会いに来てほしい。焙煎したての一杯と一緒に、この場所で過ごす時間そのものを届けたい── それが三十日珈琲の原点です。
-              </p>
+              {homeContent.ourStory.block2.paragraphs.map((p, i) => (
+                <p
+                  key={i}
+                  className={`text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide ${
+                    i < homeContent.ourStory.block2.paragraphs.length - 1 ? "mb-6" : "mb-10"
+                  }`}
+                >
+                  {p}
+                </p>
+              ))}
               <Link
-                href="/about"
+                href={homeContent.ourStory.block2.ctaHref}
                 className="inline-flex items-center gap-3 border border-karekusa/30 text-karekusa text-xs tracking-[0.15em] px-7 py-3.5 hover:bg-karekusa hover:text-white transition-all duration-500"
               >
-                私たちについて詳しく
+                {homeContent.ourStory.block2.ctaLabel}
                 <ArrowIcon />
               </Link>
             </ScrollReveal>
@@ -234,9 +216,9 @@ export default function Home() {
               <span className="w-12 h-px bg-gold/40" />
             </div>
             <p className="font-serif text-konsumi text-base md:text-lg tracking-wider leading-[2.2] font-light">
-              焙煎する、届ける、出会う。
+              {homeContent.brandStatement.line1}
               <br />
-              三十日珈琲の3つの体験をご紹介します。
+              {homeContent.brandStatement.line2}
             </p>
           </ScrollReveal>
         </div>
@@ -248,16 +230,16 @@ export default function Home() {
           <ScrollReveal>
             <div className="text-center mb-28 md:mb-36">
               <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
-                Services
+                {homeContent.services.eyebrow}
               </p>
               <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
-                三十日珈琲の体験
+                {homeContent.services.heading}
               </h2>
             </div>
           </ScrollReveal>
 
           <div className="space-y-40 md:space-y-56">
-            {services.map((service, i) => (
+            {services.items.map((service, i) => (
               <div
                 key={service.title}
                 className={`flex flex-col ${
@@ -312,8 +294,8 @@ export default function Home() {
             <ScrollReveal direction="left" className="w-full md:w-1/2">
               <div className="relative aspect-[3/2] overflow-hidden">
                 <Image
-                  src="/images/about/scenery-1.jpg"
-                  alt="上野原のゆずを使ったインフューズドコーヒー"
+                  src={homeContent.newArrival.image}
+                  alt={homeContent.newArrival.imageAlt}
                   fill
                   className="object-cover hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -322,20 +304,20 @@ export default function Home() {
             </ScrollReveal>
             <ScrollReveal direction="right" delay={0.2} className="w-full md:w-1/2">
               <p className="font-[family-name:var(--font-display)] text-[11px] tracking-[0.5em] text-gold font-light mb-6 uppercase">
-                New Arrival
+                {homeContent.newArrival.eyebrow}
               </p>
               <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6">
-                上野原のゆずから生まれた、もうひとつのコーヒー
+                {homeContent.newArrival.heading}
               </h2>
               <div className="w-10 h-px bg-gold/40 mb-8" />
               <p className="text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide mb-10">
-                山梨県上野原市の規格外ゆずを、コーヒー生豆に漬け込んでから焙煎した、紅茶のように楽しむ新しい一杯。
+                {homeContent.newArrival.body}
               </p>
               <Link
-                href="/shop/uenohara-yuzu"
+                href={homeContent.newArrival.ctaHref}
                 className="inline-flex items-center gap-3 border border-karekusa/30 text-karekusa text-xs tracking-[0.15em] px-7 py-3.5 hover:bg-karekusa hover:text-white transition-all duration-500"
               >
-                詳しく見る
+                {homeContent.newArrival.ctaLabel}
                 <ArrowIcon />
               </Link>
             </ScrollReveal>
@@ -346,8 +328,8 @@ export default function Home() {
       {/* ─── 6. Experience CTA ─── */}
       <section className="relative h-[70vh] md:h-[80vh] overflow-hidden">
         <Image
-          src="/images/experience/roasting-hands.jpg"
-          alt="焙煎体験"
+          src={homeContent.experienceCta.image}
+          alt={homeContent.experienceCta.imageAlt}
           fill
           className="object-cover scale-110"
           sizes="100vw"
@@ -356,15 +338,15 @@ export default function Home() {
         <div className="relative z-10 h-full max-w-6xl mx-auto px-6 md:px-8 flex items-end pb-16 md:pb-24">
           <ScrollReveal>
             <p className="font-serif text-white/90 text-lg md:text-xl tracking-wider font-light leading-relaxed mb-8">
-              生豆の選別から焙煎、ドリップまで。
+              {homeContent.experienceCta.bodyLine1}
               <br />
-              あなただけのコーヒーを、古民家で仕上げる。
+              {homeContent.experienceCta.bodyLine2}
             </p>
             <Link
-              href="/experience"
+              href={homeContent.experienceCta.ctaHref}
               className="inline-flex items-center gap-3 border border-white/40 text-white/90 text-xs tracking-[0.2em] px-8 py-4 hover:bg-white/15 transition-all duration-500"
             >
-              焙煎体験を予約する
+              {homeContent.experienceCta.ctaLabel}
               <ArrowIcon />
             </Link>
           </ScrollReveal>
@@ -377,10 +359,10 @@ export default function Home() {
           <ScrollReveal>
             <div className="text-center mb-16 md:mb-24">
               <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
-                Gallery
+                {homeContent.gallery.eyebrow}
               </p>
               <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
-                焙煎所の風景
+                {homeContent.gallery.heading}
               </h2>
             </div>
           </ScrollReveal>
@@ -412,10 +394,10 @@ export default function Home() {
           <ScrollReveal>
             <div className="text-center mb-20 md:mb-28">
               <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
-                Online Shop
+                {homeContent.onlineShop.eyebrow}
               </p>
               <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
-                焙煎したてをお届け
+                {homeContent.onlineShop.heading}
               </h2>
             </div>
           </ScrollReveal>
@@ -448,10 +430,10 @@ export default function Home() {
           <ScrollReveal delay={0.3}>
             <div className="text-center mt-20 md:mt-28">
               <Link
-                href="/shop"
+                href={homeContent.onlineShop.ctaHref}
                 className="inline-flex items-center gap-3 border border-karekusa/30 text-karekusa text-xs tracking-[0.15em] px-7 py-3.5 hover:bg-karekusa hover:text-white transition-all duration-500"
               >
-                オンラインショップへ
+                {homeContent.onlineShop.ctaLabel}
                 <ArrowIcon />
               </Link>
             </div>
@@ -465,10 +447,10 @@ export default function Home() {
           <ScrollReveal>
             <div className="text-center mb-20 md:mb-28">
               <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
-                Journal
+                {homeContent.journal.eyebrow}
               </p>
               <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
-                コラム・お知らせ
+                {homeContent.journal.heading}
               </h2>
             </div>
           </ScrollReveal>
@@ -516,10 +498,10 @@ export default function Home() {
           <ScrollReveal delay={0.3}>
             <div className="text-center mt-20 md:mt-28">
               <Link
-                href="/blog"
+                href={homeContent.journal.ctaHref}
                 className="inline-flex items-center gap-3 border border-karekusa/30 text-karekusa text-xs tracking-[0.15em] px-7 py-3.5 hover:bg-karekusa hover:text-white transition-all duration-500"
               >
-                すべてのジャーナルを見る
+                {homeContent.journal.ctaLabel}
                 <ArrowIcon />
               </Link>
             </div>
@@ -532,12 +514,12 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-6 md:px-8 text-center">
           <ScrollReveal>
             <p className="font-serif text-konsumi text-base md:text-lg tracking-wider leading-[2.4] font-light mb-12">
-              焙煎の様子や季節の風景を
+              {homeContent.instagram.bodyLine1}
               <br />
-              Instagramでお届けしています。
+              {homeContent.instagram.bodyLine2}
             </p>
             <a
-              href="https://instagram.com/misoca_coffee"
+              href={homeContent.instagram.href}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 border border-karekusa/30 text-karekusa text-xs tracking-[0.15em] px-7 py-3.5 hover:bg-karekusa hover:text-white transition-all duration-500"
@@ -553,7 +535,7 @@ export default function Home() {
                 <circle cx="12" cy="12" r="5" />
                 <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
               </svg>
-              @misoca_coffee
+              {homeContent.instagram.handle}
             </a>
           </ScrollReveal>
         </div>

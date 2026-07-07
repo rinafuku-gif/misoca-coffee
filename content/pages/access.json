@@ -1,0 +1,46 @@
+{
+  "seo": {
+    "title": "アクセス",
+    "description": "三十日珈琲へのアクセス。山梨県上野原市松留939。JR中央本線「上野原」駅から。新宿から中央特快で約65分、高尾から約16分。中央自動車道「上野原IC」から約10分。"
+  },
+  "hero": {
+    "title": "ACCESS",
+    "subtitle": "アクセス",
+    "description": "東京から約1時間。里山の古民家へ。",
+    "image": "/images/about/river-landscape.jpg"
+  },
+  "addressBlock": {
+    "eyebrow": "Address",
+    "name": "三十日珈琲 Shared Roasting",
+    "postalAddress": "〒409-0115 山梨県上野原市松留939",
+    "reservationNote": "完全予約制",
+    "tel": "090-8080-2165",
+    "telHref": "tel:09080802165",
+    "email": "misocacoffee@gmail.com",
+    "emailHref": "mailto:misocacoffee@gmail.com",
+    "mapEmbedUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3238.5!2d139.1055!3d35.6305!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x601917e8a7e14a8d%3A0x4e7a9b6f1b3c5d2e!2z5bGx5qKo55yM5LiK6YeO5Y6f5biC5p2-55WZ939!5e0!3m2!1sja!2sjp!4v1710000000000"
+  },
+  "transportation": {
+    "eyebrow": "Transportation",
+    "heading": "交通手段",
+    "trainCard": {
+      "title": "電車でお越しの方",
+      "items": [
+        "JR中央本線「上野原」駅",
+        "上野原駅からバスで約10分「松留入口」下車 徒歩2分",
+        "新宿から約65分（中央特快利用）",
+        "高尾から約16分"
+      ]
+    },
+    "carCard": {
+      "title": "お車でお越しの方",
+      "items": ["中央自動車道「上野原IC」から約10分", "駐車場あり（無料・6台）"]
+    }
+  },
+  "scenery": {
+    "image": "/images/about/scenery-1.jpg",
+    "imageAlt": "上野原の風景",
+    "bodyLine1": "東京から約1時間。都会の喧騒を離れ、",
+    "bodyLine2": "里山の自然のなかでゆっくりとした時間をお過ごしください。"
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "experienceCta": {
+    "image": "/images/experience/roasting-hands.jpg",
+    "imageAlt": "焙煎体験",
+    "bodyLine1": "生豆の選別から焙煎、ドリップまで。",
+    "bodyLine2": "あなただけのコーヒーを、古民家で仕上げる。",
+    "ctaLabel": "焙煎体験を予約する",
+    "ctaHref": "/experience"
+  },
+  "brandStatement": {
+    "line1": "焙煎する、届ける、出会う。",
+    "line2": "三十日珈琲の3つの体験をご紹介します。"
+  },
+  "ourStory": {
+    "eyebrow": "Our Story",
+    "heading": "コーヒーがつないだ、人と場所。",
+    "block1": {
+      "image": "/images/about/house-exterior.jpg",
+      "imageAlt": "築300年の古民家 母屋全景",
+      "title": "築300年の古民家から",
+      "paragraphs": [
+        "住まいのサブスクサービス「ADDress」での出会いをきっかけに、山梨県上野原市にある築300年の古民家に辿り着きました。",
+        "太い梁、土壁、障子から差し込む光── この場所でしか生まれない空気の中で、長屋門の一室に小さな焙煎所を開きました。"
+      ]
+    },
+    "block2": {
+      "image": "/images/about/open-sign.jpg",
+      "imageAlt": "三十日珈琲の看板",
+      "title": "ただの焙煎所ではなく",
+      "paragraphs": [
+        "コーヒーを「飲む」だけでなく、「つくる」「届ける」「つながる」体験を通じて、日常にもうひとつの居場所をつくりたい。",
+        "30日に一度、会いに来てほしい。焙煎したての一杯と一緒に、この場所で過ごす時間そのものを届けたい── それが三十日珈琲の原点です。"
+      ],
+      "ctaLabel": "私たちについて詳しく",
+      "ctaHref": "/about"
+    }
+  },
+  "onlineShop": {
+    "eyebrow": "Online Shop",
+    "heading": "焙煎したてをお届け",
+    "ctaLabel": "オンラインショップへ",
+    "ctaHref": "/shop"
+  },
+  "gallery": {
+    "eyebrow": "Gallery",
+    "heading": "焙煎所の風景",
+    "images": [
+      {
+        "src": "/images/experience/roaster-machine.jpg",
+        "alt": "Aillio Bullet焙煎機"
+      },
+      {
+        "src": "/images/about/scenery-1.jpg",
+        "alt": "コーヒー生豆の麻袋"
+      },
+      {
+        "src": "/images/about/exterior-window.jpg",
+        "alt": "窓辺のドリッパーとカップ"
+      },
+      {
+        "src": "/images/about/interior-shelf.jpg",
+        "alt": "焙煎所の棚"
+      },
+      {
+        "src": "/images/about/scenery-2.jpg",
+        "alt": "焙煎機クローズアップ"
+      },
+      {
+        "src": "/images/about/open-sign.jpg",
+        "alt": "古民家の外観"
+      }
+    ]
+  },
+  "instagram": {
+    "bodyLine1": "焙煎の様子や季節の風景を",
+    "bodyLine2": "Instagramでお届けしています。",
+    "handle": "@misoca_coffee",
+    "href": "https://instagram.com/misoca_coffee"
+  },
+  "journal": {
+    "eyebrow": "Journal",
+    "heading": "コラム・お知らせ",
+    "ctaLabel": "すべてのジャーナルを見る",
+    "ctaHref": "/blog"
+  },
+  "newArrival": {
+    "eyebrow": "New Arrival",
+    "image": "/images/about/scenery-1.jpg",
+    "imageAlt": "上野原のゆずを使ったインフューズドコーヒー",
+    "heading": "上野原のゆずから生まれた、もうひとつのコーヒー",
+    "body": "山梨県上野原市の規格外ゆずを、コーヒー生豆に漬け込んでから焙煎した、紅茶のように楽しむ新しい一杯。",
+    "ctaLabel": "詳しく見る",
+    "ctaHref": "/shop/uenohara-yuzu"
+  },
+  "hero": {
+    "slides": [
+      {
+        "src": "/images/hero/hero-roaster-machine.jpg",
+        "alt": "焙煎機"
+      },
+      {
+        "src": "/images/hero/hero-interior-atmosphere.jpg",
+        "alt": "古民家の情緒ある空間"
+      },
+      {
+        "src": "/images/hero/hero-roasting-output.jpg",
+        "alt": "焙煎豆の出来上がり"
+      },
+      {
+        "src": "/images/hero/hero-group-watching.jpg",
+        "alt": "焙煎体験の様子"
+      },
+      {
+        "src": "/images/about/scenery-1.jpg",
+        "alt": "上野原の風景"
+      },
+      {
+        "src": "/images/about/scenery-2.jpg",
+        "alt": "焙煎所のある里山"
+      }
+    ],
+    "subtitleLine1": "築300年の古民家で、自分だけのコーヒーを焙煎する。",
+    "subtitleLine2": "山梨県上野原市から届ける、体験とスペシャルティコーヒー。",
+    "primaryCtaLabel": "焙煎体験を予約する",
+    "secondaryCtaHref": "/shop",
+    "secondaryCtaLabel": "コーヒー豆を購入する",
+    "primaryCtaHref": "/experience",
+    "headingLine1": "コーヒーと暮らす。",
+    "headingLine2": "古くて新しい、みんなの焙煎所。"
+  },
+  "services": {
+    "eyebrow": "Services",
+    "heading": "三十日珈琲の体験",
+    "items": [
+      {
+        "title": "焙煎体験",
+        "text": "生豆を選び、自分の手で焙煎する。\n築300年の古民家で、五感を開く時間。",
+        "image": "/images/experience/bean-sorting.jpg",
+        "href": "/experience",
+        "cta": "体験を詳しく見る"
+      },
+      {
+        "title": "コーヒーケータリング",
+        "text": "スペシャルティコーヒーを、保温ポットでお届け。\nポットひとつで、そこがカフェになる。",
+        "image": "/images/catering/hand-drip.jpg",
+        "href": "/catering",
+        "cta": "ケータリングを見る"
+      },
+      {
+        "title": "出張焙煎体験",
+        "text": "焙煎所の体験を、あなたの場所へ。\n企業研修やイベントに、焙煎士が伺います。",
+        "image": "/images/experience/roaster-machine.jpg",
+        "href": "/mobile-roasting",
+        "cta": "出張焙煎を見る"
+      }
+    ]
+  }
+}

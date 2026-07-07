@@ -1,0 +1,99 @@
+{
+  "seo": {
+    "title": "コーヒースタンド | misoca coffee stand",
+    "description": "暮らしのそばに、景色とおいしいコーヒーを。見晴亭（上野原駅北口から徒歩すぐ）で毎週水曜日営業。ハンドドリップコーヒーと自家焙煎豆の購入ができます。"
+  },
+  "hero": {
+    "title": "COFFEE STAND",
+    "subtitle": "コーヒースタンド",
+    "description": "暮らしのそばに、景色とおいしいコーヒーを。",
+    "image": "/images/stand/stand-1.jpg"
+  },
+  "aboutStand": {
+    "eyebrow": "misoca coffee stand",
+    "headingLine1": "暮らしのそばに、",
+    "headingLine2": "景色とおいしいコーヒーを。",
+    "paragraphs": [
+      "見晴亭（上野原駅北口から徒歩すぐ）で営業中。ハンドドリップコーヒーと自家焙煎豆の購入ができます。",
+      "景色を眺めてゆったりコーヒーを楽しめる、ホッと一息つけるコーヒースタンドです。",
+      "珈琲初心者さんも常連さんも、電車の待ち時間などでも、お気軽にお立ち寄りください。"
+    ],
+    "image": "/images/stand/stand-morning-mist.jpg",
+    "imageAlt": "朝霧と朝日の風景"
+  },
+  "galleryBanner": {
+    "image": "/images/stand/stand-summer-lake.jpg",
+    "imageAlt": "夏の緑と湖の景色"
+  },
+  "menu": {
+    "eyebrow": "Menu",
+    "heading": "メニュー",
+    "items": [
+      { "name": "ハンドドリップコーヒー", "price": "¥500", "note": "Hot" },
+      { "name": "本日のコーヒー", "price": "¥300", "note": "水曜 8:00〜9:30 限定5杯" },
+      { "name": "オーツミルクラテ", "price": "¥800", "note": "Hot" },
+      { "name": "オーツミルク単品", "price": "¥400", "note": "Hot" }
+    ],
+    "footnotes": [
+      "※ アイスはすべて +¥50",
+      "※ オーツミルク変更 +¥50",
+      "※ 砂糖・ミルクの標準提供はございません",
+      "※ 自家焙煎豆の販売もしています（100g ¥800〜 / 種類により変動）"
+    ],
+    "note2": "季節や仕入れ状況により、メニュー・価格が変わる場合があります。"
+  },
+  "info": {
+    "eyebrow": "Info & Calendar",
+    "heading": "営業情報",
+    "days": "毎週水曜日",
+    "hours": "8:00 〜 9:30 / 10:30 〜 16:00",
+    "location": "見晴亭（上野原駅北口から徒歩すぐ）",
+    "address": "〒409-0113 山梨県上野原市新田1053-3"
+  },
+  "followUs": {
+    "eyebrow": "Follow Us",
+    "heading": "最新情報をチェック",
+    "bodyLine1": "営業日や新しい豆の入荷情報は、Instagramでお知らせしています。",
+    "bodyLine2": "ご来店前にぜひご確認ください。",
+    "igLabel": "@misoca_coffeestand をフォロー",
+    "igHref": "https://www.instagram.com/misoca_coffeestand",
+    "shopLabel": "オンラインショップへ",
+    "shopHref": "/shop"
+  },
+  "sceneryArchive": {
+    "eyebrow": "Scenery",
+    "heading": "見晴亭からの景色",
+    "subheading": "毎朝、同じ場所から撮り続けている景色",
+    "photos": [
+      { "month": "2026年3月", "src": "/images/stand/scenery-2026-03.jpg" },
+      { "month": "2026年2月", "src": "/images/stand/scenery-2026-02.jpg" },
+      { "month": "2026年1月", "src": "/images/stand/scenery-2026-01.jpg" },
+      { "month": "2025年12月", "src": "/images/stand/scenery-2025-12.jpg" },
+      { "month": "2025年11月", "src": "/images/stand/scenery-2025-11.jpg" },
+      { "month": "2025年10月", "src": "/images/stand/scenery-2025-10.jpg" },
+      { "month": "2025年9月", "src": "/images/stand/scenery-2025-09.jpg" },
+      { "month": "2025年8月", "src": "/images/stand/scenery-2025-08.jpg" },
+      { "month": "2025年7月", "src": "/images/stand/scenery-2025-07.jpg" },
+      { "month": "2025年6月", "src": "/images/stand/scenery-2025-06.jpg" },
+      { "month": "2025年5月", "src": "/images/stand/scenery-2025-05.jpg" },
+      { "month": "2025年4月", "src": "/images/stand/scenery-2025-04.jpg" },
+      { "month": "2025年3月", "src": "/images/stand/scenery-2025-03.jpg" },
+      { "month": "2025年2月", "src": "/images/stand/scenery-2025-02.jpg" },
+      { "month": "2025年1月", "src": "/images/stand/scenery-2025-01.jpg" },
+      { "month": "2024年12月", "src": "/images/stand/scenery-2024-12.jpg" },
+      { "month": "2024年11月", "src": "/images/stand/scenery-2024-11.jpg" },
+      { "month": "2024年10月", "src": "/images/stand/scenery-2024-10.jpg" },
+      { "month": "2024年9月", "src": "/images/stand/scenery-2024-09.jpg" },
+      { "month": "2024年8月", "src": "/images/stand/scenery-2024-08.jpg" },
+      { "month": "2024年7月", "src": "/images/stand/scenery-2024-07.jpg" }
+    ]
+  },
+  "roastingCta": {
+    "eyebrow": "misoca coffee",
+    "heading": "焙煎体験もやっています",
+    "bodyLine1": "三十日珈琲では、築300年の古民家での焙煎体験も行っています。",
+    "bodyLine2": "コーヒースタンドとはまた違った、特別な時間をお過ごしください。",
+    "ctaLabel": "焙煎体験を予約する",
+    "ctaHref": "/experience"
+  }
+}
