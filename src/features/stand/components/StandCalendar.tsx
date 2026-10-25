@@ -2,21 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-// ---- 型定義 ----------------------------------------------------------------
-
-interface StandEvent {
-  date: string;       // YYYY-MM-DD
-  startTime: string;  // HH:mm
-  endTime: string;    // HH:mm
-  description: string;
-}
-
-interface DayCell {
-  date: Date;
-  isCurrentMonth: boolean;
-  event: StandEvent | null;
-}
+import { buildCalendarCells, type StandEvent } from "../calendar";
 
 // ---- カレンダー計算 ----------------------------------------------------------
 
@@ -27,47 +13,6 @@ const MONTH_NAMES = [
   "May", "June", "July", "August",
   "September", "October", "November", "December",
 ] as const;
-
-function buildCalendarCells(year: number, month: number, events: StandEvent[]): DayCell[] {
-  const firstDay = new Date(year, month - 1, 1);
-  const lastDay = new Date(year, month, 0);
-
-  // 月曜始まり: 月初の曜日（0=日→6, 1=月→0）
-  const startDow = (firstDay.getDay() + 6) % 7;
-  const endDow = (lastDay.getDay() + 6) % 7;
-
-  const cells: DayCell[] = [];
-
-  // 前月の日付
-  for (let i = startDow - 1; i >= 0; i--) {
-    const d = new Date(year, month - 1, -i);
-    cells.push({ date: d, isCurrentMonth: false, event: null });
-  }
-
-  // 当月の日付
-  for (let d = 1; d <= lastDay.getDate(); d++) {
-    const date = new Date(year, month - 1, d);
-    const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-    const event = events.find((e) => e.date === dateStr) ?? null;
-    cells.push({ date, isCurrentMonth: true, event });
-  }
-
-  // 翌月の日付（42マスに揃える）
-  const remaining = (7 - ((endDow + 1) % 7)) % 7;
-  for (let i = 1; i <= remaining; i++) {
-    const d = new Date(year, month, i);
-    cells.push({ date: d, isCurrentMonth: false, event: null });
-  }
-
-  while (cells.length < 42) {
-    const last = cells[cells.length - 1];
-    const d = new Date(last.date);
-    d.setDate(d.getDate() + 1);
-    cells.push({ date: d, isCurrentMonth: false, event: null });
-  }
-
-  return cells;
-}
 
 // ---- メインコンポーネント ---------------------------------------------------
 
@@ -489,7 +434,7 @@ export function StandCalendar() {
                   const dow = idx % 7; // 0=月, 5=土, 6=日
                   const isSat = dow === 5;
                   const isSun = dow === 6;
-                  const isOpen = cell.event !== null && cell.isCurrentMonth;
+                  const isOpen = cell.events.length > 0 && cell.isCurrentMonth;
 
                   // 色の決定: セルは白ベース、営業日だけ色付け
                   let bgColor = cell.isCurrentMonth ? KOMINKA_WHITE : `${USUZUMI}44`;
@@ -536,8 +481,11 @@ export function StandCalendar() {
                       </span>
 
                       {/* 営業時間バッジ */}
-                      {isOpen && cell.event && (
-                        <>
+                      {isOpen && cell.events.map((event, slotIndex) => (
+                        <div
+                          key={`${event.startTime}-${event.endTime}-${slotIndex}`}
+                          style={{ display: "flex", flexDirection: "column", marginTop: slotIndex > 0 ? "4px" : 0 }}
+                        >
                           {/* 時間 */}
                           <span
                             style={{
@@ -548,12 +496,12 @@ export function StandCalendar() {
                               letterSpacing: "0.02em",
                             }}
                           >
-                            {cell.event.startTime}
+                            {event.startTime}
                             <br />
-                            -{cell.event.endTime}
+                            -{event.endTime}
                           </span>
                           {/* 補足テキスト */}
-                          {cell.event.description && (
+                          {event.description && (
                             <span
                               style={{
                                 color: `${AINEZU}CC`,
@@ -562,11 +510,11 @@ export function StandCalendar() {
                                 marginTop: "3px",
                               }}
                             >
-                              {cell.event.description}
+                              {event.description}
                             </span>
                           )}
-                        </>
-                      )}
+                        </div>
+                      ))}
                     </div>
                   );
                 })}
