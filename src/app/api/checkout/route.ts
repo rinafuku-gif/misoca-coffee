@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/shared/payments/stripe";
 import { getProducts } from "@/features/shop/notion";
+import { SHOP_PAUSED } from "@/features/shop/policy";
+import { CheckoutInputSchema } from "@/features/shop/checkout-input";
 
 interface CartItem {
   id: string;
@@ -14,15 +16,25 @@ const GIFT_TICKET_IDS = ["gift-roasting-experience"];
 const GIFT_TICKET_PRICE = 8800;
 
 export async function POST(request: NextRequest) {
+  // bodyを読む前に拒否し、NotionやStripeにも触れない。
+  if (SHOP_PAUSED) {
+    return NextResponse.json(
+      { error: "現在、オンラインショップの注文受付を休止しています。", code: "SHOP_PAUSED" },
+      { status: 503, headers: { "Cache-Control": "no-store" } }
+    );
+  }
+  let input: unknown;
   try {
-    const { items } = (await request.json()) as { items: CartItem[] };
-
-    if (!items || items.length === 0) {
-      return NextResponse.json(
-        { error: "カートが空です" },
-        { status: 400 }
-      );
-    }
+    input = await request.json();
+  } catch {
+    return NextResponse.json({ error: "注文内容を確認してください。" }, { status: 400 });
+  }
+  const parsed = CheckoutInputSchema.safeParse(input);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "商品と数量を確認してください。" }, { status: 400 });
+  }
+  try {
+    const { items } = parsed.data;
 
     const baseUrl = (
       process.env.NEXT_PUBLIC_BASE_URL?.trim()

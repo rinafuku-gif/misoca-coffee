@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import type { Product } from "@/features/shop/notion";
+import { SHOP_PAUSED } from "@/features/shop/policy";
 
 interface CartItem {
   product: Product;
@@ -16,10 +17,6 @@ interface CartItem {
 const CART_STORAGE_KEY = "misoca-coffee-cart";
 const FREE_SHIPPING_THRESHOLD = 5000;
 const SHIPPING_COST = 370;
-
-// 焙煎豆の販売を一時休止中（店主の関西滞在中）
-// 再開時はこのフラグを false にする
-const SHOP_PAUSED = true;
 
 const ROAST_FILTERS = ["全て", "浅煎り", "中煎り", "中深煎り", "深煎り"] as const;
 
