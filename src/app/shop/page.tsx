@@ -317,7 +317,7 @@ export default function ShopPage() {
         <section className="bg-konsumi py-6 overflow-hidden">
           <div className="max-w-4xl mx-auto px-4 text-center">
             <p className="text-white/80 text-sm md:text-base tracking-wider font-light">
-              すべてスペシャルティグレード ／ 焙煎3日以内に発送 ／ 全国一律
+              すべてスペシャルティグレード ／ ご注文後7日以内に発送 ／ 全国一律
               ¥370（¥5,000以上で送料無料）
             </p>
           </div>
@@ -740,7 +740,7 @@ export default function ShopPage() {
                 <p className="text-sm text-haicha leading-[2.2] tracking-wide">
                   ご注文後に焙煎
                   <br />
-                  3日以内に発送します
+                  7日以内に発送します
                 </p>
               </div>
             </ScrollReveal>

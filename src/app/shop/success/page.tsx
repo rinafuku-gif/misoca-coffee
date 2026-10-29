@@ -216,7 +216,7 @@ export default function SuccessPage() {
                     />
                   </svg>
                   <p className="text-sm text-haicha leading-relaxed text-left">
-                    ご注文後に焙煎し、3日以内に発送いたします。
+                    ご注文後に焙煎し、7日以内に発送いたします。
                     発送完了時に追跡番号をメールでお知らせします。
                   </p>
                 </div>
