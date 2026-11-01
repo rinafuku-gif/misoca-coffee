@@ -43,6 +43,13 @@ export default function PrivacyPage() {
           <h3>6. お問い合わせ</h3>
           <p>個人情報の取り扱いに関するお問い合わせは、misocacoffee@gmail.com までご連絡ください。</p>
 
+          <h3 id="management-login">7. 運営担当者の管理ログインメール</h3>
+          <p>管理用ログインは現在準備中です。有効化する場合は、個別に登録した運営担当者のメールアドレスと担当者の識別情報を、ログイン確認と担当権限の照合に利用します。お客様向けの会員登録や、一斉配信のための情報ではありません。</p>
+          <p>ログインメールの配送には、当店が認可したGoogleアカウントとGmail APIの送信専用権限を利用します。登録された運営担当者の宛先とログインリンクを、メールの作成・配送のためにGoogleへ送ります。この接続では受信箱の閲覧、連絡先やカレンダーへのアクセスを求めません。Googleへの接続を認可するのは当店の差出人アカウントであり、受取人のGmailへのアクセスを求めるものではありません。</p>
+          <p>Googleの認可情報はサーバー側で保護し、公開ソースやブラウザに含めません。Google APIから得た情報を広告目的に利用したり、販売したり、汎用AIモデルの学習に利用したりしません。Googleから受け取った情報の利用と他のアプリへの転送は、Limited Use要件を含む<a href="https://developers.google.com/terms/api-services-user-data-policy" className="underline underline-offset-4">Google API Services User Data Policy</a>に従います。</p>
+          <p>差出人のGoogleアカウントで、対象アプリへのアクセスを取り消すと送信専用接続を停止できます。保存済みの認可情報や運営担当者の登録の削除については、上記の連絡先へお問い合わせください。接続の停止後は新しいログインメールを送れなくなるため、復旧方法もあわせて確認します。現在の接続と運営者登録の確認をせず、自動で登録し直すことはありません。</p>
+          <p>機能の概要は<a href="/management-login-info" className="underline underline-offset-4">管理ログインメールについて</a>をご覧ください。</p>
+
           <p className="text-xs text-haicha/60 mt-8">制定日: 2025年1月1日</p>
         </div>
       </section>
