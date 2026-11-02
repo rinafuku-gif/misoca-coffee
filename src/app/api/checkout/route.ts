@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/shared/payments/stripe";
 import { getProducts } from "@/features/shop/notion";
+import { canPurchaseCatalogProduct } from "@/features/shop/product-schema";
 import { SHOP_PAUSED } from "@/features/shop/policy";
 import { CheckoutInputSchema } from "@/features/shop/checkout-input";
 
@@ -44,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // サーバー側で正規価格を取得し、クライアントの価格は無視する
     const products = await getProducts();
-    const productPriceMap = new Map(products.map((p) => [p.id, p.price]));
+    const productPriceMap = new Map(products.filter(canPurchaseCatalogProduct).map((p) => [p.id, p.price]));
 
     const verifiedItems: Array<CartItem & { verifiedPrice: number }> = [];
     for (const item of items) {
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
         continue;
       }
       const realPrice = productPriceMap.get(item.id);
-      if (realPrice === undefined) {
+      if (typeof realPrice !== "number") {
         return NextResponse.json(
           { error: `商品「${item.name}」は現在販売されていません` },
           { status: 400 }

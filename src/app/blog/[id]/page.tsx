@@ -231,6 +231,7 @@ export default async function BlogPostPage({ params }: Props) {
               <div className="relative aspect-[16/9] rounded-sm overflow-hidden">
                 <Image
                   src={post.coverImage}
+                  unoptimized={post.coverImage.startsWith("/api/notion-image/")}
                   alt={post.title}
                   fill
                   className="object-cover"

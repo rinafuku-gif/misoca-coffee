@@ -3,13 +3,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { ProductSchema, catalogPriceLabel, type Product } from "@/features/shop/product-schema";
 import { HeroSlideshow } from "@/shared/ui/HeroSlideshow";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import homeContent from "@content/pages/home.json";
 
 /* ───────────────────────── Data ───────────────────────── */
 /* services / galleryImages は content/pages/home.json（Decap CMSで編集可能）から取得する。
-   fallbackProducts / fallbackJournals は Notion連携APIの初期表示用フォールバックのため
+   fallbackJournals は Notion連携APIの初期表示用フォールバックのため
    CMS化スコープ外（Notion側が正）。 */
 
 const { services, gallery } = homeContent;
@@ -36,23 +37,6 @@ const fallbackJournals = [
   },
 ];
 
-const fallbackProducts = [
-  {
-    name: "エチオピア イルガチェフェ",
-    price: 1200,
-    image: "/images/experience/bean-selection.jpg",
-  },
-  {
-    name: "グアテマラ アンティグア",
-    price: 1100,
-    image: "/images/experience/roaster-machine.jpg",
-  },
-  {
-    name: "ブラジル セラード",
-    price: 1000,
-    image: "/images/experience/coffee-meter.jpg",
-  },
-];
 
 /* ───────────────── Arrow SVG ───────────────── */
 
@@ -82,7 +66,8 @@ interface JournalEntry {
 }
 
 export default function Home() {
-  const [products, setProducts] = useState(fallbackProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productsState, setProductsState] = useState<"loading" | "ready" | "error">("loading");
   const [journals, setJournals] = useState<JournalEntry[]>(fallbackJournals.map((j, i) => ({
     id: String(i),
     coverImage: "",
@@ -91,29 +76,28 @@ export default function Home() {
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
+    let active = true;
     fetch("/api/products")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setProducts(
-            data.slice(0, 3).map((p: { name: string; price: number; image: string }) => ({
-              name: p.name,
-              price: p.price,
-              image: p.image,
-            }))
-          );
+      .then(async (res) => {
+        if (!res.ok) throw new Error("CATALOG_UNAVAILABLE");
+        const parsed = ProductSchema.array().max(500).safeParse(await res.json());
+        if (!parsed.success) throw new Error("CATALOG_INVALID");
+        if (active) {
+          setProducts(parsed.data.slice(0, 3));
+          setProductsState("ready");
         }
       })
-      .catch(() => {});
+      .catch(() => { if (active) setProductsState("error"); });
 
     fetch("/api/journal")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
-          setJournals(data.slice(0, 3));
+          if (active) setJournals(data.slice(0, 3));
         }
       })
       .catch(() => {});
+    return () => { active = false; };
   }, []);
 
   return (
@@ -402,24 +386,34 @@ export default function Home() {
             </div>
           </ScrollReveal>
 
+          {productsState !== "ready" || products.length === 0 ? (
+            <p role="status" className="text-center text-sm text-haicha py-8">
+              {productsState === "loading" ? "商品を読み込み中..." : productsState === "error" ? "商品を読み込めませんでした" : "現在掲載している商品はありません"}
+            </p>
+          ) : null}
           <div className="grid md:grid-cols-3 gap-10 md:gap-14">
             {products.map((item, i) => (
               <ScrollReveal key={item.name} direction="up" delay={i * 0.15}>
                 <div className="group cursor-pointer">
                   <div className="relative aspect-[4/5] overflow-hidden mb-6">
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      fill
-                      className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                    />
+                    {item.image ? (
+                      <Image
+                        src={item.image}
+                        unoptimized={item.image.startsWith("/api/notion-image/")}
+                        alt={item.name}
+                        fill
+                        className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-tsuchikabe/40 flex items-center justify-center text-[10px] tracking-[0.2em] text-haicha/40">NO IMAGE</div>
+                    )}
                   </div>
                   <h3 className="font-serif text-base text-konsumi mb-3 tracking-wider font-light">
                     {item.name}
                   </h3>
                   <p className="text-karekusa text-sm tracking-wider">
-                    ¥{item.price.toLocaleString()}
+                    {catalogPriceLabel(item)}
                     <span className="text-[10px] text-haicha/50 ml-2">/ 100g</span>
                   </p>
                 </div>
@@ -463,6 +457,7 @@ export default function Home() {
                     {post.coverImage && !failedImages.has(post.id) ? (
                       <Image
                         src={post.coverImage}
+                        unoptimized={post.coverImage.startsWith("/api/notion-image/")}
                         alt={post.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"

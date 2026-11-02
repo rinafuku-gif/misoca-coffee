@@ -37,7 +37,7 @@ describe("再開を模擬しても注文数量をサーバーで検証", () => {
     expect(mocks.stripe).not.toHaveBeenCalled();
   });
   it("正常な数量は偽物のCheckoutにだけ渡し、クライアント価格を採用しない", async () => {
-    mocks.products.mockResolvedValue([{ id: item.id, price: 900 }]);
+    mocks.products.mockResolvedValue([{ id: item.id, price: 900, inStock: true }]);
     mocks.create.mockResolvedValue({ url: "https://example.invalid/dummy-checkout" });
     mocks.stripe.mockReturnValue({ checkout: { sessions: { create: mocks.create } } });
     const res = await POST(new NextRequest("http://localhost/api/checkout", {
@@ -46,5 +46,18 @@ describe("再開を模擬しても注文数量をサーバーで検証", () => {
     expect(res.status).toBe(200);
     expect(mocks.create).toHaveBeenCalledTimes(1);
     expect(mocks.create.mock.calls[0][0].line_items[0].price_data.unit_amount).toBe(900);
+  });
+  it.each([
+    {price: 900, priceIsReference: true, inStock: true},
+    {price: null, inStock: true},
+    {price: 0, inStock: true},
+    {price: 900, inStock: false},
+  ])("参考価格・未設定価格・売り切れは決済に渡さない: %j", async product => {
+    mocks.products.mockResolvedValue([{id: item.id, ...product}]);
+    const res = await POST(new NextRequest("http://localhost/api/checkout", {
+      method: "POST", body: JSON.stringify({items: [item]}),
+    }));
+    expect(res.status).toBe(400);
+    expect(mocks.stripe).not.toHaveBeenCalled();
   });
 });

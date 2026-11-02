@@ -1,4 +1,6 @@
-import { z } from "zod";
+import {ProductSchema,type Product} from './product-schema';
+import {readWebsiteProducts} from './site-product-website-entry';
+export {ProductSchema,type Product} from './product-schema';
 import {
   notion,
   parseOrNull,
@@ -12,27 +14,13 @@ import {
 
 const databaseId = process.env.NOTION_DATABASE_ID!;
 
-// スキーマを「型の真実の源」にする（手書きinterfaceを廃止し z.infer で型を導出）
-export const ProductSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  origin: z.string(),
-  roast: z.string(),
-  flavor: z.string(),
-  price: z.number(),
-  unit: z.string(),
-  image: z.string(),
-  inStock: z.boolean(),
-  process: z.string(),
-  variety: z.string(),
-  region: z.string(),
-  farm: z.string(),
-  altitude: z.string(),
-  description: z.string(),
-});
-export type Product = z.infer<typeof ProductSchema>;
-
 export async function getProducts(): Promise<Product[]> {
+  const authority=process.env.MISOCA_SITE_VISIBILITY_AUTHORITY??'notion';
+  if(authority!=='notion'&&authority!=='emdash')throw Error('SITE_CATALOG_CONFIG_INVALID');
+  if(authority==='emdash'){
+    if(!process.env.NOTION_API_KEY||databaseId?.replaceAll('-','').toLowerCase()!=='db3bf8892b8544cf9cb50c8403d283c9'||!process.env.MISOCA_SITE_PRODUCT_INDEX_URL)throw Error('SITE_CATALOG_CONFIG_INVALID');
+    return readWebsiteProducts(process.env.NOTION_API_KEY,process.env.MISOCA_SITE_PRODUCT_INDEX_URL);
+  }
   if (!process.env.NOTION_API_KEY || !process.env.NOTION_DATABASE_ID) {
     return [];
   }

@@ -112,6 +112,7 @@ export default function BlogPage() {
                       {post.coverImage && !failedImages.has(post.id) ? (
                         <Image
                           src={post.coverImage}
+                          unoptimized={post.coverImage.startsWith("/api/notion-image/")}
                           alt={post.title}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"

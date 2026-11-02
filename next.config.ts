@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 import path from "node:path";
 
 const nextConfig: NextConfig = {
+  // Revocable media uses its checked direct route, never the optimizer cache.
+  images: {
+    localPatterns: [{ pathname: "/images/**" }, { pathname: "/_next/static/media/**" }],
+  },
   // 環境上 /Users/Inaryo 直下に無関係な package-lock.json が存在し、Turbopackが
   // ワークスペースルートをそこだと誤検知して `next dev` 時に依存解決に失敗する事象への対処。
   // 明示的にこのプロジェクト自身をルートに固定する（本番Vercelビルド環境には影響しない安全な変更）。

@@ -6,7 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
-import type { Product } from "@/features/shop/notion";
+import { ProductSchema, canPurchaseCatalogProduct, catalogPriceLabel, type Product } from "@/features/shop/product-schema";
 import { SHOP_PAUSED } from "@/features/shop/policy";
 
 interface CartItem {
@@ -19,60 +19,6 @@ const FREE_SHIPPING_THRESHOLD = 5000;
 const SHIPPING_COST = 370;
 
 const ROAST_FILTERS = ["全て", "浅煎り", "中煎り", "中深煎り", "深煎り"] as const;
-
-const fallbackProducts: Product[] = [
-  {
-    id: "1",
-    name: "Ethiopia Aricha (N)",
-    origin: "エチオピア🇪🇹",
-    roast: "浅煎り",
-    flavor: "フルーティーな甘みとベリーのような香り",
-    price: 900,
-    unit: "100g",
-    image: "/images/experience/bean-selection.jpg",
-    inStock: true,
-    process: "Natural",
-    variety: "",
-    region: "アリチャ",
-    farm: "",
-    altitude: "1,800-2,200m",
-    description: "",
-  },
-  {
-    id: "2",
-    name: "ブラジル サントアントニオ プレミアムショコラ",
-    origin: "ブラジル🇧🇷",
-    roast: "中煎り",
-    flavor: "チョコレートのようなコクと甘み",
-    price: 800,
-    unit: "100g",
-    image: "/images/experience/roaster-machine.jpg",
-    inStock: true,
-    process: "Natural",
-    variety: "",
-    region: "サントアントニオ",
-    farm: "",
-    altitude: "1,000-1,200m",
-    description: "",
-  },
-  {
-    id: "3",
-    name: "Peru El Diamante (W)",
-    origin: "ペルー🇵🇪",
-    roast: "中深煎り",
-    flavor: "クリーンな酸味とナッツの余韻",
-    price: 900,
-    unit: "100g",
-    image: "/images/experience/coffee-meter.jpg",
-    inStock: true,
-    process: "Washed",
-    variety: "",
-    region: "エル・ディアマンテ",
-    farm: "",
-    altitude: "1,500-1,800m",
-    description: "",
-  },
-];
 
 function loadCartFromStorage(): CartItem[] {
   if (typeof window === "undefined") return [];
@@ -98,10 +44,11 @@ function saveCartToStorage(cart: CartItem[]) {
 }
 
 export default function ShopPage() {
-  const [products, setProducts] = useState<Product[]>(fallbackProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [productsError, setProductsError] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [roastFilter, setRoastFilter] = useState<string>("全て");
   const [originFilter, setOriginFilter] = useState<string | null>(null);
@@ -127,24 +74,24 @@ export default function ShopPage() {
     saveCartToStorage(cart);
   }, [cart, cartInitialized]);
 
-  // Fetch products from Notion
+  // Never replace a failed or empty catalog with invented products.
   useEffect(() => {
+    let active = true;
     fetch("/api/products")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setProducts(data);
-        }
+      .then(async (res) => {
+        if (!res.ok) throw new Error("CATALOG_UNAVAILABLE");
+        const parsed = ProductSchema.array().max(500).safeParse(await res.json());
+        if (!parsed.success) throw new Error("CATALOG_INVALID");
+        if (active) setProducts(parsed.data);
       })
-      .catch(() => {
-        // Notionが未設定の場合はフォールバックを使用
-      })
-      .finally(() => setLoading(false));
+      .catch(() => { if (active) setProductsError(true); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
   }, []);
 
   const addToCart = useCallback(
     (product: Product) => {
-      if (SHOP_PAUSED) return;
+      if (SHOP_PAUSED || !canPurchaseCatalogProduct(product)) return;
       setCart((prev) => {
         const existing = prev.find((item) => item.product.id === product.id);
         if (existing) {
@@ -177,7 +124,7 @@ export default function ShopPage() {
   }, []);
 
   const subtotal = cart.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + (typeof item.product.price === "number" ? item.product.price : 0) * item.quantity,
     0
   );
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
@@ -202,7 +149,7 @@ export default function ShopPage() {
   });
 
   const handleCheckout = async () => {
-    if (cart.length === 0 || SHOP_PAUSED) return;
+    if (cart.length === 0 || SHOP_PAUSED || cart.some((item) => !canPurchaseCatalogProduct(item.product))) return;
     setCheckoutLoading(true);
     try {
       const res = await fetch("/api/checkout", {
@@ -398,6 +345,11 @@ export default function ShopPage() {
               />
               商品を読み込み中...
             </div>
+          ) : productsError ? (
+            <div role="status" className="text-center text-haicha py-20">
+              <p className="text-lg mb-2">商品を読み込めませんでした</p>
+              <p className="text-sm">時間をおいて、このページを開き直してください。</p>
+            </div>
           ) : filteredProducts.length === 0 ? (
             <div className="text-center text-haicha py-20">
               <p className="text-lg mb-2">該当する商品がありません</p>
@@ -429,6 +381,7 @@ export default function ShopPage() {
                         {product.image && !failedImages.has(product.id) ? (
                           <Image
                             src={product.image}
+                            unoptimized={product.image.startsWith("/api/notion-image/")}
                             alt={product.name}
                             fill
                             className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
@@ -451,7 +404,7 @@ export default function ShopPage() {
                         </span>
 
                         {/* SOLD OUT Overlay */}
-                        {!product.inStock && (
+                        {!product.inStock && !product.priceIsReference && (
                           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                             <span className="text-white text-xs tracking-[0.2em]">
                               SOLD OUT
@@ -493,7 +446,7 @@ export default function ShopPage() {
 
                         <div className="flex items-end justify-between">
                           <p className="text-karekusa text-sm tracking-wider">
-                            ¥{product.price.toLocaleString()}
+                            {catalogPriceLabel(product)}
                             <span className="text-[10px] text-haicha/50 ml-2">
                               / {product.unit}
                             </span>
@@ -504,7 +457,7 @@ export default function ShopPage() {
                               販売休止中
                             </span>
                           ) : (
-                            product.inStock && (
+                            canPurchaseCatalogProduct(product) && (
                               <motion.button
                                 onClick={(e) => { e.stopPropagation(); addToCart(product); }}
                                 whileTap={{ scale: 0.97 }}
@@ -828,6 +781,7 @@ export default function ShopPage() {
                 {selectedProduct.image && !failedImages.has(selectedProduct.id) ? (
                   <Image
                     src={selectedProduct.image}
+                    unoptimized={selectedProduct.image.startsWith("/api/notion-image/")}
                     alt={selectedProduct.name}
                     fill
                     className="object-cover"
@@ -907,7 +861,7 @@ export default function ShopPage() {
                 {/* Price & Add to Cart */}
                 <div className="flex items-end justify-between">
                   <p className="text-karekusa text-2xl font-light tracking-wider">
-                    ¥{selectedProduct.price.toLocaleString()}
+                    {catalogPriceLabel(selectedProduct)}
                     <span className="text-sm text-haicha/50 ml-2">/ {selectedProduct.unit}</span>
                   </p>
                   {SHOP_PAUSED ? (
@@ -915,7 +869,7 @@ export default function ShopPage() {
                       販売休止中
                     </span>
                   ) : (
-                    selectedProduct.inStock && (
+                    canPurchaseCatalogProduct(selectedProduct) && (
                       <motion.button
                         onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }}
                         whileTap={{ scale: 0.97 }}
@@ -1092,6 +1046,7 @@ export default function ShopPage() {
                             {item.product.image && !failedImages.has(item.product.id) ? (
                               <Image
                                 src={item.product.image}
+                                unoptimized={item.product.image.startsWith("/api/notion-image/")}
                                 alt={item.product.name}
                                 fill
                                 className="object-cover"
@@ -1116,7 +1071,7 @@ export default function ShopPage() {
                             <p className="font-bold text-karekusa text-sm">
                               ¥
                               {(
-                                item.product.price * item.quantity
+                                (typeof item.product.price === "number" ? item.product.price : 0) * item.quantity
                               ).toLocaleString()}
                             </p>
                           </div>
