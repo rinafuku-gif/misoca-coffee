@@ -25,7 +25,7 @@ beforeEach(() => {
   mocks.page.mockResolvedValue(page()); mocks.block.mockRejectedValue(new Error("DUMMY_NOT_FOUND"));
   mocks.fetch.mockImplementation(async () => new Response(png, { headers: { "content-type": "image/png" } })); vi.stubGlobal("fetch", mocks.fetch);
 });
-afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
+afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals();vi.restoreAllMocks(); });
 describe("public Notion image boundary", () => {
   it.each(["path", "query"])("serves the live public product via %s without caching or credentials", async route => {
     const response = route === "path" ? await readPath() : await query(request(`/api/notion-image?pageId=${root}&property=${encodeURIComponent("画像")}`));
@@ -86,18 +86,22 @@ describe("public Notion image boundary", () => {
     expect((await readPath()).status).toBe(404);
   });
   it('uses EmDash publication for product images, even when Notion says 完売',async()=>{
-    vi.stubEnv('MISOCA_SITE_VISIBILITY_AUTHORITY','emdash');vi.stubEnv('MISOCA_SITE_PRODUCT_INDEX_URL','https://management.example.invalid/api/site-products/index');vi.stubEnv('NOTION_DATABASE_ID','db3bf889-2b85-44cf-9cb5-0c8403d283c9');
+    vi.stubEnv('MISOCA_SITE_VISIBILITY_AUTHORITY','emdash');vi.stubEnv('MISOCA_SITE_PRODUCT_CATALOG_URL','https://management.example.invalid/api/site-products/catalog');vi.stubEnv('MISOCA_SITE_CATALOG_READ_KEY','a'.repeat(64));vi.stubEnv('NOTION_DATABASE_ID','db3bf889-2b85-44cf-9cb5-0c8403d283c9');
     const value=page('product','完売');value.parent.data_source_id='db3bf889-2b85-44cf-9cb5-0c8403d283c9';mocks.page.mockResolvedValue(value);
-    mocks.fetch.mockImplementation(async(input:string)=>input===signed?new Response(png,{headers:{'content-type':'image/png'}}):Response.json({format:1,sourceIds:[root]}));
-    expect((await readPath()).status).toBe(200);expect(mocks.fetch).toHaveBeenCalledTimes(3);
+    mocks.fetch.mockImplementation(async(input:string,init?:RequestInit)=>{if(input===signed){expect(new Headers(init?.headers).has('authorization')).toBe(false);return new Response(png,{headers:{'content-type':'image/png'}});}expect(input).toBe('https://management.example.invalid/api/site-products/catalog');expect(new Headers(init?.headers).get('authorization')).toBe('Bearer '+'a'.repeat(64));return Response.json({format:2,products:[{sourceId:root,name:'公開の豆',origin:'',farm:'',variety:'',process:'',description:''}]});});
+    expect((await readPath()).status).toBe(200);expect(mocks.fetch).toHaveBeenCalledTimes(2);
   });
   it('revokes a managed image during fetch and never falls back to Notion 販売中',async()=>{
-    vi.stubEnv('MISOCA_SITE_VISIBILITY_AUTHORITY','emdash');vi.stubEnv('MISOCA_SITE_PRODUCT_INDEX_URL','https://management.example.invalid/api/site-products/index');vi.stubEnv('NOTION_DATABASE_ID','db3bf889-2b85-44cf-9cb5-0c8403d283c9');
+    let time=Date.now()+100000;vi.spyOn(Date,'now').mockImplementation(()=>time);
+    vi.stubEnv('MISOCA_SITE_VISIBILITY_AUTHORITY','emdash');vi.stubEnv('MISOCA_SITE_PRODUCT_CATALOG_URL','https://management.example.invalid/api/site-products/catalog');vi.stubEnv('MISOCA_SITE_CATALOG_READ_KEY','a'.repeat(64));vi.stubEnv('NOTION_DATABASE_ID','db3bf889-2b85-44cf-9cb5-0c8403d283c9');
     const value=page();value.parent.data_source_id='db3bf889-2b85-44cf-9cb5-0c8403d283c9';mocks.page.mockResolvedValue(value);let visible=true;
-    mocks.fetch.mockImplementation(async(input:string)=>{if(input===signed){visible=false;return new Response(png,{headers:{'content-type':'image/png'}});}return Response.json({format:1,sourceIds:visible?[root]:[]});});
+    mocks.fetch.mockImplementation(async(input:string)=>{if(input===signed){visible=false;time+=30000;return new Response(png,{headers:{'content-type':'image/png'}});}return Response.json({format:2,products:visible?[{sourceId:root,name:'公開の豆',origin:'',farm:'',variety:'',process:'',description:''}]:[]});});
     expect((await readPath()).status).toBe(404);expect(mocks.fetch).toHaveBeenCalledTimes(3);
-    mocks.fetch.mockClear();expect((await readPath()).status).toBe(404);expect(mocks.fetch).toHaveBeenCalledTimes(1);
-    mocks.fetch.mockResolvedValue(Response.json({private:'PRIVATE_PROVIDER_DIAGNOSTIC'},{status:503}));expect((await readPath()).status).toBe(404);
+    mocks.fetch.mockClear();expect((await readPath()).status).toBe(404);expect(mocks.fetch).not.toHaveBeenCalled();
+    time+=30000;mocks.fetch.mockResolvedValue(Response.json({private:'PRIVATE_PROVIDER_DIAGNOSTIC'},{status:503}));expect((await readPath()).status).toBe(404);
+  });
+  it('cannot serve managed product images with missing read credentials or the old anonymous index',async()=>{
+    vi.stubEnv('MISOCA_SITE_VISIBILITY_AUTHORITY','emdash');vi.stubEnv('MISOCA_SITE_PRODUCT_INDEX_URL','https://management.example.invalid/api/site-products/index');vi.stubEnv('MISOCA_SITE_PRODUCT_CATALOG_URL','');vi.stubEnv('MISOCA_SITE_CATALOG_READ_KEY','');vi.stubEnv('NOTION_DATABASE_ID','db3bf889-2b85-44cf-9cb5-0c8403d283c9');const value=page();value.parent.data_source_id='db3bf889-2b85-44cf-9cb5-0c8403d283c9';mocks.page.mockResolvedValue(value);expect((await readPath()).status).toBe(404);expect(mocks.fetch).not.toHaveBeenCalled();
   });
   it("requires a live bounded block ancestry ending in a public article", async () => {
     mocks.page.mockImplementation(async ({ page_id }: { page_id: string }) => { if (page_id === root) return page("journal"); throw new Error("DUMMY_NOT_PAGE"); });

@@ -1,5 +1,5 @@
 import {ProductSchema,type Product} from './product-schema';
-import {readWebsiteProducts} from './site-product-website-entry';
+import {readWebsitePublishedProducts} from './site-product-website-entry';
 export {ProductSchema,type Product} from './product-schema';
 import {
   notion,
@@ -18,8 +18,8 @@ export async function getProducts(): Promise<Product[]> {
   const authority=process.env.MISOCA_SITE_VISIBILITY_AUTHORITY??'notion';
   if(authority!=='notion'&&authority!=='emdash')throw Error('SITE_CATALOG_CONFIG_INVALID');
   if(authority==='emdash'){
-    if(!process.env.NOTION_API_KEY||databaseId?.replaceAll('-','').toLowerCase()!=='db3bf8892b8544cf9cb50c8403d283c9'||!process.env.MISOCA_SITE_PRODUCT_INDEX_URL)throw Error('SITE_CATALOG_CONFIG_INVALID');
-    return readWebsiteProducts(process.env.NOTION_API_KEY,process.env.MISOCA_SITE_PRODUCT_INDEX_URL);
+    if(!process.env.NOTION_API_KEY||databaseId?.replaceAll('-','').toLowerCase()!=='db3bf8892b8544cf9cb50c8403d283c9'||!process.env.MISOCA_SITE_PRODUCT_CATALOG_URL||!process.env.MISOCA_SITE_CATALOG_READ_KEY)throw Error('SITE_CATALOG_CONFIG_INVALID');
+    return readWebsitePublishedProducts(process.env.NOTION_API_KEY,process.env.MISOCA_SITE_PRODUCT_CATALOG_URL,process.env.MISOCA_SITE_CATALOG_READ_KEY);
   }
   if (!process.env.NOTION_API_KEY || !process.env.NOTION_DATABASE_ID) {
     return [];

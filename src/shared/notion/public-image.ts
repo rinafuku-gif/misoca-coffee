@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { notion } from "./client";
-import {readSitePublicationIndex} from '@/features/shop/site-publication-index';
+import {readWebsitePublishedCatalog} from '@/features/shop/site-product-website-entry';
 
 const LIMIT = 8 * 1024 * 1024;
 const headers = { "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff", "X-Robots-Tag": "noindex, nofollow", "Content-Security-Policy": "default-src 'none'; sandbox" };
@@ -16,9 +16,9 @@ async function publicKind(page: RecordValue): Promise<"product" | "journal" | nu
   if(product&&source===product){
     const authority=process.env.MISOCA_SITE_VISIBILITY_AUTHORITY??'notion';
     if(authority==='emdash'){
-      if(product!=='db3bf8892b8544cf9cb50c8403d283c9'||!process.env.MISOCA_SITE_PRODUCT_INDEX_URL)return null;
-      const index=await readSitePublicationIndex(fetch,process.env.MISOCA_SITE_PRODUCT_INDEX_URL);
-      return index.sourceIds.some(sourceId=>id(sourceId)===id(page.id))?'product':null;
+      if(product!=='db3bf8892b8544cf9cb50c8403d283c9'||!process.env.MISOCA_SITE_PRODUCT_CATALOG_URL||!process.env.MISOCA_SITE_CATALOG_READ_KEY)return null;
+      const catalog=await readWebsitePublishedCatalog(process.env.MISOCA_SITE_PRODUCT_CATALOG_URL,process.env.MISOCA_SITE_CATALOG_READ_KEY);
+      return catalog.some(product=>id(product.sourceId)===id(page.id))?'product':null;
     }
     if(authority==='notion'&&sale?.type==='status'&&record(sale.status)?.name==='販売中')return 'product';
     return null;
