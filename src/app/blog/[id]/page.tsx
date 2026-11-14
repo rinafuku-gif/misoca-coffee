@@ -5,19 +5,31 @@ import { notFound } from "next/navigation";
 import { getJournalPostById, getPageBlocks } from "@/features/journal/notion";
 import type { NotionBlock } from "@/features/journal/notion";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
+import { siteOrigin } from "@/shared/seo/site-entities";
 
 type Props = {
   params: Promise<{ id: string }>;
 };
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const post = await getJournalPostById(id);
-  if (!post) return { title: "記事が見つかりません" };
+  if (!post) return { title: "記事が見つかりません", robots: { index: false, follow: false } };
 
+  // Nested metadata is replaced by Next.js, so the social block is complete.
+  // The shared site image keeps link previews independent of the image proxy.
+  const description = post.excerpt || `${post.title} - 三十日珈琲ジャーナル`;
+  const url = `${siteOrigin}/blog/${post.id}`;
+  const title = `${post.title} | 三十日珈琲`;
+  const images = ["/images/hero/hero-interior-atmosphere.jpg"];
   return {
     title: post.title,
-    description: post.excerpt || `${post.title} - 三十日珈琲ジャーナル`,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title, description, url, siteName: "三十日珈琲 Shared Roasting", type: "article", locale: "ja_JP", images },
+    twitter: { card: "summary_large_image", title, description, images },
   };
 }
 
@@ -191,12 +203,11 @@ function NotionBlockRenderer({ block }: { block: NotionBlock }) {
 
 export default async function BlogPostPage({ params }: Props) {
   const { id } = await params;
-  const [post, blocks] = await Promise.all([
-    getJournalPostById(id),
-    getPageBlocks(id),
-  ]);
-
+  const post = await getJournalPostById(id);
   if (!post) notFound();
+  const blocks = await getPageBlocks(id);
+  // Publication may have been withdrawn while loading the body.
+  if (!await getJournalPostById(id)) notFound();
 
   return (
     <>

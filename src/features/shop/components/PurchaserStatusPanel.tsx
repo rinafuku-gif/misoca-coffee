@@ -7,6 +7,7 @@ import Link from "next/link";
 import { emailCopy, giftCopy, paymentCopy, physicalCopy, purchaserStatusSchema, type BuyerStatus } from "../purchaser-status";
 import { purchaseKeyForStatus, reconcilePurchasedCart, applyCheckoutCancellation, readPurchaseSession } from "../purchase-session";
 import { CheckoutCancellationPanel } from "./CheckoutCancellationPanel";
+import { PurchaseLegalLinks } from "./PurchaseTerms";
 import { ProductPublicationDetails } from "./ProductPublicationDetails";
 
 type View = { kind: "loading" | "missing" | "unavailable" | "busy" | "offline" | "ready" | "not_created"; status?: BuyerStatus; checkedAt?: number; purchaseKey?: string; cancelRequested?: boolean };
@@ -58,7 +59,7 @@ export function PurchaserStatusPanel() {
     : view.kind === "unavailable" ? "注文を照合できませんでした。確認情報の有効期限などを店舗で確認する必要があります。新しい注文や再請求は行っていません。"
     : view.kind === "busy" ? "確認が続いたため、少し時間を空けてからお試しください。新しい注文は作っていません。"
     : view.kind === "offline" ? "現在、注文状況の接続確認ができません。通信が戻ってから「状況を再確認」を押してください。この表示は、支払失敗や注文取消を意味しません。" : "";
-  return <div className={purchaseUi.page}>
+  return <main className={purchaseUi.page}>
     <div className={purchaseUi.container}>
       <PurchaseBrandHeader title="注文状況の確認" description="お支払い・商品の準備・発送を、記録に合わせて表示します。" />
       <div role="status" aria-live="polite" className={purchaseUi.status}>
@@ -79,6 +80,7 @@ export function PurchaserStatusPanel() {
       }} /> : null}
       <section className={card}><h2 className={purchaseUi.heading}>わからないときは</h2><p className="mt-2 leading-relaxed">注文番号が表示されている場合は、その番号を添えて店舗へお問い合わせください。カード番号などの決済情報は送らないでください。</p><a className="mt-3 inline-flex min-h-12 items-center break-all underline underline-offset-4" href="mailto:misocacoffee@gmail.com">misocacoffee@gmail.com</a><p className="mt-2 text-sm">押すとメールアプリが開きます。自動送信はしません。</p></section>
       <Link href="/shop/order" className="inline-flex min-h-12 items-center underline underline-offset-4">商品を選ぶ画面へ</Link>
+      <PurchaseLegalLinks />
     </div>
-  </div>;
+  </main>;
 }

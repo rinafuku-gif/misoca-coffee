@@ -10,33 +10,10 @@ import homeContent from "@content/pages/home.json";
 
 /* ───────────────────────── Data ───────────────────────── */
 /* services / galleryImages は content/pages/home.json（Decap CMSで編集可能）から取得する。
-   fallbackJournals は Notion連携APIの初期表示用フォールバックのため
-   CMS化スコープ外（Notion側が正）。 */
+   記事は取得できた公開情報だけを使う。サンプルの記事では埋めない。 */
 
 const { services, gallery } = homeContent;
 const galleryImages = gallery.images;
-
-const fallbackJournals = [
-  {
-    category: "上野原の暮らし",
-    title: "古民家の冬支度──薪ストーブとコーヒーの日々",
-    excerpt: "焙煎所のある古民家では、冬が近づくと薪ストーブの準備が始まります。",
-    date: "2026.02.15",
-  },
-  {
-    category: "産地レポート",
-    title: "エチオピアのコーヒー農園を訪ねて",
-    excerpt: "イルガチェフェの農園で見た、コーヒーチェリーの収穫風景。",
-    date: "2026.02.01",
-  },
-  {
-    category: "お知らせ",
-    title: "焙煎体験 春の予約受付開始のお知らせ",
-    excerpt: "3月〜5月の焙煎体験予約を受け付けています。",
-    date: "2026.01.20",
-  },
-];
-
 
 /* ───────────────── Arrow SVG ───────────────── */
 
@@ -68,11 +45,8 @@ interface JournalEntry {
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [productsState, setProductsState] = useState<"loading" | "ready" | "error">("loading");
-  const [journals, setJournals] = useState<JournalEntry[]>(fallbackJournals.map((j, i) => ({
-    id: String(i),
-    coverImage: "",
-    ...j,
-  })));
+  const [journals, setJournals] = useState<JournalEntry[]>([]);
+  const [journalState, setJournalState] = useState<"loading" | "ready" | "error">("loading");
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -89,14 +63,13 @@ export default function Home() {
       })
       .catch(() => { if (active) setProductsState("error"); });
 
-    fetch("/api/journal")
-      .then((res) => res.json())
+    fetch("/api/journal", { cache: "no-store" })
+      .then((res) => { if (!res.ok) throw new Error("JOURNAL_UNAVAILABLE"); return res.json(); })
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          if (active) setJournals(data.slice(0, 3));
-        }
+        if (!Array.isArray(data)) throw new Error("JOURNAL_UNAVAILABLE");
+        if (active) { setJournals(data.slice(0, 3)); setJournalState("ready"); }
       })
-      .catch(() => {});
+      .catch(() => { if (active) { setJournals([]); setJournalState("error"); } });
     return () => { active = false; };
   }, []);
 
@@ -450,6 +423,7 @@ export default function Home() {
           </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-10 md:gap-14">
+            {journals.length === 0 && <p role="status" className="text-sm text-haicha md:col-span-3 text-center">{journalState === "loading" ? "記事を読み込んでいます。" : journalState === "error" ? "記事を取得できませんでした。時間をおいてページを開き直してください。" : "公開記事はまだありません。"}</p>}
             {journals.map((post, i) => (
               <ScrollReveal key={post.id} direction="up" delay={i * 0.15}>
                 <Link href={`/blog/${post.id}`} className="group block">

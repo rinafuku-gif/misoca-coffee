@@ -9,36 +9,6 @@ import type { JournalPost } from "@/features/journal/notion";
 
 const categories = ["すべて", "上野原の暮らし", "コーヒーの知識", "産地レポート", "お知らせ"];
 
-const fallbackPosts: JournalPost[] = [
-  {
-    id: "1",
-    category: "上野原の暮らし",
-    title: "古民家の冬支度──薪ストーブとコーヒーの日々",
-    date: "2026-02-15",
-    excerpt: "",
-    coverImage: "",
-    status: "公開",
-  },
-  {
-    id: "2",
-    category: "産地レポート",
-    title: "エチオピアのコーヒー農園を訪ねて",
-    date: "2026-02-01",
-    excerpt: "",
-    coverImage: "",
-    status: "公開",
-  },
-  {
-    id: "3",
-    category: "お知らせ",
-    title: "焙煎体験 春の予約受付開始のお知らせ",
-    date: "2026-01-20",
-    excerpt: "",
-    coverImage: "",
-    status: "公開",
-  },
-];
-
 function formatDate(dateStr: string): string {
   if (!dateStr) return "";
   const d = new Date(dateStr);
@@ -49,19 +19,21 @@ function formatDate(dateStr: string): string {
 }
 
 export default function BlogPage() {
-  const [posts, setPosts] = useState<JournalPost[]>(fallbackPosts);
+  const [posts, setPosts] = useState<JournalPost[]>([]);
+  const [loadState, setLoadState] = useState<"loading" | "ready" | "error">("loading");
   const [activeCategory, setActiveCategory] = useState("すべて");
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    fetch("/api/journal")
-      .then((res) => res.json())
+    let cancelled = false;
+    fetch("/api/journal", { cache: "no-store" })
+      .then((res) => { if (!res.ok) throw new Error("JOURNAL_UNAVAILABLE"); return res.json(); })
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setPosts(data);
-        }
+        if (!Array.isArray(data)) throw new Error("JOURNAL_UNAVAILABLE");
+        if (!cancelled) { setPosts(data); setLoadState("ready"); }
       })
-      .catch(() => {});
+      .catch(() => { if (!cancelled) { setPosts([]); setLoadState("error"); } });
+    return () => { cancelled = true; };
   }, []);
 
   const filtered = activeCategory === "すべて"
@@ -98,9 +70,9 @@ export default function BlogPage() {
           </ScrollReveal>
 
           {/* Posts */}
-          {filtered.length === 0 ? (
-            <p className="text-center text-haicha py-20">
-              このカテゴリの記事はまだありません。
+          {loadState !== "ready" || filtered.length === 0 ? (
+            <p role="status" className="text-center text-haicha py-20">
+              {loadState === "loading" ? "記事を読み込んでいます。" : loadState === "error" ? "記事を取得できませんでした。時間をおいてページを開き直してください。" : "このカテゴリの公開記事はまだありません。"}
             </p>
           ) : (
             <div className="grid md:grid-cols-3 gap-10">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { serviceMetadata } from "@/shared/seo/service-metadata";
 import Link from "next/link";
 import Image from "next/image";
 import { PageHero } from "@/shared/ui/PageHero";
@@ -6,10 +7,7 @@ import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import { ExperienceClientSections } from "./ExperienceClientSections";
 import content from "@content/pages/experience.json";
 
-export const metadata: Metadata = {
-  title: content.seo.title,
-  description: content.seo.description,
-};
+export const metadata: Metadata = serviceMetadata("/experience", content.seo, content.hero.image);
 
 /* プラン価格（¥8,800 / ¥4,400）は src/features/reservation/pricing.ts の
    BASE_PRICE 定数と直結しているため、CMS化スコープ外とし直書きのまま維持する。

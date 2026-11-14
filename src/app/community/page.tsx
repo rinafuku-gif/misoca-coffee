@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
+import { serviceMetadata } from "@/shared/seo/service-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = serviceMetadata("/community", {
   title: "コミュニティ",
   description:
     "三十日珈琲のコミュニティ。コーヒーを通じてつながる人と場所。焙煎体験、イベント、地域交流を通じた新しいつながりの形。",
-};
+});
 
 const connections = [
   {

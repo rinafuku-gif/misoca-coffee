@@ -4,19 +4,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://misoca-coffee.vercel.app";
 
   return [
-    { url: baseUrl, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
-    { url: `${baseUrl}/experience`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${baseUrl}/shop`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${baseUrl}/stand`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-    { url: `${baseUrl}/catering`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${baseUrl}/mobile-roasting`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
-    { url: `${baseUrl}/community`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
-    { url: `${baseUrl}/access`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
-    { url: `${baseUrl}/faq`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
-    { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.5 },
-    { url: `${baseUrl}/blog`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.6 },
-    { url: `${baseUrl}/shop/gift-ticket`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${baseUrl}/shop/uenohara-yuzu`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
+    // Build time is not a content update time. Omit unverified lastModified.
+    { url: baseUrl, changeFrequency: "weekly", priority: 1 },
+    { url: `${baseUrl}/experience`, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${baseUrl}/shop`, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${baseUrl}/stand`, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${baseUrl}/catering`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${baseUrl}/mobile-roasting`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${baseUrl}/about`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/community`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/access`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/faq`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/contact`, changeFrequency: "yearly", priority: 0.5 },
+    { url: `${baseUrl}/privacy`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${baseUrl}/terms`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${baseUrl}/tokushoho`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${baseUrl}/blog`, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${baseUrl}/shop/gift-ticket`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${baseUrl}/shop/uenohara-yuzu`, changeFrequency: "weekly", priority: 0.85 },
   ];
 }

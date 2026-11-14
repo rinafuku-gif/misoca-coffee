@@ -3,10 +3,13 @@ import Image from "next/image";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import content from "@content/pages/access.json";
+import { locationEntities, siteOrigin, structuredDataJson } from "@/shared/seo/site-entities";
 
 export const metadata: Metadata = {
   title: content.seo.title,
   description: content.seo.description,
+  alternates: { canonical: `${siteOrigin}/access` },
+  openGraph: { title: content.seo.title, description: content.seo.description, url: `${siteOrigin}/access` },
 };
 
 export default function AccessPage() {
@@ -14,6 +17,7 @@ export default function AccessPage() {
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredDataJson(locationEntities("roastery")) }} />
       <PageHero
         title={hero.title}
         subtitle={hero.subtitle}

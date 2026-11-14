@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/shared/ui/PageHero";
+import { serviceMetadata } from "@/shared/seo/service-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = serviceMetadata("/terms", {
   title: "利用規約",
-};
+  description: "三十日珈琲の利用規約。ウェブサイトとサービスの利用条件をご案内します。",
+});
 
 export default function TermsPage() {
   return (

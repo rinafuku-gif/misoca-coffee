@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/shared/ui/PageHero";
+import { serviceMetadata } from "@/shared/seo/service-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = serviceMetadata("/tokushoho", {
   title: "特定商取引法に基づく表記",
-};
+  description: "三十日珈琲の特定商取引法に基づく表記。販売業者、連絡先、商品のお取引条件を掲載しています。",
+});
 
 export default function TokushohoPage() {
   return (

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/shared/ui/PageHero";
+import { serviceMetadata } from "@/shared/seo/service-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = serviceMetadata("/privacy", {
   title: "プライバシーポリシー",
-};
+  description: "三十日珈琲のプライバシーポリシー。個人情報の取り扱い、利用目的、お問い合わせ先をご案内します。",
+});
 
 export default function PrivacyPage() {
   return (

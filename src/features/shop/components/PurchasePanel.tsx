@@ -9,6 +9,7 @@ import { buyerProductPublicationSchema } from "../product-publication-view";
 import { ProductPublicationDetails } from "./ProductPublicationDetails";
 import { purchaserStatusSchema, cancellationCopy } from "../purchaser-status";
 import { CheckoutCancellationPanel } from "./CheckoutCancellationPanel";
+import { PurchaseConditions, PurchaseLegalLinks } from "./PurchaseTerms";
 import { UnlistedCartItems } from "./UnlistedCartItems";
 import { recoverRejectedCheckout, unlistedCartLines, shippingFailureNotice } from "../purchase-recovery";
 import { allowedCheckoutLocation, purchaseKeyForStatus, readPurchaseSession, reconcilePurchasedCart, writePurchaseSession, type PurchaseAttempt, type PurchaseSession } from "../purchase-session";
@@ -210,6 +211,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
             <div className="flex items-baseline justify-between gap-4 text-sm"><dt>送料</dt><dd>{money(quotation.shipping)}</dd></div>
             <div className="mt-4 flex flex-wrap items-baseline justify-between gap-4"><dt>合計</dt><dd className={purchaseUi.statusTitle}>{money(quotation.total)}</dd></div>
           </dl>
+          <PurchaseConditions />
           <label className="flex min-h-12 cursor-pointer items-start gap-3 py-3"><input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} className={purchaseUi.checkbox} /><span>商品・数量と、送料を含む合計を確認しました</span></label>
           <button className={button} disabled={busy || catalogStale || !confirmed || !catalog.acceptingOrders} onClick={() => { void run(begin); }}>この金額で決済画面へ</button>
           <p className="text-sm leading-loose text-haicha">次はStripeでカード情報を入力します。まだ支払いは完了しません。</p>
@@ -220,5 +222,6 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     </> : null}
     {session?.history.length ? <section className={card}><h2 className={purchaseUi.heading}>このタブで確認した注文</h2>{session.history.map(h => <button disabled={busy} key={h.orderReference} className="my-2 min-h-12 w-full break-all text-left underline" onClick={() => { try { save({ ...session, viewKey: h.purchaseKey }); location.assign("/shop/success"); } catch { setNotice("確認情報を保存できませんでした。"); } }}>注文 {h.orderReference} を確認</button>)}</section> : null}
     {session?.attempt ? <p className="text-sm leading-relaxed">このタブを閉じると確認情報を失う場合があります。わからない場合は買い直さず、店舗へお問い合わせください。</p> : null}<Link href={shopRoot ? "/" : "/shop"} className="inline-flex min-h-12 items-center underline">{shopRoot ? "三十日珈琲のホームへ戻る" : "ショップの案内へ戻る"}</Link>
+    <PurchaseLegalLinks />
   </div></main>;
 }

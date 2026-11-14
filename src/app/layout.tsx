@@ -4,6 +4,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SiteShell } from "@/shared/ui/SiteShell";
+import { siteEntities, structuredDataJson } from "@/shared/seo/site-entities";
 import "./globals.css";
 
 const notoSans = Noto_Sans_JP({
@@ -66,32 +67,7 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
-              {
-                "@context": "https://schema.org",
-                "@type": "LocalBusiness",
-                name: "三十日珈琲 Shared Roasting",
-                image: "https://misoca-coffee.vercel.app/images/hero/hero-interior-atmosphere.jpg",
-                address: {
-                  "@type": "PostalAddress",
-                  streetAddress: "松留939",
-                  addressLocality: "上野原市",
-                  addressRegion: "山梨県",
-                  postalCode: "409-0115",
-                  addressCountry: "JP",
-                },
-                url: "https://misoca-coffee.vercel.app",
-                email: "misocacoffee@gmail.com",
-                description:
-                  "山梨県上野原市、築300年の古民家で焙煎体験。コーヒーを入口に、暮らしの体験を届ける。",
-              },
-              {
-                "@context": "https://schema.org",
-                "@type": "WebSite",
-                name: "三十日珈琲 Shared Roasting",
-                url: "https://misoca-coffee.vercel.app",
-              },
-            ]),
+            __html: structuredDataJson(siteEntities),
           }}
         />
       </head>

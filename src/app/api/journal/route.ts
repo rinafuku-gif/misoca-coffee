@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
 import { getJournalPosts } from "@/features/journal/notion";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+const headers = { "Cache-Control": "private, no-store" };
 
 export async function GET() {
   try {
     const posts = await getJournalPosts();
-    return NextResponse.json(posts);
-  } catch (error) {
-    console.error("Failed to fetch journal posts from Notion:", error);
+    return NextResponse.json(posts, { headers });
+  } catch {
     return NextResponse.json(
       { error: "ジャーナル記事の取得に失敗しました" },
-      { status: 500 }
+      { status: 503, headers }
     );
   }
 }

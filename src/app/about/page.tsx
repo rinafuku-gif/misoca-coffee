@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { serviceMetadata } from "@/shared/seo/service-metadata";
 import Link from "next/link";
 import Image from "next/image";
 import { PageHero } from "@/shared/ui/PageHero";
@@ -6,10 +7,7 @@ import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import { BoldText } from "@/shared/ui/BoldText";
 import content from "@content/pages/about.json";
 
-export const metadata: Metadata = {
-  title: content.seo.title,
-  description: content.seo.description,
-};
+export const metadata: Metadata = serviceMetadata("/about", content.seo, content.hero.image);
 
 export default function AboutPage() {
   const { hero, brandStory, thePlace, thePeople, sceneryUenohara, cta } = content;

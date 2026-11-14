@@ -1,17 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
-
-const inquiryTypes = [
-  "焙煎体験の予約",
-  "ケータリングのお問い合わせ",
-  "出張焙煎のお問い合わせ",
-  "オンラインショップについて",
-  "その他",
-];
+import { inquiryTypes, contactReceiptSchema, type ContactReceipt } from "@/features/contact/contract";
+import { observeBrowserInquiry } from "@/features/discovery/journey-events";
 
 export default function ContactPage() {
   const [form, setForm] = useState({
@@ -21,31 +15,52 @@ export default function ContactPage() {
     phone: "",
     message: "",
   });
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error" | "unknown">(
     "idle"
   );
+  const pending = useRef(false);
+  const uncertain = useRef(false);
+  const [receipt, setReceipt] = useState<ContactReceipt | null>(null);
+  const [notice, setNotice] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (pending.current || uncertain.current) return;
     if (!form.type || !form.name || !form.email || !form.message) return;
-
+    pending.current = true;
+    const attemptId = crypto.randomUUID();
+    const unknown = () => {
+      uncertain.current = true; setStatus("unknown");
+      setNotice(`受付状況を確認できません。入力は残しています。同じ内容を送信し直さず、受付確認番号 ${attemptId} を添えてLINEで店舗へ確認してください。`);
+    };
     setStatus("sending");
+    setNotice("");
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, attemptId }),
+        signal: AbortSignal.timeout(15000),
       });
       const data = await res.json();
-      if (data.success) {
+      const saved = contactReceiptSchema.safeParse(data);
+      if (res.ok && saved.success && saved.data.attemptId === attemptId) {
+        observeBrowserInquiry(res.status, data, attemptId);
+        setReceipt(saved.data);
         setStatus("sent");
         setForm({ type: "", name: "", email: "", phone: "", message: "" });
-      } else {
+      } else if (res.status === 503 && data.state === "unavailable" && data.error === "INTAKE_NOT_CONFIGURED") {
         setStatus("error");
+        setNotice("フォームの受付先を利用できないため、送信していません。入力は残しています。LINE公式アカウントからご相談ください。");
+      } else if ([400, 403, 413, 415].includes(res.status) && data.state === "rejected") {
+        setStatus("error");
+        setNotice("入力または接続を確認できず、送信していません。必須項目と文字数を確認してください。内容は残しています。");
+      } else {
+        unknown();
       }
     } catch {
-      setStatus("error");
-    }
+      unknown();
+    } finally { pending.current = false; }
   };
 
   const inputClasses =
@@ -56,7 +71,7 @@ export default function ContactPage() {
       <PageHero
         title="CONTACT"
         subtitle="お問い合わせ"
-        description="ご質問・ご相談はお気軽にどうぞ。2営業日以内にご返信いたします。"
+        description="ご質問・ご相談をお送りください。予約の確定は担当者との確認後です。"
       />
 
       {/* LINE誘導 */}
@@ -70,12 +85,13 @@ export default function ContactPage() {
               LINEでのお問い合わせが便利です
             </h2>
             <p className="text-haicha leading-loose mb-10">
-              焙煎体験の予約やご質問は、LINE公式アカウントからが一番スムーズです。
+              焙煎体験の日程・人数のご相談やご質問は、LINE公式アカウントからも受け付けています。
               <br />
               お気軽にメッセージをお送りください。
             </p>
             <a
               href="https://lin.ee/ihDBxM8"
+              data-journey-surface="contact"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 bg-[#06C755] hover:bg-[#05b04c] text-white px-10 py-4 text-xs tracking-[0.2em] transition-all duration-500"
@@ -130,13 +146,14 @@ export default function ContactPage() {
                         </svg>
                       </div>
                       <h2 className="text-xl font-serif text-konsumi tracking-wider font-light mb-6">
-                        お問い合わせありがとうございます
+                        お問い合わせ内容を保存しました
                       </h2>
                       <p className="text-haicha leading-loose">
-                        2営業日以内にご返信いたします。
+                        担当者からの返信をお待ちください。予約はまだ確定していません。
                         <br />
-                        しばらくお待ちください。
+                        受付確認番号：<span className="break-all">{receipt?.attemptId}</span>
                       </p>
+                      {receipt?.notification !== "provider_acknowledged" && <p className="text-sm text-haicha mt-4">担当者への通知は確認できていません。内容は保存済みですので、重ねて送信しないでください。</p>}
                     </motion.div>
                   ) : (
                     <motion.form
@@ -147,11 +164,13 @@ export default function ContactPage() {
                       className="space-y-8"
                     >
                       <div>
-                        <label className="block text-sm text-sumi mb-2.5">
+                        <label htmlFor="contact-type" className="block text-sm text-sumi mb-2.5">
                           お問い合わせ種別{" "}
                           <span className="text-error">*</span>
                         </label>
                         <select
+                          id="contact-type"
+                          disabled={status === "sending" || status === "unknown"}
                           value={form.type}
                           onChange={(e) =>
                             setForm({ ...form, type: e.target.value })
@@ -169,11 +188,12 @@ export default function ContactPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm text-sumi mb-2.5">
+                        <label htmlFor="contact-name" className="block text-sm text-sumi mb-2.5">
                           お名前 <span className="text-error">*</span>
                         </label>
                         <input
                           type="text"
+                          id="contact-name" maxLength={100} readOnly={status === "sending" || status === "unknown"}
                           value={form.name}
                           onChange={(e) =>
                             setForm({ ...form, name: e.target.value })
@@ -185,12 +205,13 @@ export default function ContactPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm text-sumi mb-2.5">
+                        <label htmlFor="contact-email" className="block text-sm text-sumi mb-2.5">
                           メールアドレス{" "}
                           <span className="text-error">*</span>
                         </label>
                         <input
                           type="email"
+                          id="contact-email" maxLength={254} readOnly={status === "sending" || status === "unknown"}
                           value={form.email}
                           onChange={(e) =>
                             setForm({ ...form, email: e.target.value })
@@ -202,12 +223,13 @@ export default function ContactPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm text-sumi mb-2.5">
+                        <label htmlFor="contact-phone" className="block text-sm text-sumi mb-2.5">
                           電話番号{" "}
                           <span className="text-haicha text-xs">（任意）</span>
                         </label>
                         <input
                           type="tel"
+                          id="contact-phone" maxLength={40} readOnly={status === "sending" || status === "unknown"}
                           value={form.phone}
                           onChange={(e) =>
                             setForm({ ...form, phone: e.target.value })
@@ -218,11 +240,12 @@ export default function ContactPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm text-sumi mb-2.5">
+                        <label htmlFor="contact-message" className="block text-sm text-sumi mb-2.5">
                           お問い合わせ内容{" "}
                           <span className="text-error">*</span>
                         </label>
                         <textarea
+                          id="contact-message" maxLength={2000} readOnly={status === "sending" || status === "unknown"}
                           rows={7}
                           value={form.message}
                           onChange={(e) =>
@@ -234,20 +257,20 @@ export default function ContactPage() {
                         />
                       </div>
 
-                      {status === "error" && (
+                      {(status === "error" || status === "unknown") && (
                         <motion.p
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
                           className="text-error text-sm bg-error/5 border border-error/20 p-4"
+                          role="alert"
                         >
-                          送信に失敗しました。時間をおいて再度お試しいただくか、
-                          misocacoffee@gmail.com まで直接ご連絡ください。
+                          {notice}
                         </motion.p>
                       )}
 
                       <button
                         type="submit"
-                        disabled={status === "sending"}
+                        disabled={status === "sending" || status === "unknown"}
                         className="w-full bg-gold/90 hover:bg-gold disabled:opacity-50 text-white py-4 text-xs tracking-[0.2em] transition-all duration-500"
                       >
                         {status === "sending" ? (
@@ -303,7 +326,7 @@ export default function ContactPage() {
                       LINE公式アカウント
                     </a>
                     <p className="text-sm text-haicha mt-2 leading-relaxed">
-                      一番早くお返事できます
+                      メッセージを確認して担当者が返信します
                     </p>
                   </div>
 
@@ -352,7 +375,7 @@ export default function ContactPage() {
                       Response Time
                     </p>
                     <p className="text-sm text-haicha leading-relaxed">
-                      フォームからは2営業日以内にご返信いたします。
+                      受付後、担当者が内容を確認して返信します。
                       お急ぎの場合はLINEをご利用ください。
                     </p>
                   </div>

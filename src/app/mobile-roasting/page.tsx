@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
+import { serviceMetadata } from "@/shared/seo/service-metadata";
 import Image from "next/image";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import { MobileRoastingReservation } from "./MobileRoastingReservation";
 import content from "@content/pages/mobile-roasting.json";
 
-export const metadata: Metadata = {
-  title: content.seo.title,
-  description: content.seo.description,
-};
+export const metadata: Metadata = serviceMetadata("/mobile-roasting", content.seo, content.hero.image);
 
 /* 基本料金（¥11,000）・追加料金（+¥4,400）は src/features/reservation/pricing.ts の
    BASE_PRICE / EXTRA_PRICE_PER_PERSON 定数と直結しているため、CMS化スコープ外とし

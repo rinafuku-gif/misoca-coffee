@@ -9,7 +9,22 @@ import {
   getFile,
 } from "@/shared/notion/client";
 
-const journalDbId = process.env.NOTION_JOURNAL_DB_ID || "";
+const normalizeId = (value: unknown): string | null => {
+  if (typeof value !== "string" || !/^(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.test(value)) return null;
+  return value.replace(/-/g, "").toLowerCase();
+};
+const journalSource = () => normalizeId(process.env.NOTION_JOURNAL_DB_ID?.trim());
+
+function isPublicJournalPage(page: Record<string, unknown>, expectedId?: string): boolean {
+  const source = journalSource(), parent = page.parent as Record<string, unknown> | undefined;
+  const props = page.properties as Record<string, Record<string, unknown>> | undefined;
+  return Boolean(source && page.object === "page" && normalizeId(page.id) &&
+    (!expectedId || normalizeId(page.id) === normalizeId(expectedId)) &&
+    parent?.type === "data_source_id" && normalizeId(parent.data_source_id) === source &&
+    page.in_trash === false && (page.archived === undefined || page.archived === false) &&
+    (page.is_archived === undefined || page.is_archived === false) &&
+    props && getSelect(props["ステータス"]) === "公開");
+}
 
 // スキーマを「型の真実の源」にする（手書きinterfaceを廃止し z.infer で型を導出）
 export const JournalPostSchema = z.object({
@@ -27,8 +42,9 @@ export type JournalPost = z.infer<typeof JournalPostSchema>;
 export type NotionBlock = Record<string, any>;
 
 export async function getJournalPosts(): Promise<JournalPost[]> {
+  const journalDbId = journalSource();
   if (!process.env.NOTION_API_KEY || !journalDbId) {
-    return [];
+    throw new Error("JOURNAL_UNAVAILABLE");
   }
 
   const response = await notion.dataSources.query({
@@ -48,6 +64,7 @@ export async function getJournalPosts(): Promise<JournalPost[]> {
   });
 
   return response.results
+    .filter((page) => isPublicJournalPage(page as unknown as Record<string, unknown>))
     .map((page: unknown) => {
       const pageObj = page as Record<string, unknown>;
       const props = pageObj["properties"] as Record<string, Record<string, unknown>>;
@@ -71,10 +88,11 @@ export async function getJournalPosts(): Promise<JournalPost[]> {
 }
 
 export async function getJournalPostById(id: string): Promise<JournalPost | null> {
-  if (!process.env.NOTION_API_KEY) return null;
+  if (!process.env.NOTION_API_KEY || !journalSource() || !normalizeId(id)) return null;
 
   try {
     const page = await notion.pages.retrieve({ page_id: id }) as Record<string, unknown>;
+    if (!isPublicJournalPage(page, id)) return null;
     const props = page["properties"] as Record<string, Record<string, unknown>>;
     const pageId = page["id"] as string;
 
@@ -97,22 +115,23 @@ export async function getJournalPostById(id: string): Promise<JournalPost | null
 }
 
 export async function getPageBlocks(pageId: string): Promise<NotionBlock[]> {
-  if (!process.env.NOTION_API_KEY) return [];
+  if (!await getJournalPostById(pageId)) return [];
 
   const blocks: NotionBlock[] = [];
   let cursor: string | undefined = undefined;
 
   do {
+    if (!await getJournalPostById(pageId)) return [];
     const response = await notion.blocks.children.list({
       block_id: pageId,
       start_cursor: cursor,
       page_size: 100,
     });
-    blocks.push(...(response.results as NotionBlock[]));
+    blocks.push(...(response.results as NotionBlock[]).filter(block => block.in_trash === false && block.archived !== true));
     cursor = response.has_more ? (response.next_cursor ?? undefined) : undefined;
   } while (cursor);
 
-  return blocks;
+  return await getJournalPostById(pageId) ? blocks : [];
 }
 
 function resolveJournalCoverImage(

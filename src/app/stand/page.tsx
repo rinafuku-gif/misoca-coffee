@@ -5,10 +5,13 @@ import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import { StandCalendar } from "@/features/stand/components/StandCalendar";
 import content from "@content/pages/stand.json";
+import { locationEntities, siteOrigin, structuredDataJson } from "@/shared/seo/site-entities";
 
 export const metadata: Metadata = {
   title: content.seo.title,
   description: content.seo.description,
+  alternates: { canonical: `${siteOrigin}/stand` },
+  openGraph: { title: content.seo.title, description: content.seo.description, url: `${siteOrigin}/stand` },
 };
 
 export default function StandPage() {
@@ -17,6 +20,7 @@ export default function StandPage() {
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredDataJson(locationEntities("stand")) }} />
       <PageHero
         title={hero.title}
         subtitle={hero.subtitle}

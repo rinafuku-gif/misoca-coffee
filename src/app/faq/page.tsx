@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
+import { serviceMetadata } from "@/shared/seo/service-metadata";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import content from "@content/pages/faq.json";
 
-export const metadata: Metadata = {
-  title: content.seo.title,
-  description: content.seo.description,
-};
+export const metadata: Metadata = serviceMetadata("/faq", content.seo);
 
 export default function FaqPage() {
   return (
