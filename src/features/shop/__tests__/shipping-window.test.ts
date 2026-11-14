@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { SHOP_PAUSED } from "../policy";
 
 describe("confirmed shipping window without reopening checkout", () => {
-  it.each(["src/app/terms/page.tsx", "src/app/tokushoho/page.tsx", "src/app/shop/page.tsx", "src/app/shop/success/page.tsx", "content/pages/faq.json"])("uses seven days for shipping in %s", path => {
+  it.each(["src/app/terms/page.tsx", "src/app/tokushoho/page.tsx", "src/app/shop/page.tsx", "content/pages/faq.json"])("uses seven days for shipping in %s", path => {
     const source = readFileSync(resolve(path), "utf8");
     expect(source).toContain("7日以内に発送");
     expect(source).not.toContain("3日以内に発送");

@@ -9,9 +9,10 @@ interface PageHeroProps {
   subtitle: string;
   description?: string;
   image?: string;
+  compact?: boolean;
 }
 
-export function PageHero({ title, subtitle, description, image }: PageHeroProps) {
+export function PageHero({ title, subtitle, description, image, compact = false }: PageHeroProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -23,10 +24,10 @@ export function PageHero({ title, subtitle, description, image }: PageHeroProps)
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   return (
-    <section ref={sectionRef} className="relative py-36 md:py-48 overflow-hidden">
+    <section ref={sectionRef} className={`relative overflow-hidden ${compact ? "py-16 md:py-24" : "py-36 md:py-48"}`}>
       {image ? (
         <>
-          <motion.div className="absolute inset-0" style={{ y: imageY }}>
+          <motion.div className="absolute inset-0" style={compact ? undefined : { y: imageY }}>
             <Image
               src={image}
               alt={subtitle}
@@ -44,7 +45,7 @@ export function PageHero({ title, subtitle, description, image }: PageHeroProps)
 
       <motion.div
         className="relative z-10 max-w-4xl mx-auto px-6 md:px-8 text-center"
-        style={{ y: contentY, opacity }}
+        style={compact ? undefined : { y: contentY, opacity }}
       >
         <motion.p
           initial={{ opacity: 0, y: 20 }}

@@ -6,7 +6,7 @@ import { Footer } from "./Footer";
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAdmin = pathname.startsWith("/admin");
+  const isAdmin = pathname.startsWith("/admin") || pathname === "/shop/success" || pathname === "/shop/order";
 
   if (isAdmin) {
     return <>{children}</>;
