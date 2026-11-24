@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP, Noto_Serif_JP, Playfair_Display } from "next/font/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SiteShell } from "@/shared/ui/SiteShell";
+import { SiteMeasurement } from "@/shared/ui/SiteMeasurement";
 import { siteEntities, structuredDataJson } from "@/shared/seo/site-entities";
 import "./globals.css";
 
@@ -73,9 +71,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <SiteShell>{children}</SiteShell>
-        {gaId && <GoogleAnalytics gaId={gaId} />}
-        <Analytics />
-        <SpeedInsights />
+        <SiteMeasurement gaId={gaId} />
       </body>
     </html>
   );

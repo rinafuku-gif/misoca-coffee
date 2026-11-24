@@ -4,10 +4,10 @@ import { PurchaseBrandHeader, purchaseUi } from "./PurchaseBrand";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { emailCopy, giftCopy, paymentCopy, physicalCopy, purchaserStatusSchema, type BuyerStatus } from "../purchaser-status";
+import { emailCopy, giftCopy, paymentCopy, physicalCopy, purchaserStatusSchema, showsShippingWindow, type BuyerStatus } from "../purchaser-status";
 import { purchaseKeyForStatus, reconcilePurchasedCart, applyCheckoutCancellation, readPurchaseSession } from "../purchase-session";
 import { CheckoutCancellationPanel } from "./CheckoutCancellationPanel";
-import { PurchaseLegalLinks } from "./PurchaseTerms";
+import { PurchaseLegalLinks, purchaseConditions } from "./PurchaseTerms";
 import { ProductPublicationDetails } from "./ProductPublicationDetails";
 
 type View = { kind: "loading" | "missing" | "unavailable" | "busy" | "offline" | "ready" | "not_created"; status?: BuyerStatus; checkedAt?: number; purchaseKey?: string; cancelRequested?: boolean };
@@ -72,7 +72,7 @@ export function PurchaserStatusPanel() {
       </div>
       {data ? <>
         <section className={card}><h2 className={purchaseUi.heading}>商品とお支払い</h2><ul className="mt-4 divide-y divide-usuzumi">{data.items.map((item, i) => <li key={i} className="py-3"><p className="break-words font-medium">{item.name}</p><p className="mt-1 text-sm">{item.unit} × {item.quantity}点 ／ 1点 {yen(item.unitPrice)}</p><ProductPublicationDetails publication={item.publication} purchased /></li>)}</ul><dl className="mt-4 space-y-2 border-t border-usuzumi pt-4"><div className="flex justify-between gap-4"><dt>送料</dt><dd>{yen(data.shipping)}</dd></div><div className="flex justify-between gap-4 text-lg font-semibold"><dt>注文合計</dt><dd>{yen(data.total)}</dd></div>{data.refundedTotal > 0 ? <div className="flex justify-between gap-4"><dt>返金記録の合計</dt><dd>{yen(data.refundedTotal)}</dd></div> : null}</dl></section>
-        <section className={card}><h2 className={purchaseUi.heading}>受け取りまでの状況</h2><dl className="mt-4 space-y-5">{data.physical !== "not_applicable" ? <div><dt className="font-semibold">商品の発送</dt><dd className="mt-1 leading-relaxed">{physicalCopy[data.physical]}</dd></div> : null}{data.giftDelivery !== "not_applicable" ? <div><dt className="font-semibold">ギフト券</dt><dd className="mt-1 leading-relaxed">{giftCopy[data.giftDelivery]}</dd></div> : null}<div><dt className="font-semibold">支払確認メール</dt><dd className="mt-1 leading-relaxed">{emailCopy[data.confirmationEmail]}</dd></div></dl></section>
+        <section className={card}><h2 className={purchaseUi.heading}>受け取りまでの状況</h2><dl className="mt-4 space-y-5">{data.physical !== "not_applicable" ? <div><dt className="font-semibold">商品の発送</dt><dd className="mt-1 leading-relaxed">{physicalCopy[data.physical]}</dd>{showsShippingWindow(data) ? <dd className="mt-1 text-sm leading-relaxed text-karekusa">{purchaseConditions.shipping}</dd> : null}</div> : null}{data.giftDelivery !== "not_applicable" ? <div><dt className="font-semibold">ギフト券</dt><dd className="mt-1 leading-relaxed">{giftCopy[data.giftDelivery]}</dd></div> : null}<div><dt className="font-semibold">支払確認メール</dt><dd className="mt-1 leading-relaxed">{emailCopy[data.confirmationEmail]}</dd></div></dl></section>
       </> : null}
       {data && view.purchaseKey ? <CheckoutCancellationPanel purchaseKey={view.purchaseKey} payment={data.payment} pending={data.cancellation === "checking" || view.cancelRequested} state={data.cancellation} onOutcome={outcome => {
         if ("status" in outcome) setView(previous => ({ ...previous, kind: "ready", status: outcome.status, checkedAt: Date.now() }));

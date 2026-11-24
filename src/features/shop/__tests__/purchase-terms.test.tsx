@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { PurchaseConditions, PurchaseLegalLinks, purchaseConditions } from "../components/PurchaseTerms";
+import { purchaserStatusSchema, showsShippingWindow } from "../purchaser-status";
 
 const read = (path: string) => readFileSync(resolve(path), "utf8");
 
@@ -51,5 +52,18 @@ describe("購入の前に見せるお届けと返品の条件", () => {
     expect(status).toContain("<PurchaseLegalLinks />");
     const html = renderToStaticMarkup(<PurchaseLegalLinks />);
     expect(html).toContain('aria-label="お取引に関する案内"');
+  });
+  it("注文状況の画面は、支払いが確認済みで発送前のときだけ、規約と同じ発送の目安を添える", () => {
+    const payments = purchaserStatusSchema.shape.payment.options, physicals = purchaserStatusSchema.shape.physical.options;
+    const shown = payments.flatMap(payment => physicals.filter(physical => showsShippingWindow({ payment, physical })).map(physical => `${payment}:${physical}`));
+    expect(shown.sort()).toEqual(["confirmed:awaiting_preparation", "confirmed:packed", "confirmed:preparing"]);
+    expect(showsShippingWindow({ payment: "refunded", physical: "packed" })).toBe(false);
+    expect(showsShippingWindow({ payment: "waiting", physical: "awaiting_preparation" })).toBe(false);
+    expect(showsShippingWindow({ payment: "confirmed", physical: "replacement_preparing" })).toBe(false);
+    const status = read("src/features/shop/components/PurchaserStatusPanel.tsx");
+    expect(status).toContain("{physicalCopy[data.physical]}</dd>{showsShippingWindow(data) ? <dd");
+    expect(status.match(/purchaseConditions\.shipping/g)).toHaveLength(1);
+    expect(status.match(/showsShippingWindow\(/g)).toHaveLength(1);
+    expect(status).not.toContain("7日以内");
   });
 });

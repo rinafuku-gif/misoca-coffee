@@ -4,9 +4,9 @@ import { NextRequest } from "next/server";
 const mocks = vi.hoisted(() => ({
   create: vi.fn(), products: vi.fn(), stripe: vi.fn(),
 }));
-// 検証用モジュールだけ再開状態を模擬。本番のpolicy.tsはtrueのまま。
+// 保全した旧実装の数量検証専用。本番では両方の設定が受付を拒否する。
 vi.mock("@/features/shop/policy", async importOriginal => ({
-  ...await importOriginal<typeof import("../policy")>(), SHOP_PAUSED: false,
+  ...await importOriginal<typeof import("../policy")>(), SHOP_PAUSED: false, LEGACY_CHECKOUT_ENABLED: true,
 }));
 vi.mock("@/features/shop/notion", () => ({ getProducts: mocks.products }));
 vi.mock("@/shared/payments/stripe", () => ({ getStripe: mocks.stripe }));
@@ -37,7 +37,7 @@ describe("再開を模擬しても注文数量をサーバーで検証", () => {
     expect(mocks.stripe).not.toHaveBeenCalled();
   });
   it("正常な数量は偽物のCheckoutにだけ渡し、クライアント価格を採用しない", async () => {
-    mocks.products.mockResolvedValue([{ id: item.id, price: 900, inStock: true }]);
+    mocks.products.mockResolvedValue([{ id: item.id, price: 900, inStock:true }]);
     mocks.create.mockResolvedValue({ url: "https://example.invalid/dummy-checkout" });
     mocks.stripe.mockReturnValue({ checkout: { sessions: { create: mocks.create } } });
     const res = await POST(new NextRequest("http://localhost/api/checkout", {
@@ -47,17 +47,9 @@ describe("再開を模擬しても注文数量をサーバーで検証", () => {
     expect(mocks.create).toHaveBeenCalledTimes(1);
     expect(mocks.create.mock.calls[0][0].line_items[0].price_data.unit_amount).toBe(900);
   });
-  it.each([
-    {price: 900, priceIsReference: true, inStock: true},
-    {price: null, inStock: true},
-    {price: 0, inStock: true},
-    {price: 900, inStock: false},
-  ])("参考価格・未設定価格・売り切れは決済に渡さない: %j", async product => {
-    mocks.products.mockResolvedValue([{id: item.id, ...product}]);
-    const res = await POST(new NextRequest("http://localhost/api/checkout", {
-      method: "POST", body: JSON.stringify({items: [item]}),
-    }));
-    expect(res.status).toBe(400);
-    expect(mocks.stripe).not.toHaveBeenCalled();
+  it.each([{price:900,inStock:true,priceIsReference:true},{price:null,inStock:true},{price:0,inStock:true},{price:900,inStock:false}])('掲載だけ・参考価格・未設定・在庫不明を決済に渡さない',async product=>{
+    mocks.products.mockResolvedValue([{id:item.id,...product}]);
+    const response=await POST(new NextRequest('http://localhost/api/checkout',{method:'POST',body:JSON.stringify({items:[item]})}));
+    expect(response.status).toBe(400);expect(mocks.stripe).not.toHaveBeenCalled();expect(mocks.create).not.toHaveBeenCalled();
   });
 });

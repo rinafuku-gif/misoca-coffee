@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/shared/payments/stripe";
 import { getProducts } from "@/features/shop/notion";
-import { canPurchaseCatalogProduct } from "@/features/shop/product-schema";
-import { SHOP_PAUSED } from "@/features/shop/policy";
+import {canPurchaseCatalogProduct} from '@/features/shop/product-schema';
+import { LEGACY_CHECKOUT_ENABLED, SHOP_PAUSED } from "@/features/shop/policy";
 import { CheckoutInputSchema } from "@/features/shop/checkout-input";
 
 interface CartItem {
@@ -22,6 +22,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: "現在、オンラインショップの注文受付を休止しています。", code: "SHOP_PAUSED" },
       { status: 503, headers: { "Cache-Control": "no-store" } }
+    );
+  }
+  if (!LEGACY_CHECKOUT_ENABLED) {
+    return NextResponse.json(
+      { error: "この注文経路は現在利用できません。ショップで受付状況をご確認ください。", code: "LEGACY_CHECKOUT_DISABLED" },
+      { status: 410, headers: { "Cache-Control": "no-store" } }
     );
   }
   let input: unknown;
@@ -54,7 +60,7 @@ export async function POST(request: NextRequest) {
         continue;
       }
       const realPrice = productPriceMap.get(item.id);
-      if (typeof realPrice !== "number") {
+      if (typeof realPrice !== 'number') {
         return NextResponse.json(
           { error: `商品「${item.name}」は現在販売されていません` },
           { status: 400 }

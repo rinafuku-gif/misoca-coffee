@@ -63,6 +63,17 @@ describe("Notion product source, no publication/stock authority",()=>{
     const raw=page();raw.properties["100g豆売売価"].number=0;const result=parseNotionSiteProduct(raw,sourceId);
     expect(result.content.referencePrice100g).toBe(0);expect(result).not.toHaveProperty("orderAcceptance");
   });
+  it.each([900, 0, null])("reads the selected price formula result %s without exposing its expression or costs",price=>{
+    const raw=page();Object.assign(raw.properties["100g豆売売価"],{type:"formula",formula:{type:"number",number:price,expression:"PRIVATE_COST_FORMULA"}});
+    const result=parseNotionSiteProduct(raw,sourceId);
+    expect(result.content.referencePrice100g).toBe(price);expect(JSON.stringify(result)).not.toMatch(/PRIVATE|expression|12345/);
+    const numeric=page();numeric.properties["100g豆売売価"].number=price;
+    expect(result.fingerprint).toBe(parseNotionSiteProduct(numeric,sourceId).fingerprint);
+  });
+  it.each([{type:"string",string:"900円"},{type:"number",number:900.5},{type:"number",number:-1},{type:"number",number:"900"},{type:"number"},null])("rejects an invalid price formula without cost fallback: %j",formula=>{
+    const raw=page();Object.assign(raw.properties["100g豆売売価"],{type:"formula",formula});
+    expect(()=>parseNotionSiteProduct(raw,sourceId)).toThrow("SITE_PRODUCT_SOURCE_INVALID");
+  });
   it("matches the legacy comment-or-text description fallback",()=>{
     const raw=page();raw.properties.コメント=rich("");expect(parseNotionSiteProduct(raw,sourceId).content.description).toBe("予備の紹介文");
   });

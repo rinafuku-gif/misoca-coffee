@@ -7,7 +7,7 @@ describe('every public consumer respects revocable media and nullable reference 
   expect(covers).toHaveLength(1);
   expect(covers[0][0]).toContain('unoptimized={post.coverImage.startsWith("/api/notion-image/")}');
  });
- it.each([['src/app/page.tsx','item'],['src/app/shop/page.tsx','product']])('public catalog validates API and does not invent fallback rows in %s',(path,item)=>{
+ it.each([['src/app/page.tsx','item'],['src/features/shop/components/ShopCatalog.tsx','product']])('public catalog validates API and does not invent fallback rows in %s',(path,item)=>{
   const source=readFileSync(path,'utf8');
   expect(source).toContain('ProductSchema.array().max(500).safeParse');
   expect(source).toContain(`catalogPriceLabel(${item})`);

@@ -221,7 +221,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
       </div>
     </> : null}
     {session?.history.length ? <section className={card}><h2 className={purchaseUi.heading}>このタブで確認した注文</h2>{session.history.map(h => <button disabled={busy} key={h.orderReference} className="my-2 min-h-12 w-full break-all text-left underline" onClick={() => { try { save({ ...session, viewKey: h.purchaseKey }); location.assign("/shop/success"); } catch { setNotice("確認情報を保存できませんでした。"); } }}>注文 {h.orderReference} を確認</button>)}</section> : null}
-    {session?.attempt ? <p className="text-sm leading-relaxed">このタブを閉じると確認情報を失う場合があります。わからない場合は買い直さず、店舗へお問い合わせください。</p> : null}<Link href={shopRoot ? "/" : "/shop"} className="inline-flex min-h-12 items-center underline">{shopRoot ? "三十日珈琲のホームへ戻る" : "ショップの案内へ戻る"}</Link>
+    {session?.attempt ? <p className="text-sm leading-relaxed">このタブを閉じると確認情報を失う場合があります。わからない場合は買い直さず、店舗へお問い合わせください。</p> : null}{shopRoot ? <Link href="/" className="inline-flex min-h-12 items-center underline">三十日珈琲のホームへ戻る</Link> : <a href="/shop" className="inline-flex min-h-12 items-center underline">ショップの案内へ戻る</a>}
     <PurchaseLegalLinks />
   </div></main>;
 }

@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import { siteProductSourceSchema, type SiteProductSource } from "./site-product-view";
+import { readNotionPriceValue } from "./notion-price-value";
 
 // Explicit public-product allowlist. Never spread arbitrary Notion properties
 // (supplier details, purchase costs, contacts, credentials) into the catalog.
@@ -63,6 +64,9 @@ export function parseNotionSiteProduct(raw: unknown, expectedDataSourceId: strin
   }
   function number(key: "referencePrice100g" | "displayOrder") {
     const prop = property(key); if (!prop) return null;
+    if (key === "referencePrice100g") {
+      try { return readNotionPriceValue(prop); } catch { return fail("SITE_PRODUCT_SOURCE_INVALID"); }
+    }
     if (prop.type !== "number" || prop.number !== null && (typeof prop.number !== "number" || !Number.isFinite(prop.number))) return fail("SITE_PRODUCT_SOURCE_INVALID");
     return prop.number as number | null;
   }

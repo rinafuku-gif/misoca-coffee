@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { PageHero } from "@/shared/ui/PageHero";
 import { purchaseUi } from "./purchase-ui";
 export { purchaseUi } from "./purchase-ui";
@@ -12,14 +11,18 @@ export function PurchaseSelectionSummary({ count }: { count: number }) {
   </div>;
 }
 
+/** The two links back to the shop are plain anchors on purpose. They render
+ * only on the purchase and order-status pages, which are not measured; leaving
+ * those pages must be a full page load so that a measured page and an
+ * unmeasured page never share one loaded document (see SiteMeasurement). */
 export function PurchaseBrandHeader({ title, description, shopIntroduction = false, shopRoot = false }: { title: string; description: string; shopIntroduction?: boolean; shopRoot?: boolean }) {
   return <header className="pb-10 sm:pb-12">
     {!shopRoot ? <div className="mb-6 flex flex-wrap items-center justify-between gap-x-5 gap-y-2 border-b border-usuzumi pb-6 sm:mb-8">
-      <Link href="/shop" aria-label="三十日珈琲のショップへ" className="inline-flex min-h-12 items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-karekusa">
+      <a href="/shop" aria-label="三十日珈琲のショップへ" className="inline-flex min-h-12 items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-karekusa">
         <Image src="/images/logo-circle-green.jpg" alt="" width={40} height={40} className="h-10 w-10" />
         <Image src="/images/logo-text-dark.png" alt="三十日珈琲 Shared Roasting" width={130} height={48} className="h-10 w-auto" />
-      </Link>
-      <Link href="/shop" className={purchaseUi.link}>ショップの案内へ戻る</Link>
+      </a>
+      <a href="/shop" className={purchaseUi.link}>ショップの案内へ戻る</a>
     </div> : null}
     {shopIntroduction ? <>
       <PageHero title="ONLINE SHOP" subtitle={title} image="/images/experience/coffee-beans-close.jpg" compact />

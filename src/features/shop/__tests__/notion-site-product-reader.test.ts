@@ -9,6 +9,14 @@ function api(){return{
  schema:vi.fn(async():Promise<unknown>=>({object:"data_source",id:source,archived:false,in_trash:false,properties:{名前:title,EC販売ステータス:status,コメント:description,仕入原価:{id:"private-cost",name:"仕入原価",type:"number"}}})),
  query:vi.fn(async(_input:unknown):Promise<unknown>=>list(page())),property:vi.fn(async(_input:unknown):Promise<unknown>=>list()),page:vi.fn(async(_input:unknown):Promise<unknown>=>page()),
 };}
+it("projects only the configured numeric formula price and retains exact schema/page types",async()=>{
+ const sdk=api(),price={id:"price",name:"100g豆売売価",type:"formula"};
+ sdk.schema.mockResolvedValueOnce({object:"data_source",id:source,archived:false,in_trash:false,properties:{名前:title,"100g豆売売価":price}});
+ const raw=page();Object.assign(raw.properties,{"100g豆売売価":{...price,formula:{type:"number",number:950,expression:"PRIVATE_FORMULA"}}});sdk.query.mockResolvedValueOnce(list(raw));
+ const result=await prepareNotionSiteProducts(createNotionSiteProductReader(sdk,source),source);
+ expect(result[0].content.referencePrice100g).toBe(950);expect(JSON.stringify(result)).not.toMatch(/PRIVATE|12345|expression/);
+ expect(sdk.property).not.toHaveBeenCalled();
+});
 it("is lazy and requests only allowed schema properties with no sale-state filter",async()=>{
  const sdk=api(),reader=createNotionSiteProductReader(sdk,source);expect(sdk.schema).not.toHaveBeenCalled();
  const result=await prepareNotionSiteProducts(reader,source);expect(result).toHaveLength(1);expect(result[0].saleStatus).toBe("完売");

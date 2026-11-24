@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { boundedExternal } from "./ledger/timeout";
 import { canonicalSiteSourceId, notionSiteProductFieldNames, type NotionSiteProductReader } from "./notion-site-product-source";
+import { isNotionPriceType } from "./notion-price-value";
 
 /** Inject an already authorized read-only SDK/transport. No client, credential,
  * write/search method, data-source selection or network request is constructed.
@@ -37,7 +38,7 @@ export function createNotionSiteProductReader(api: NotionSiteProductApi, dataSou
     for(const name of notionSiteProductFieldNames){
       if(!Object.hasOwn(properties,name))continue;
       const field=fields.safeParse(properties[name]);
-      const validType=name==="EC販売ステータス"?field.data?.type==="status":name==="100g豆売売価"||name==="表示順"?field.data?.type==="number":name==="画像"?field.data?.type==="files":["title","rich_text","select","multi_select"].includes(field.data?.type??"");
+      const validType=name==="EC販売ステータス"?field.data?.type==="status":name==="100g豆売売価"?isNotionPriceType(field.data?.type):name==="表示順"?field.data?.type==="number":name==="画像"?field.data?.type==="files":["title","rich_text","select","multi_select"].includes(field.data?.type??"");
       if(!field.success||field.data.name!==name||!validType||ids.has(field.data.id))return fail("SITE_PRODUCT_SOURCE_INVALID");
       ids.add(field.data.id);result.set(name,field.data);
     }
