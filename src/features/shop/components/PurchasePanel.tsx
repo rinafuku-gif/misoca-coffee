@@ -14,11 +14,14 @@ import { UnlistedCartItems } from "./UnlistedCartItems";
 import { recoverRejectedCheckout, unlistedCartLines, shippingFailureNotice } from "../purchase-recovery";
 import { allowedCheckoutLocation, purchaseKeyForStatus, readPurchaseSession, reconcilePurchasedCart, withDeliveryMethod, writePurchaseSession, type PurchaseAttempt, type PurchaseSession } from "../purchase-session";
 import { catalogDeliveryMethodsSchema, checkoutRequestBody, quoteRequestBody, receivingCopy, requestedMethod, selectableMethods, shippingFeeLabel, type DeliveryMethod } from "../receiving-method";
+import { catalogReceptionSchema, receptionPauseNotice } from "../reception-notice";
 
 const product = z.object({ skuId: z.string(), name: z.string(), unit: z.string(), unitPrice: z.number().int().nonnegative(), kind: z.enum(["physical", "gift"]), maxQuantity: z.number().int().min(0).max(20), publication: buyerProductPublicationSchema.optional() }).strict();
 // deliveryMethods: present only when the management side offers receiving methods. Absent, or not in the agreed
-// shape = shipping only, as before (it never fails the catalog). Every other field is checked as strictly as before.
-export const catalogSchema = z.object({ items: z.array(product).max(50), nextOffset: z.number().int().nonnegative().nullable(), acceptingOrders: z.boolean(), deliveryMethods: catalogDeliveryMethodsSchema }).strict();
+// shape = shipping only, as before (it never fails the catalog). reception: present only when the reception
+// switch is open AND the site asked for it. Absent, or not in the agreed shape, keeps the fixed sentence (G-4).
+// Neither ever fails the catalog itself. Every other field is checked as strictly as before.
+export const catalogSchema = z.object({ items: z.array(product).max(50), nextOffset: z.number().int().nonnegative().nullable(), acceptingOrders: z.boolean(), deliveryMethods: catalogDeliveryMethodsSchema, reception: catalogReceptionSchema }).strict();
 const quotationSchema = z.object({ items: z.array(product.omit({ maxQuantity: true }).extend({ quantity: z.number().int().min(1).max(20) })).max(20), total: z.number().int().nonnegative(), shipping: z.number().int().nonnegative(), acceptedQuote: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
 type Catalog = z.infer<typeof catalogSchema>; type Quotation = z.infer<typeof quotationSchema>;
 const money = (value: number) => `¥${value.toLocaleString("ja-JP")}`;
@@ -127,14 +130,18 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     }
     setQuotation(quotationSchema.parse(result.body)); setQuotedMethod(method); setConfirmed(false); setNotice("");
   }
-  async function checkout(attempt: PurchaseAttempt) {
+  // isNewPurchase: true only when called from begin() with a purchaseKey it just
+  // generated in this tab (G-4). The "同じ注文の決済へ戻る" button below calls this
+  // with its existing attempt and leaves it false; a prior attempt with that key may
+  // already have created an order, so SALES_PAUSED is never read as "no order" there.
+  async function checkout(attempt: PurchaseAttempt, isNewPurchase = false) {
     const current = readPurchaseSession(sessionStorage);
     save({ ...current, viewKey: attempt.purchaseKey });
     const result = await send("checkout", checkoutRequestBody(attempt));
     const latest = readPurchaseSession(sessionStorage);
     if (latest.attempt?.purchaseKey !== attempt.purchaseKey || latest.attempt.cancelRequested || cancellationIntents.current.has(attempt.purchaseKey)) { setNotice("決済中止の確認を続けています。新しい決済画面へは進みません。"); return; }
     if (!result.ok) {
-      const recovered = recoverRejectedCheckout(latest, attempt.purchaseKey, result.body);
+      const recovered = recoverRejectedCheckout(latest, attempt.purchaseKey, result.body, { isNewPurchase });
       if (recovered) {
         save(recovered.session);
         await refreshCatalog(recovered.notice);
@@ -151,7 +158,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     const bytes = crypto.getRandomValues(new Uint8Array(32)); const purchaseKey = Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
     const attempt: PurchaseAttempt = { purchaseKey, lines: session.cart, acceptedQuote: currentQuotation.acceptedQuote, ...(method === "shipping" ? {} : { deliveryMethod: method }) };
     // Save the exact attempt atomically BEFORE an external outcome can become unknown.
-    save({ ...session, attempt, viewKey: purchaseKey }); await checkout(attempt);
+    save({ ...session, attempt, viewKey: purchaseKey }); await checkout(attempt, true);
   }
   async function anotherOrder() {
     if (!session?.attempt) return;
@@ -190,7 +197,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
       setNotice(outcome.cancellation === "not_created" ? "注文は作られていませんでした。カートの内容を残しています。合計を確認し直してから購入できます。" : outcome.cancellation === "closed" && outcome.status.payment === "closed" ? cancellationCopy.closed : "");
     }} /> : null}
     {catalog && session && !session.attempt ? <>
-      {!catalog.acceptingOrders ? <p className={purchaseUi.notice}>現在は注文を受け付けていません。金額の確認はできますが、決済へは進めません。</p> : null}
+      {!catalog.acceptingOrders ? <p className={purchaseUi.notice}>{receptionPauseNotice(catalog.reception) ?? "現在は注文を受け付けていません。金額の確認はできますが、決済へは進めません。"}</p> : null}
       <div className="my-6">
         {catalogStale ? <p className="text-sm leading-loose text-haicha">現在は更新前の商品一覧です。更新できるまで決済には進めません。選択から外す操作はできます。</p> : null}
       </div>

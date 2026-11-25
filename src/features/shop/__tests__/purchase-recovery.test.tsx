@@ -29,6 +29,29 @@ describe("未作成が確定した購入操作だけを選び直す", () => {
     expect(recoverRejectedCheckout({ ...session, attempt: { ...session.attempt!, settledOrderId: "dummy_paid" } }, key, body)).toBeNull();
   });
 });
+describe("受付がお休み中のSALES_PAUSEDは、そのタブで新しく作った鍵からの決済開始だけを選び直す（G-4）", () => {
+  it("新しい購入の鍵からの決済開始がSALES_PAUSEDで断られたら、注文情報を消して文を返す", () => {
+    const session = saved();
+    const result = recoverRejectedCheckout(session, key, { error: "SALES_PAUSED" }, { isNewPurchase: true });
+    expect(result?.notice).toContain("この操作では注文・請求は始まっていません");
+    expect(result?.session).toEqual({ ...session, attempt: null, viewKey: null });
+    expect(session).toEqual(saved());
+  });
+  it("「同じ注文の決済へ戻る」からの場合（isNewPurchaseなし）は、前の試みで注文ができているかもしれないため消さない", () => {
+    expect(recoverRejectedCheckout(saved(), key, { error: "SALES_PAUSED" })).toBeNull();
+    expect(recoverRejectedCheckout(saved(), key, { error: "SALES_PAUSED" }, { isNewPurchase: false })).toBeNull();
+  });
+  it("orderMayExistが付いた想定外の形は扱わない", () => {
+    expect(recoverRejectedCheckout(saved(), key, { error: "SALES_PAUSED", orderMayExist: false }, { isNewPurchase: true })).toBeNull();
+    expect(recoverRejectedCheckout(saved(), key, { error: "SALES_PAUSED", orderMayExist: true }, { isNewPurchase: true })).toBeNull();
+  });
+  it("別の購入操作・中止確認中・支払い確認済みには、新しい鍵でも適用しない", () => {
+    const body = { error: "SALES_PAUSED" }, session = saved();
+    expect(recoverRejectedCheckout(session, "d".repeat(64), body, { isNewPurchase: true })).toBeNull();
+    expect(recoverRejectedCheckout({ ...session, attempt: { ...session.attempt!, cancelRequested: true } }, key, body, { isNewPurchase: true })).toBeNull();
+    expect(recoverRejectedCheckout({ ...session, attempt: { ...session.attempt!, settledOrderId: "dummy_paid" } }, key, body, { isNewPurchase: true })).toBeNull();
+  });
+});
 describe("配送の問題と注文状態を分けて説明する", () => {
   it.each(["SHIPPING_REVIEW_REQUIRED", "SHIPPING_LIMIT_EXCEEDED"])("%sの見積と未確定注文を区別する", error => {
     expect(shippingFailureNotice({ error })).toContain("この見積操作では注文・請求は始まりません");

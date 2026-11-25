@@ -6,6 +6,8 @@ import { buyerProductPublicationSchema } from "./product-publication-view";
 export const RECEIVING_METHODS = ["local_delivery", "store_pickup"] as const;
 /** サイトが「商品一覧の応答の deliveryMethods を受け取れる」と管理側へ伝えるヘッダ（値は v1）。 */
 export const DELIVERY_METHODS_HEADER = "x-misoca-delivery-methods";
+/** サイトが「商品一覧の応答の reception を受け取れる」と管理側へ伝えるヘッダ（値は v1）。受け取り方法のヘッダーとは別物。 */
+export const RECEPTION_HEADER = "x-misoca-reception";
 export const purchaserStatusSchema = z.object({
   orderReference: z.string().min(1).max(128), createdAt: z.number().int().nonnegative(),
   items: z.array(z.object({ skuId: z.string(), name: z.string(), unit: z.string(), quantity: z.number().int().positive(), unitPrice: z.number().int().nonnegative(), kind: z.enum(["physical", "gift"]), publication: buyerProductPublicationSchema.optional() }).strict()).max(20),

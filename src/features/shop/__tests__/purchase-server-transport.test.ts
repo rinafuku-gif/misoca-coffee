@@ -11,8 +11,10 @@ describe("公開サイトとEC台帳の専用接続", () => {
     const send = vi.fn(async (request: Request) => {
       expect(request.url).toBe(backendOrigin + "/api/ec/purchase/catalog");
       // x-misoca-delivery-methods: the website states that it can read `deliveryMethods` in a catalog answer (added with the receiving methods).
-      expect([...request.headers.keys()].sort()).toEqual(["authorization", "content-type", "x-misoca-at", "x-misoca-client", "x-misoca-delivery-methods", "x-misoca-request-id", "x-misoca-site-origin"]);
+      // x-misoca-reception: the website states that it can read `reception` in a catalog answer (added with the reception switch, H).
+      expect([...request.headers.keys()].sort()).toEqual(["authorization", "content-type", "x-misoca-at", "x-misoca-client", "x-misoca-delivery-methods", "x-misoca-reception", "x-misoca-request-id", "x-misoca-site-origin"]);
       expect(request.headers.get("x-misoca-delivery-methods")).toBe("v1");
+      expect(request.headers.get("x-misoca-reception")).toBe("v1");
       expect(request.headers.get("authorization")).toBe(`Bearer ${serverKey}`);
       expect(request.redirect).toBe("manual");
       expect(await request.text()).toBe("{}"); return success();
@@ -89,6 +91,15 @@ describe("公開サイトとEC台帳の専用接続", () => {
     for (const deliveryMethods of [["shipping"], ["shipping", "store_pickup"], ["shipping", "local_delivery", "store_pickup"]]) expect(await answer({ ...plain, deliveryMethods })).toEqual({ status: 200, json: { ...plain, deliveryMethods } });
     for (const deliveryMethods of [[], ["drone"], ["shipping", "store_pickup", "local_delivery", "shipping"], "store_pickup", null, [1]]) expect((await answer({ ...plain, deliveryMethods })).status).toBe(503);
   });
+  it("商品一覧の reception は任意: 無い応答は今までどおり通し、ある応答は決まった値だけ通す", async () => {
+    const answer = async (body: unknown) => { const send = vi.fn(async () => Response.json(body)); const response = await createPurchaseWebsiteProxy({ ...config, send })(req()); return { status: response.status, json: await response.json() }; };
+    const plain = { items: [], nextOffset: null, acceptingOrders: true };
+    expect(await answer(plain)).toEqual({ status: 200, json: plain });
+    for (const reception of [{ state: "open" }, { state: "paused", reopensAt: null, message: "" }, { state: "paused", reopensAt: 1795582800000, message: "年末年始はお休みをいただきます。" }])
+      expect(await answer({ ...plain, reception })).toEqual({ status: 200, json: { ...plain, reception } });
+    for (const reception of [{ state: "closed" }, { state: "paused" }, { state: "paused", reopensAt: null }, { state: "paused", reopensAt: -1, message: "" }, { state: "open", extra: 1 }, "paused", null, 1])
+      expect((await answer({ ...plain, reception })).status).toBe(503);
+  });
   it("注文の状況の receiving は任意: 配送の注文の形はそのまま、配送以外は決まった値だけ通す", async () => {
     const status = { orderReference: "order_dummy", createdAt: 1, items: [], total: 1800, shipping: 0, refundedTotal: 0, payment: "confirmed", physical: "awaiting_preparation", giftDelivery: "not_applicable", confirmationEmail: "not_sent", cancellation: "none" };
     const answer = async (body: unknown) => { const send = vi.fn(async () => Response.json(body)); const response = await createPurchaseWebsiteProxy({ ...config, send })(req("status", JSON.stringify({ purchaseKey: "a".repeat(64) }))); return { status: response.status, json: await response.json() }; };
@@ -102,5 +113,9 @@ describe("公開サイトとEC台帳の専用接続", () => {
     expect(forwarded("/api/ec/purchase/catalog", { "x-misoca-delivery-methods": "v1", authorization: "private", "x-other": "1" })).toEqual(["content-type", "origin", "x-misoca-delivery-methods"]);
     for (const value of ["v2", "V1", "1", ""]) expect(forwarded("/api/ec/purchase/catalog", { "x-misoca-delivery-methods": value })).toEqual(["content-type", "origin"]);
     expect(forwarded("/api/ec/webhook", { "x-misoca-delivery-methods": "v1", "stripe-signature": "t=1,v1=dummy" })).toEqual(["content-type", "stripe-signature"]);
+    expect(forwarded("/api/ec/purchase/catalog", { "x-misoca-reception": "v1", authorization: "private", "x-other": "1" })).toEqual(["content-type", "origin", "x-misoca-reception"]);
+    expect(forwarded("/api/ec/purchase/catalog", { "x-misoca-delivery-methods": "v1", "x-misoca-reception": "v1" })).toEqual(["content-type", "origin", "x-misoca-delivery-methods", "x-misoca-reception"]);
+    for (const value of ["v2", "V1", "1", ""]) expect(forwarded("/api/ec/purchase/catalog", { "x-misoca-reception": value })).toEqual(["content-type", "origin"]);
+    expect(forwarded("/api/ec/webhook", { "x-misoca-reception": "v1", "stripe-signature": "t=1,v1=dummy" })).toEqual(["content-type", "stripe-signature"]);
   });
 });

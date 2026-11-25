@@ -14,15 +14,32 @@ export function shippingFailureNotice(body: unknown, continuation = false) {
   return continuation ? `${message}注文が作成されていないことはまだ確認できません。買い直さず、同じ注文の状況を確認してください。` : `${message}この見積操作では注文・請求は始まりません。`;
 }
 
-export function recoverRejectedCheckout(session: PurchaseSession, key: string, body: unknown) {
-  if (!body || typeof body !== "object" || !("error" in body) || !("orderMayExist" in body) || body.orderMayExist !== false) return null;
-  const code = body.error;
-  if (typeof code !== "string" || !Object.hasOwn(rejectionMessages, code)) return null;
+/** `isNewPurchase` は、この決済開始が「そのタブで、たった今作った新しい購入の鍵」
+ * からの呼び出しであることを呼び出し側が示す印（PurchasePanel.tsx の begin()）。
+ * 「同じ注文の決済へ戻る」からの呼び出し（この印なし）は、前の試み（別の依頼）で
+ * 注文ができているかもしれないため、SALES_PAUSED を注文なしとは読み替えない（G-4）。 */
+export function recoverRejectedCheckout(session: PurchaseSession, key: string, body: unknown, options?: { isNewPurchase?: boolean }) {
   if (session.attempt?.purchaseKey !== key || session.attempt.cancelRequested || session.attempt.settledOrderId) return null;
-  return {
-    session: { ...session, attempt: null, viewKey: null },
-    notice: `${rejectionMessages[code as keyof typeof rejectionMessages]}この購入操作では注文・請求は始まっていません。商品と数量を見直し、合計を確認し直してください。`,
-  };
+  if (!body || typeof body !== "object" || !("error" in body) || typeof body.error !== "string") return null;
+  const code = body.error;
+  if (Object.hasOwn(rejectionMessages, code)) {
+    if (!("orderMayExist" in body) || (body as { orderMayExist?: unknown }).orderMayExist !== false) return null;
+    return {
+      session: { ...session, attempt: null, viewKey: null },
+      notice: `${rejectionMessages[code as keyof typeof rejectionMessages]}この購入操作では注文・請求は始まっていません。商品と数量を見直し、合計を確認し直してください。`,
+    };
+  }
+  // G-4 の境目: 新しい購入の鍵からの決済開始が SALES_PAUSED で断られたときだけ、
+  // 注文・請求が始まっていないと判断できる（管理側は注文を作る前に断っており、
+  // 新しい鍵ならほかに注文を作りうる依頼が無い）。orderMayExist が付いている応答は
+  // 想定外の形なのでここでは扱わない。
+  if (code === "SALES_PAUSED" && options?.isNewPurchase && !("orderMayExist" in body)) {
+    return {
+      session: { ...session, attempt: null, viewKey: null },
+      notice: "ご注文の受付がお休みに入りました。この操作では注文・請求は始まっていません。商品一覧を確認し直してください。",
+    };
+  }
+  return null;
 }
 
 /** Absence from a paginated catalog is not proof of withdrawal. Labels already

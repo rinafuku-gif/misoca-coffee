@@ -31,7 +31,7 @@ describe("サイトの受け口は、受け取り方法の項目を落とさず�
   });
   afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
 
-  it("全部の経路で、管理側への依頼にヘッダ x-misoca-delivery-methods: v1 を1つ足す", async () => {
+  it("全部の経路で、管理側への依頼にヘッダ x-misoca-delivery-methods: v1 と x-misoca-reception: v1 を1つずつ足す", async () => {
     const answers: Record<string, unknown> = {
       catalog: { items: [], nextOffset: null, acceptingOrders: true },
       quote: { items: [], shipping: 0, total: 2900, acceptedQuote },
@@ -44,7 +44,8 @@ describe("サイトの受け口は、受け取り方法の項目を落とさず�
     expect(seen.map(request => request.url)).toEqual(Object.keys(answers).map(action => `${backendOrigin}/api/ec/purchase/${action}`));
     for (const request of seen) {
       expect(request.headers["x-misoca-delivery-methods"]).toBe("v1");
-      expect(Object.keys(request.headers).sort()).toEqual(["authorization", "content-type", "x-misoca-at", "x-misoca-client", "x-misoca-delivery-methods", "x-misoca-request-id", "x-misoca-site-origin"]);
+      expect(request.headers["x-misoca-reception"]).toBe("v1");
+      expect(Object.keys(request.headers).sort()).toEqual(["authorization", "content-type", "x-misoca-at", "x-misoca-client", "x-misoca-delivery-methods", "x-misoca-reception", "x-misoca-request-id", "x-misoca-site-origin"]);
     }
   });
 
@@ -71,9 +72,19 @@ describe("サイトの受け口は、受け取り方法の項目を落とさず�
     }
   });
 
+  it("商品一覧の reception は、あればそのまま返し、無ければ足さない", async () => {
+    const plain = { items: [], nextOffset: null, acceptingOrders: true };
+    answer = () => plain;
+    expect(await relay("catalog", "{}")).toEqual({ status: 200, text: JSON.stringify(plain) });
+    for (const reception of [{ state: "open" }, { state: "paused", reopensAt: null, message: "" }, { state: "paused", reopensAt: 1795582800000, message: "年末年始はお休みをいただきます。" }]) {
+      answer = () => ({ ...plain, reception });
+      expect(await relay("catalog", "{}")).toEqual({ status: 200, text: JSON.stringify({ ...plain, reception }) });
+    }
+  });
+
   it("商品一覧の知らない方法名・余分な項目は、受け口で断る（503）", async () => {
     const plain = { items: [], nextOffset: null, acceptingOrders: true };
-    for (const extra of [{ deliveryMethods: ["shipping", "drone"] }, { deliveryMethods: [] }, { deliveryMethods: ["shipping", "store_pickup"], shippingFee: 0 }, { deliveryMethod: "store_pickup" }]) {
+    for (const extra of [{ deliveryMethods: ["shipping", "drone"] }, { deliveryMethods: [] }, { deliveryMethods: ["shipping", "store_pickup"], shippingFee: 0 }, { deliveryMethod: "store_pickup" }, { reception: { state: "closed" } }, { reception: { state: "paused" } }]) {
       answer = () => ({ ...plain, ...extra });
       expect(await relay("catalog", "{}")).toEqual({ status: 503, text: '{"error":"SERVICE_UNAVAILABLE"}' });
     }

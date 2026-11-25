@@ -128,7 +128,7 @@ describe("購入画面が商品一覧の応答を読むとき（ブラウザ側�
     expect(catalogSchema.safeParse({ ...plain, items: "x", deliveryMethods: ["store_pickup", "shipping"] }).success).toBe(false);
   });
   it("この読み方は、購入画面の商品一覧の検査の中の deliveryMethods だけに使う", () => {
-    expect(panel).toContain("acceptingOrders: z.boolean(), deliveryMethods: catalogDeliveryMethodsSchema }).strict();");
+    expect(panel).toContain("acceptingOrders: z.boolean(), deliveryMethods: catalogDeliveryMethodsSchema, reception: catalogReceptionSchema }).strict();");
     expect(panel.match(/catalogDeliveryMethodsSchema/g)).toHaveLength(2);
     expect(panel.match(/catalogSchema\.parse\(/g)).toHaveLength(3);
     expect(catalogDeliveryMethodsSchema.parse(undefined)).toBeUndefined();
