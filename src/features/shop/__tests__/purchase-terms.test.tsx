@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { PurchaseConditions, PurchaseLegalLinks, purchaseConditions } from "../components/PurchaseTerms";
 import { purchaserStatusSchema, showsShippingWindow } from "../purchaser-status";
+import TokushohoPage from "@/app/tokushoho/page";
 
 const read = (path: string) => readFileSync(resolve(path), "utf8");
 
@@ -20,6 +21,29 @@ describe("購入の前に見せるお届けと返品の条件", () => {
     expect(purchaseConditions.shipping).toContain("7日以内に発送");
     expect(legal).toContain(purchaseConditions.contact);
     expect(legal).toContain(purchaseConditions.paymentMethod);
+  });
+  it("特定商取引法の表記は、メールアドレスの次に電話番号の行を置き、引き渡し時期を決めた文面で出す", () => {
+    const html = renderToStaticMarkup(<TokushohoPage />);
+    const rows = [...html.matchAll(/<dt[^>]*>([^<]*)<\/dt><dd[^>]*>([^<]*)<\/dd>/g)].map(row => [row[1], row[2]]);
+    expect(rows).toEqual([
+      ["販売業者", "三十日珈琲（稲福良祐・後藤伸啓）"],
+      ["所在地", "〒409-0115 山梨県上野原市松留939"],
+      ["メールアドレス", "misocacoffee@gmail.com"],
+      ["電話番号", "ご請求いただければ、遅滞なく開示いたします"],
+      ["販売価格", "各商品ページに記載"],
+      ["送料", "全国一律 ¥370（¥5,000以上で送料無料）"],
+      ["お支払い方法", "クレジットカード（Stripe）"],
+      ["商品の引き渡し時期", "ご注文をいただいてから焙煎するため、注文確定後7日以内に発送します"],
+      ["返品・交換", "商品到着後7日以内にご連絡ください"],
+    ]);
+    // 長いメールアドレスも、狭い画面で白い枠の中に折り返す。
+    expect(html.match(/<dd class="text-sumi min-w-0 break-words">/g)).toHaveLength(rows.length);
+  });
+  it("購入画面の発送の欄は、規約と同じ文のすぐ後ろに理由の一文を続け、注文状況の画面には足さない", () => {
+    expect(purchaseConditions.shippingReason).toBe("焙煎したてをお届けするため、少しお時間をいただいています。");
+    const html = renderToStaticMarkup(<PurchaseConditions />);
+    expect(html).toContain(`<dt class="text-haicha">発送</dt><dd>${purchaseConditions.shipping}${purchaseConditions.shippingReason}</dd>`);
+    expect(read("src/features/shop/components/PurchaserStatusPanel.tsx")).not.toContain("shippingReason");
   });
   it("発送・返品・問い合わせ先と、3つの案内ページへ届く", () => {
     const html = renderToStaticMarkup(<PurchaseConditions />);

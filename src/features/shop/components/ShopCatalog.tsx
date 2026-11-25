@@ -9,6 +9,7 @@ import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import {ProductSchema,canPurchaseCatalogProduct,catalogPriceLabel,type Product} from "@/features/shop/product-schema";
 import { SHOP_PAUSED } from "@/features/shop/policy";
 import { useLegacyCart } from "@/features/shop/use-legacy-cart";
+import { WhyOnline } from "@/features/shop/components/WhyOnline";
 const FREE_SHIPPING_THRESHOLD = 5000;
 const SHIPPING_COST = 370;
 
@@ -607,6 +608,8 @@ export default function ShopCatalog() {
           </div>
         </div>
       </section>
+
+      <WhyOnline />
 
       {/* Preserve the already confirmed/public shipping conditions. */}
       <section className="bg-tsuchikabe py-24 md:py-32 overflow-hidden">

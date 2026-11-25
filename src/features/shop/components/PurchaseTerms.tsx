@@ -6,6 +6,8 @@ import { purchaseUi } from "./purchase-ui";
  * so the purchase screen never promises something the public pages do not say. */
 export const purchaseConditions = {
   shipping: "商品は注文確定後に焙煎し、7日以内に発送いたします。",
+  // Purchase screen only: the reason shown right after the shipping sentence.
+  shippingReason: "焙煎したてをお届けするため、少しお時間をいただいています。",
   customerReturn: "商品の性質上、お客様都合による返品・交換はお受けできません。",
   defect: "商品に不備があった場合は、到着後7日以内にご連絡ください。",
   paymentMethod: "クレジットカード（Stripe）",
@@ -34,7 +36,7 @@ export function PurchaseConditions() {
     <h3 id="purchase-conditions-title" className="text-sm font-medium tracking-wide text-konsumi">お届けと返品について</h3>
     <dl className="mt-3 space-y-3 text-sm leading-relaxed">
       <div><dt className="text-haicha">お支払い</dt><dd>{purchaseConditions.paymentMethod}。次の画面でのお手続きが完了したときに決済されます。</dd></div>
-      <div><dt className="text-haicha">発送</dt><dd>{purchaseConditions.shipping}</dd></div>
+      <div><dt className="text-haicha">発送</dt><dd>{purchaseConditions.shipping}{purchaseConditions.shippingReason}</dd></div>
       <div><dt className="text-haicha">お届け先</dt><dd>発送する商品があるときは、次のStripeの画面で入力します（日本国内のみ）。</dd></div>
       <div><dt className="text-haicha">返品・交換</dt><dd>{purchaseConditions.customerReturn}{purchaseConditions.defect}</dd></div>
       <div><dt className="text-haicha">お問い合わせ</dt><dd><a href={`mailto:${purchaseConditions.contact}`} className="inline-flex min-h-12 items-center break-all underline underline-offset-4">{purchaseConditions.contact}</a></dd></div>

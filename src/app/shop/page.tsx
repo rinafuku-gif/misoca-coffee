@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ShopCatalog from "@/features/shop/components/ShopCatalog";
 import { PurchasePanel } from "@/features/shop/components/PurchasePanel";
+import { WhyOnline } from "@/features/shop/components/WhyOnline";
 import { SHOP_PAUSED } from "@/features/shop/policy";
 
 const title = "オンラインショップ";
@@ -26,5 +27,7 @@ export const metadata: Metadata = {
 export default function ShopPage() {
   // Keep the current pause and its product guide. Once reopening is approved,
   // use the ledger-backed flow, never revive the legacy checkout/cart.
-  return SHOP_PAUSED ? <ShopCatalog /> : <PurchasePanel shopRoot />;
+  // While paused, ShopCatalog itself places WhyOnline right before 配送について.
+  // After reopening, the same section follows the purchase panel.
+  return SHOP_PAUSED ? <ShopCatalog /> : <><PurchasePanel shopRoot /><WhyOnline /></>;
 }
