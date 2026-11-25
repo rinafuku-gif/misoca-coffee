@@ -4,7 +4,8 @@ import { PurchaseBrandHeader, purchaseUi } from "./PurchaseBrand";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { emailCopy, giftCopy, paymentCopy, physicalCopy, purchaserStatusSchema, showsShippingWindow, type BuyerStatus } from "../purchaser-status";
+import { emailCopy, giftCopy, paymentCopy, purchaserStatusSchema, type BuyerStatus } from "../purchaser-status";
+import { physicalStatusView, shippingFeeLabel, showsShippingWindow } from "../receiving-method";
 import { purchaseKeyForStatus, reconcilePurchasedCart, applyCheckoutCancellation, readPurchaseSession } from "../purchase-session";
 import { CheckoutCancellationPanel } from "./CheckoutCancellationPanel";
 import { PurchaseLegalLinks, purchaseConditions } from "./PurchaseTerms";
@@ -25,6 +26,13 @@ async function readLatestStatus(signal: AbortSignal): Promise<StatusRead> {
   const response = await fetch("/api/ec/purchase/status", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ purchaseKey: key }), cache: "no-store", credentials: "omit", signal });
   if (!response.ok) return { kind: response.status === 404 ? "unavailable" : response.status === 429 ? "busy" : "offline" };
   return { kind: "ready", status: purchaserStatusSchema.parse((await response.json()).status), purchaseKey: key, cancelRequested };
+}
+/** The physical part of an order. An answer without `receiving` (every
+ * shipping order) renders the heading, wording and shipping window exactly as
+ * before; with it, the wording follows the receiving method. */
+export function PhysicalStatus({ status }: { status: BuyerStatus }) {
+  const physical = physicalStatusView(status);
+  return <div><dt className="font-semibold">{physical.heading}</dt><dd className="mt-1 leading-relaxed">{physical.text}</dd>{showsShippingWindow(status) ? <dd className="mt-1 text-sm leading-relaxed text-karekusa">{purchaseConditions.shipping}</dd> : null}{physical.place ? <dd className="mt-1 text-sm leading-relaxed text-karekusa">{physical.place}</dd> : null}</div>;
 }
 export function PurchaserStatusPanel() {
   const [view, setView] = useState<View>({ kind: "loading" });
@@ -71,8 +79,8 @@ export function PurchaserStatusPanel() {
         <p className="mt-3 text-sm leading-relaxed text-karekusa">この操作は状況の読取だけです。注文・請求・メール送信は行いません。</p>
       </div>
       {data ? <>
-        <section className={card}><h2 className={purchaseUi.heading}>商品とお支払い</h2><ul className="mt-4 divide-y divide-usuzumi">{data.items.map((item, i) => <li key={i} className="py-3"><p className="break-words font-medium">{item.name}</p><p className="mt-1 text-sm">{item.unit} × {item.quantity}点 ／ 1点 {yen(item.unitPrice)}</p><ProductPublicationDetails publication={item.publication} purchased /></li>)}</ul><dl className="mt-4 space-y-2 border-t border-usuzumi pt-4"><div className="flex justify-between gap-4"><dt>送料</dt><dd>{yen(data.shipping)}</dd></div><div className="flex justify-between gap-4 text-lg font-semibold"><dt>注文合計</dt><dd>{yen(data.total)}</dd></div>{data.refundedTotal > 0 ? <div className="flex justify-between gap-4"><dt>返金記録の合計</dt><dd>{yen(data.refundedTotal)}</dd></div> : null}</dl></section>
-        <section className={card}><h2 className={purchaseUi.heading}>受け取りまでの状況</h2><dl className="mt-4 space-y-5">{data.physical !== "not_applicable" ? <div><dt className="font-semibold">商品の発送</dt><dd className="mt-1 leading-relaxed">{physicalCopy[data.physical]}</dd>{showsShippingWindow(data) ? <dd className="mt-1 text-sm leading-relaxed text-karekusa">{purchaseConditions.shipping}</dd> : null}</div> : null}{data.giftDelivery !== "not_applicable" ? <div><dt className="font-semibold">ギフト券</dt><dd className="mt-1 leading-relaxed">{giftCopy[data.giftDelivery]}</dd></div> : null}<div><dt className="font-semibold">支払確認メール</dt><dd className="mt-1 leading-relaxed">{emailCopy[data.confirmationEmail]}</dd></div></dl></section>
+        <section className={card}><h2 className={purchaseUi.heading}>商品とお支払い</h2><ul className="mt-4 divide-y divide-usuzumi">{data.items.map((item, i) => <li key={i} className="py-3"><p className="break-words font-medium">{item.name}</p><p className="mt-1 text-sm">{item.unit} × {item.quantity}点 ／ 1点 {yen(item.unitPrice)}</p><ProductPublicationDetails publication={item.publication} purchased /></li>)}</ul><dl className="mt-4 space-y-2 border-t border-usuzumi pt-4"><div className="flex justify-between gap-4"><dt>{shippingFeeLabel(data.receiving ?? "shipping")}</dt><dd>{yen(data.shipping)}</dd></div><div className="flex justify-between gap-4 text-lg font-semibold"><dt>注文合計</dt><dd>{yen(data.total)}</dd></div>{data.refundedTotal > 0 ? <div className="flex justify-between gap-4"><dt>返金記録の合計</dt><dd>{yen(data.refundedTotal)}</dd></div> : null}</dl></section>
+        <section className={card}><h2 className={purchaseUi.heading}>受け取りまでの状況</h2><dl className="mt-4 space-y-5">{data.physical !== "not_applicable" ? <PhysicalStatus status={data} /> : null}{data.giftDelivery !== "not_applicable" ? <div><dt className="font-semibold">ギフト券</dt><dd className="mt-1 leading-relaxed">{giftCopy[data.giftDelivery]}</dd></div> : null}<div><dt className="font-semibold">支払確認メール</dt><dd className="mt-1 leading-relaxed">{emailCopy[data.confirmationEmail]}</dd></div></dl></section>
       </> : null}
       {data && view.purchaseKey ? <CheckoutCancellationPanel purchaseKey={view.purchaseKey} payment={data.payment} pending={data.cancellation === "checking" || view.cancelRequested} state={data.cancellation} onOutcome={outcome => {
         if ("status" in outcome) setView(previous => ({ ...previous, kind: "ready", status: outcome.status, checkedAt: Date.now() }));

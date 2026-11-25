@@ -1,10 +1,14 @@
 import { z } from "zod";
-import { PURCHASE_STORAGE_KEY, type BuyerStatus, type PurchaseCancellationResult } from "./purchaser-status";
+import { PURCHASE_STORAGE_KEY, RECEIVING_METHODS, type BuyerStatus, type PurchaseCancellationResult } from "./purchaser-status";
 
 export const PURCHASE_SESSION_KEY = "misoca-ec-purchase-session-v1";
 export const cartLinesSchema = z.array(z.object({ skuId: z.string().min(1).max(128), quantity: z.number().int().min(1).max(20) }).strict()).max(20).refine(lines => new Set(lines.map(l => l.skuId)).size === lines.length);
-export const purchaseAttemptSchema = z.object({ purchaseKey: z.string().regex(/^[a-f0-9]{64}$/), lines: cartLinesSchema, acceptedQuote: z.string().regex(/^[a-f0-9]{64}$/), settledOrderId: z.string().optional(), cancelRequested: z.literal(true).optional() }).strict();
-const sessionSchema = z.object({ version: z.literal(1), cart: cartLinesSchema, attempt: purchaseAttemptSchema.nullable(), history: z.array(z.object({ purchaseKey: z.string().regex(/^[a-f0-9]{64}$/), orderReference: z.string() }).strict()).max(1000), viewKey: z.string().regex(/^[a-f0-9]{64}$/).nullable() }).strict();
+/** Chosen receiving method. Saved only when it is not shipping, so a shipping
+ * cart and a shipping attempt are stored exactly as before. The attempt keeps
+ * its own copy: returning to the same payment must send the same method. */
+const receivingMethodSchema = z.enum(RECEIVING_METHODS).optional();
+export const purchaseAttemptSchema = z.object({ purchaseKey: z.string().regex(/^[a-f0-9]{64}$/), lines: cartLinesSchema, acceptedQuote: z.string().regex(/^[a-f0-9]{64}$/), settledOrderId: z.string().optional(), cancelRequested: z.literal(true).optional(), deliveryMethod: receivingMethodSchema }).strict();
+const sessionSchema = z.object({ version: z.literal(1), cart: cartLinesSchema, attempt: purchaseAttemptSchema.nullable(), history: z.array(z.object({ purchaseKey: z.string().regex(/^[a-f0-9]{64}$/), orderReference: z.string() }).strict()).max(1000), viewKey: z.string().regex(/^[a-f0-9]{64}$/).nullable(), deliveryMethod: receivingMethodSchema }).strict();
 export type PurchaseSession = z.infer<typeof sessionSchema>;
 export type PurchaseAttempt = z.infer<typeof purchaseAttemptSchema>;
 type StoragePort = Pick<Storage, "getItem" | "setItem">;
@@ -16,6 +20,11 @@ export function writePurchaseSession(storage: StoragePort, session: PurchaseSess
   // A single browser-storage write makes cart adjustment and its receipt atomic.
   const serialized = JSON.stringify(sessionSchema.parse(session)); storage.setItem(PURCHASE_SESSION_KEY, serialized);
   if (storage.getItem(PURCHASE_SESSION_KEY) !== serialized) throw new Error("PURCHASE_STORAGE_UNAVAILABLE");
+}
+/** The cart's chosen method; `undefined` (shipping) removes the key entirely. */
+export function withDeliveryMethod(session: PurchaseSession, method: PurchaseSession["deliveryMethod"]): PurchaseSession {
+  const next = { ...session }; delete next.deliveryMethod;
+  return method === undefined ? next : { ...next, deliveryMethod: method };
 }
 export function purchaseKeyForStatus(storage: StoragePort) {
   const session = readPurchaseSession(storage);

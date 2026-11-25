@@ -9,13 +9,16 @@ import { buyerProductPublicationSchema } from "../product-publication-view";
 import { ProductPublicationDetails } from "./ProductPublicationDetails";
 import { purchaserStatusSchema, cancellationCopy } from "../purchaser-status";
 import { CheckoutCancellationPanel } from "./CheckoutCancellationPanel";
-import { PurchaseConditions, PurchaseLegalLinks } from "./PurchaseTerms";
+import { PurchaseConditions, PurchaseLegalLinks, ReceivingMethodChoice } from "./PurchaseTerms";
 import { UnlistedCartItems } from "./UnlistedCartItems";
 import { recoverRejectedCheckout, unlistedCartLines, shippingFailureNotice } from "../purchase-recovery";
-import { allowedCheckoutLocation, purchaseKeyForStatus, readPurchaseSession, reconcilePurchasedCart, writePurchaseSession, type PurchaseAttempt, type PurchaseSession } from "../purchase-session";
+import { allowedCheckoutLocation, purchaseKeyForStatus, readPurchaseSession, reconcilePurchasedCart, withDeliveryMethod, writePurchaseSession, type PurchaseAttempt, type PurchaseSession } from "../purchase-session";
+import { catalogDeliveryMethodsSchema, checkoutRequestBody, quoteRequestBody, receivingCopy, requestedMethod, selectableMethods, shippingFeeLabel, type DeliveryMethod } from "../receiving-method";
 
 const product = z.object({ skuId: z.string(), name: z.string(), unit: z.string(), unitPrice: z.number().int().nonnegative(), kind: z.enum(["physical", "gift"]), maxQuantity: z.number().int().min(0).max(20), publication: buyerProductPublicationSchema.optional() }).strict();
-const catalogSchema = z.object({ items: z.array(product).max(50), nextOffset: z.number().int().nonnegative().nullable(), acceptingOrders: z.boolean() }).strict();
+// deliveryMethods: present only when the management side offers receiving methods. Absent, or not in the agreed
+// shape = shipping only, as before (it never fails the catalog). Every other field is checked as strictly as before.
+export const catalogSchema = z.object({ items: z.array(product).max(50), nextOffset: z.number().int().nonnegative().nullable(), acceptingOrders: z.boolean(), deliveryMethods: catalogDeliveryMethodsSchema }).strict();
 const quotationSchema = z.object({ items: z.array(product.omit({ maxQuantity: true }).extend({ quantity: z.number().int().min(1).max(20) })).max(20), total: z.number().int().nonnegative(), shipping: z.number().int().nonnegative(), acceptedQuote: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
 type Catalog = z.infer<typeof catalogSchema>; type Quotation = z.infer<typeof quotationSchema>;
 const money = (value: number) => `¥${value.toLocaleString("ja-JP")}`;
@@ -41,11 +44,13 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
   const [session, setSession] = useState<PurchaseSession | null>(null);
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [quotation, setQuotation] = useState<Quotation | null>(null);
+  const [quotedMethod, setQuotedMethod] = useState<DeliveryMethod>("shipping");
   const [confirmed, setConfirmed] = useState(false);
   const [busy, setBusy] = useState(true); const inFlight = useRef(false);
   const alive = useRef(true);
   const cancellationIntents = useRef(new Set<string>());
   const [catalogLabels, setCatalogLabels] = useState(new Map<string, string>());
+  const [physicalSkus, setPhysicalSkus] = useState(new Set<string>());
   const [catalogStale, setCatalogStale] = useState(false);
   const [notice, setNotice] = useState(""); const [fatal, setFatal] = useState(false);
   useEffect(() => {
@@ -68,7 +73,14 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
   function save(next: PurchaseSession) { writePurchaseSession(sessionStorage, next); setSession(next); }
   function rememberCatalog(next: Catalog) {
     setCatalogLabels(previous => new Map([...previous, ...next.items.map(item => [item.skuId, `${item.name} ${item.unit}`] as const)]));
+    setPhysicalSkus(previous => { const skus = new Set(previous); for (const item of next.items) { if (item.kind === "physical") skus.add(item.skuId); else skus.delete(item.skuId); } return skus; });
   }
+  // Receiving method: offered by the catalog answer, chosen only while a shipped
+  // product is in the cart. `method` is what the next quote asks for; a quote
+  // taken for another method is never shown or paid (`currentQuotation`).
+  const methodChoices = session && catalog ? selectableMethods(catalog.deliveryMethods, session.cart.some(line => physicalSkus.has(line.skuId))) : [];
+  const method = requestedMethod(session?.deliveryMethod, methodChoices);
+  const currentQuotation = quotation && quotedMethod === method ? quotation : null;
   async function send(action: string, body: unknown) {
     const result = await post(action, body); if (!alive.current) throw new Error("PAGE_LEFT"); return result;
   }
@@ -98,21 +110,27 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
       save({ ...session, cart }); setQuotation(null); setConfirmed(false); setNotice("");
     } catch { setNotice("カートを保存できません。内容を保持できるまで決済は始めません。"); }
   }
+  function chooseMethod(next: DeliveryMethod) {
+    if (!session || session.attempt || busy || !methodChoices.includes(next) || next === method) return;
+    try {
+      save(withDeliveryMethod(session, next === "shipping" ? undefined : next)); setQuotation(null); setConfirmed(false); setNotice("");
+    } catch { setNotice(receivingCopy.saveFailed); }
+  }
   async function preview() {
     if (!session?.cart.length || catalogStale) return;
     setQuotation(null); setConfirmed(false);
-    const result = await send("quote", { lines: session.cart });
+    const result = await send("quote", quoteRequestBody(session.cart, method));
     if (!result.ok) {
       const shippingNotice = shippingFailureNotice(result.body);
       if (shippingNotice) { setNotice(shippingNotice); return; }
       await refreshCatalog("合計を確認できませんでした。商品と数量を見直してください。この操作では注文・請求は始まりません。"); return;
     }
-    setQuotation(quotationSchema.parse(result.body)); setConfirmed(false); setNotice("");
+    setQuotation(quotationSchema.parse(result.body)); setQuotedMethod(method); setConfirmed(false); setNotice("");
   }
   async function checkout(attempt: PurchaseAttempt) {
     const current = readPurchaseSession(sessionStorage);
     save({ ...current, viewKey: attempt.purchaseKey });
-    const result = await send("checkout", { purchaseKey: attempt.purchaseKey, lines: attempt.lines, acceptedQuote: attempt.acceptedQuote });
+    const result = await send("checkout", checkoutRequestBody(attempt));
     const latest = readPurchaseSession(sessionStorage);
     if (latest.attempt?.purchaseKey !== attempt.purchaseKey || latest.attempt.cancelRequested || cancellationIntents.current.has(attempt.purchaseKey)) { setNotice("決済中止の確認を続けています。新しい決済画面へは進みません。"); return; }
     if (!result.ok) {
@@ -129,9 +147,9 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     window.location.assign(result.body.checkoutUrl);
   }
   async function begin() {
-    if (!session || session.attempt || !quotation || !confirmed || catalogStale || !catalog?.acceptingOrders) return;
+    if (!session || session.attempt || !currentQuotation || !confirmed || catalogStale || !catalog?.acceptingOrders) return;
     const bytes = crypto.getRandomValues(new Uint8Array(32)); const purchaseKey = Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
-    const attempt: PurchaseAttempt = { purchaseKey, lines: session.cart, acceptedQuote: quotation.acceptedQuote };
+    const attempt: PurchaseAttempt = { purchaseKey, lines: session.cart, acceptedQuote: currentQuotation.acceptedQuote, ...(method === "shipping" ? {} : { deliveryMethod: method }) };
     // Save the exact attempt atomically BEFORE an external outcome can become unknown.
     save({ ...session, attempt, viewKey: purchaseKey }); await checkout(attempt);
   }
@@ -144,7 +162,8 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     if (status.payment !== "confirmed") { setNotice("前の注文をまだ確認できません。先に注文状況を確認してください。"); return; }
     const updated = reconcilePurchasedCart(sessionStorage, session.attempt.purchaseKey, status);
     const history = updated.history.some(h => h.orderReference === status.orderReference) ? updated.history : [...updated.history, { purchaseKey: session.attempt.purchaseKey, orderReference: status.orderReference }];
-    save({ ...updated, attempt: null, history }); setQuotation(null); setConfirmed(false);
+    // A new order starts from shipping again; the finished order keeps its own method on the server.
+    save({ ...withDeliveryMethod(updated, undefined), attempt: null, history }); setQuotation(null); setConfirmed(false);
   }
   const selected = session?.cart.reduce((sum, l) => sum + l.quantity, 0) ?? 0;
   return <main className={purchaseUi.page}><div className="mx-auto max-w-6xl">
@@ -201,17 +220,18 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
         <p aria-hidden="true" className={purchaseUi.step}>02 / ORDER</p>
         <h2 className={purchaseUi.heading}>送料と合計を確認</h2>
         <p className="my-6 text-sm text-haicha">選択中：{selected}点</p>
+        <ReceivingMethodChoice methods={methodChoices} value={method} disabled={busy} onChange={chooseMethod} />
         <button className={purchaseUi.secondary} disabled={busy || catalogStale || !selected} onClick={() => { void run(preview); }}>送料を含む合計を確認</button>
-        {quotation ? <div className="mt-10 space-y-6">
-          <ul className="divide-y divide-usuzumi/60">{quotation.items.map(item => <li key={item.skuId} className="break-words py-4 first:pt-0">
+        {currentQuotation ? <div className="mt-10 space-y-6">
+          <ul className="divide-y divide-usuzumi/60">{currentQuotation.items.map(item => <li key={item.skuId} className="break-words py-4 first:pt-0">
             <p>{item.name} {item.unit} × {item.quantity}</p>
             <p className="mt-1 text-sm text-haicha">{money(item.unitPrice * item.quantity)}</p>
           </li>)}</ul>
           <dl className="border-y border-usuzumi py-6">
-            <div className="flex items-baseline justify-between gap-4 text-sm"><dt>送料</dt><dd>{money(quotation.shipping)}</dd></div>
-            <div className="mt-4 flex flex-wrap items-baseline justify-between gap-4"><dt>合計</dt><dd className={purchaseUi.statusTitle}>{money(quotation.total)}</dd></div>
+            <div className="flex items-baseline justify-between gap-4 text-sm"><dt>{shippingFeeLabel(quotedMethod)}</dt><dd>{money(currentQuotation.shipping)}</dd></div>
+            <div className="mt-4 flex flex-wrap items-baseline justify-between gap-4"><dt>合計</dt><dd className={purchaseUi.statusTitle}>{money(currentQuotation.total)}</dd></div>
           </dl>
-          <PurchaseConditions />
+          <PurchaseConditions method={quotedMethod} />
           <label className="flex min-h-12 cursor-pointer items-start gap-3 py-3"><input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} className={purchaseUi.checkbox} /><span>商品・数量と、送料を含む合計を確認しました</span></label>
           <button className={button} disabled={busy || catalogStale || !confirmed || !catalog.acceptingOrders} onClick={() => { void run(begin); }}>この金額で決済画面へ</button>
           <p className="text-sm leading-loose text-haicha">次はStripeでカード情報を入力します。まだ支払いは完了しません。</p>

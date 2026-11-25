@@ -2,6 +2,10 @@ import { z } from "zod";
 import { buyerProductPublicationSchema } from "./product-publication-view";
 
 /** Browser-safe wire contract: no ledger/native/auth imports. */
+/** 配送以外の受け取り方法（市内お届け・店頭受け取り）。値の名前はここが元。 */
+export const RECEIVING_METHODS = ["local_delivery", "store_pickup"] as const;
+/** サイトが「商品一覧の応答の deliveryMethods を受け取れる」と管理側へ伝えるヘッダ（値は v1）。 */
+export const DELIVERY_METHODS_HEADER = "x-misoca-delivery-methods";
 export const purchaserStatusSchema = z.object({
   orderReference: z.string().min(1).max(128), createdAt: z.number().int().nonnegative(),
   items: z.array(z.object({ skuId: z.string(), name: z.string(), unit: z.string(), quantity: z.number().int().positive(), unitPrice: z.number().int().nonnegative(), kind: z.enum(["physical", "gift"]), publication: buyerProductPublicationSchema.optional() }).strict()).max(20),
@@ -11,6 +15,8 @@ export const purchaserStatusSchema = z.object({
   giftDelivery: z.enum(["not_applicable", "waiting_payment", "not_started", "under_review", "awaiting_preparation", "provider_accepted", "checking_delivery", "delivery_failed", "preparing"]),
   confirmationEmail: z.enum(["provider_accepted", "checking_delivery", "delivery_failed", "not_sent"]),
   cancellation: z.enum(["none", "checking", "closed", "payment_review"]),
+  // 配送以外の注文のときだけ付く。配送の注文の応答は今までと同じ形。
+  receiving: z.enum(RECEIVING_METHODS).optional(),
 }).strict();
 export type BuyerStatus = z.infer<typeof purchaserStatusSchema>;
 export const PURCHASE_STORAGE_KEY = "misoca-purchase-v1";
@@ -39,14 +45,6 @@ export const physicalCopy: Record<BuyerStatus["physical"], string> = {
   not_applicable: "配送する商品はありません", cancelled: "出荷を取り消しました（返金とは別の記録です）", delivery_issue: "配送に関する確認が必要です。店舗へお問い合わせください", handed_over: "配送事業者への引渡しを記録しました（到着済みではありません）",
   waiting_payment: "支払確認後に発送の準備へ進みます", not_started: "発送は始まっていません", under_review: "店舗での確認後にご案内します", awaiting_preparation: "発送準備の開始待ちです", replacement_preparing: "再送分を準備しています", packed: "梱包済みです。まだ発送していません", preparing: "発送の準備を進めています",
 };
-const shippingWindowStates: ReadonlySet<BuyerStatus["physical"]> = new Set(["awaiting_preparation", "preparing", "packed"]);
-/** The status page repeats the published shipping window only while payment
- * is confirmed AND the first parcel has not left yet. Payment is checked on
- * its own because the two fields are independent in the schema: a refunded
- * order must never be shown a shipping promise. A re-shipment
- * (replacement_preparing) is not what the published sentence covers. */
-export const showsShippingWindow = (status: Pick<BuyerStatus, "payment" | "physical">) =>
-  status.payment === "confirmed" && shippingWindowStates.has(status.physical);
 export const giftCopy: Record<BuyerStatus["giftDelivery"], string> = {
   not_applicable: "ギフト券はありません", waiting_payment: "支払確認後に券の準備へ進みます", not_started: "券の送付は始まっていません", under_review: "店舗での確認後にご案内します", awaiting_preparation: "券の準備開始待ちです", provider_accepted: "メール送信の受付を確認しました。受信箱への到着は未確認です", checking_delivery: "送信結果を確認しています。重ねて送りません", delivery_failed: "送信を受け付けられませんでした。店舗での対応が必要です", preparing: "券を準備しています。まだ送っていません",
 };

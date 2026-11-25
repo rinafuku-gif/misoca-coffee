@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/shared/ui/PageHero";
 import { serviceMetadata } from "@/shared/seo/service-metadata";
+import { receivingTerms } from "@/features/shop/receiving-method";
 
 export const metadata: Metadata = serviceMetadata("/terms", {
   title: "利用規約",
@@ -32,6 +33,11 @@ export default function TermsPage() {
             <li>商品は注文確定後に焙煎し、7日以内に発送いたします。</li>
             <li>商品の性質上、お客様都合による返品・交換はお受けできません。</li>
             <li>商品に不備があった場合は、到着後7日以内にご連絡ください。</li>
+            <li>{receivingTerms.availability}</li>
+            <li>{receivingTerms.localDelivery}</li>
+            <li>{receivingTerms.storePickup}</li>
+            <li>{receivingTerms.storePickupHold}</li>
+            <li>{receivingTerms.storePickupDefect}</li>
           </ul>
 
           <h3>第4条（知的財産権）</h3>

@@ -3,7 +3,8 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { PurchaseConditions, PurchaseLegalLinks, purchaseConditions } from "../components/PurchaseTerms";
-import { purchaserStatusSchema, showsShippingWindow } from "../purchaser-status";
+import { purchaserStatusSchema } from "../purchaser-status";
+import { showsShippingWindow } from "../receiving-method";
 import TokushohoPage from "@/app/tokushoho/page";
 
 const read = (path: string) => readFileSync(resolve(path), "utf8");
@@ -31,10 +32,12 @@ describe("購入の前に見せるお届けと返品の条件", () => {
       ["メールアドレス", "misocacoffee@gmail.com"],
       ["電話番号", "ご請求いただければ、遅滞なく開示いたします"],
       ["販売価格", "各商品ページに記載"],
-      ["送料", "全国一律 ¥370（¥5,000以上で送料無料）"],
+      ["受け取り方法", "配送のほか、上野原市内お届け・店頭受け取りは、購入画面で選べるときにご利用いただけます"],
+      ["送料", "全国一律 ¥370（¥5,000以上で送料無料）。上野原市内お届け・店頭受け取りは無料"],
       ["お支払い方法", "クレジットカード（Stripe）"],
-      ["商品の引き渡し時期", "ご注文をいただいてから焙煎するため、注文確定後7日以内に発送します"],
-      ["返品・交換", "商品到着後7日以内にご連絡ください"],
+      ["商品の引き渡し時期", "ご注文をいただいてから焙煎するため、注文確定後7日以内に発送します。上野原市内お届けは7日以内にポストへお届けします。店頭受け取りは7日以内にご用意し、メールでお知らせしたあとの営業日にお渡しします"],
+      ["店頭受け取りの場所", "見晴亭（〒409-0113 山梨県上野原市新田1053-3）。毎週水曜 8:00〜9:30／10:30〜16:00。営業日の最新情報は Instagram でご確認ください"],
+      ["返品・交換", "商品到着後7日以内にご連絡ください（店頭受け取りは、お受け取り後7日以内）"],
     ]);
     // 長いメールアドレスも、狭い画面で白い枠の中に折り返す。
     expect(html.match(/<dd class="text-sumi min-w-0 break-words">/g)).toHaveLength(rows.length);
@@ -63,7 +66,7 @@ describe("購入の前に見せるお届けと返品の条件", () => {
   it("購入画面では、合計の後・確認のチェックの前に条件を出す", () => {
     const panel = read("src/features/shop/components/PurchasePanel.tsx");
     const total = panel.indexOf("<dt>合計</dt>");
-    const conditions = panel.indexOf("<PurchaseConditions />");
+    const conditions = panel.indexOf("<PurchaseConditions method={quotedMethod} />");
     const confirm = panel.indexOf("商品・数量と、送料を含む合計を確認しました");
     expect(total).toBeGreaterThan(-1);
     expect(conditions).toBeGreaterThan(total);
@@ -85,7 +88,7 @@ describe("購入の前に見せるお届けと返品の条件", () => {
     expect(showsShippingWindow({ payment: "waiting", physical: "awaiting_preparation" })).toBe(false);
     expect(showsShippingWindow({ payment: "confirmed", physical: "replacement_preparing" })).toBe(false);
     const status = read("src/features/shop/components/PurchaserStatusPanel.tsx");
-    expect(status).toContain("{physicalCopy[data.physical]}</dd>{showsShippingWindow(data) ? <dd");
+    expect(status).toContain("{physical.text}</dd>{showsShippingWindow(status) ? <dd");
     expect(status.match(/purchaseConditions\.shipping/g)).toHaveLength(1);
     expect(status.match(/showsShippingWindow\(/g)).toHaveLength(1);
     expect(status).not.toContain("7日以内");

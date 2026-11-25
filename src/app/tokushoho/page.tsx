@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/shared/ui/PageHero";
 import { serviceMetadata } from "@/shared/seo/service-metadata";
+import { receivingLegalNotice } from "@/features/shop/receiving-method";
 
 export const metadata: Metadata = serviceMetadata("/tokushoho", {
   title: "特定商取引法に基づく表記",
@@ -21,10 +22,12 @@ export default function TokushohoPage() {
                 ["メールアドレス", "misocacoffee@gmail.com"],
                 ["電話番号", "ご請求いただければ、遅滞なく開示いたします"],
                 ["販売価格", "各商品ページに記載"],
-                ["送料", "全国一律 ¥370（¥5,000以上で送料無料）"],
+                [receivingLegalNotice.methodsTerm, receivingLegalNotice.methods],
+                ["送料", `全国一律 ¥370（¥5,000以上で送料無料）。${receivingLegalNotice.fee}`],
                 ["お支払い方法", "クレジットカード（Stripe）"],
-                ["商品の引き渡し時期", "ご注文をいただいてから焙煎するため、注文確定後7日以内に発送します"],
-                ["返品・交換", "商品到着後7日以内にご連絡ください"],
+                ["商品の引き渡し時期", `ご注文をいただいてから焙煎するため、注文確定後7日以内に発送します。${receivingLegalNotice.handover}`],
+                [receivingLegalNotice.placeTerm, receivingLegalNotice.place],
+                ["返品・交換", "商品到着後7日以内にご連絡ください（店頭受け取りは、お受け取り後7日以内）"],
               ].map(([dt, dd]) => (
                 <div key={dt} className="flex border-b border-usuzumi/30 pb-4">
                   <dt className="w-40 text-haicha flex-shrink-0">{dt}</dt>

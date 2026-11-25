@@ -1,6 +1,6 @@
 import { timingSafeEqual, randomUUID } from "node:crypto";
 import { z } from "zod";
-import { purchaserStatusSchema, purchaseCancellationResultSchema } from "../purchaser-status";
+import { purchaserStatusSchema, purchaseCancellationResultSchema, RECEIVING_METHODS, DELIVERY_METHODS_HEADER } from "../purchaser-status";
 import { buyerProductPublicationSchema } from "../product-publication-view";
 
 const paths = new Set(["catalog", "quote", "checkout", "status", "cancel"].map(action => `/api/ec/purchase/${action}`));
@@ -47,7 +47,9 @@ export async function readPurchaseTransportBytes(body: ReadableStream<Uint8Array
 }
 const item = z.object({ skuId: z.string().min(1).max(128), name: z.string(), unit: z.string(), unitPrice: z.number().int().nonnegative(),
   kind: z.enum(["physical", "gift"]), maxQuantity: z.number().int().min(0).max(20), publication: buyerProductPublicationSchema.optional() }).strict();
-const catalog = z.object({ items: z.array(item).max(50), nextOffset: z.number().int().nonnegative().nullable(), acceptingOrders: z.boolean() }).strict();
+// deliveryMethods: only present when the management side offers methods AND this proxy asked for it (header below). Absent = shipping only.
+const catalog = z.object({ items: z.array(item).max(50), nextOffset: z.number().int().nonnegative().nullable(), acceptingOrders: z.boolean(),
+  deliveryMethods: z.array(z.enum(["shipping", ...RECEIVING_METHODS])).min(1).max(3).optional() }).strict();
 const quotation = z.object({ items: z.array(z.object({ skuId: z.string(), name: z.string(), unit: z.string(), quantity: z.number().int().positive(),
   unitPrice: z.number().int().nonnegative(), kind: z.enum(["physical", "gift"]), publication: buyerProductPublicationSchema.optional() }).strict()).max(20),
   shipping: z.number().int().nonnegative(), total: z.number().int().nonnegative(), acceptedQuote: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
@@ -102,7 +104,7 @@ export function createPurchaseWebsiteProxy(options: { siteOrigin: string; backen
       const client = identify(request), at = now();
       if (!/^[a-f0-9]{64}$/.test(client) || !Number.isSafeInteger(at) || at < 0) return unavailable();
       const headers = new Headers({ "content-type": "application/json", authorization: `Bearer ${secret}`, "x-misoca-site-origin": siteOrigin,
-        "x-misoca-client": client, "x-misoca-at": String(at), "x-misoca-request-id": randomUUID() });
+        "x-misoca-client": client, "x-misoca-at": String(at), "x-misoca-request-id": randomUUID(), [DELIVERY_METHODS_HEADER]: "v1" });
       const upstream = new Request(backendOrigin + url.pathname, { method: "POST", headers, body: payload, redirect: "manual", signal: controller.signal });
       // Race bounds adapters that don't implement AbortSignal correctly too.
       const response = await Promise.race([send(upstream), new Promise<never>((_, reject) => controller.signal.addEventListener("abort", () => reject(Error("OUTCOME_UNKNOWN")), { once: true }))]);
@@ -146,5 +148,6 @@ export function purchaseRuntimeRequest(request: Request, siteOrigin: string, web
   const headers = new Headers({ "content-type": "application/json" });
   if (path === PURCHASE_WEBHOOK_PATH) headers.set("stripe-signature", request.headers.get("stripe-signature") ?? "");
   else headers.set("origin", origin(siteOrigin));
+  if (path !== PURCHASE_WEBHOOK_PATH && request.headers.get(DELIVERY_METHODS_HEADER) === "v1") headers.set(DELIVERY_METHODS_HEADER, "v1");
   return new Request(origin(path === PURCHASE_WEBHOOK_PATH ? webhookOrigin : siteOrigin) + path, { method: "POST", headers, body: request.body, duplex: "half" } as RequestInit);
 }
