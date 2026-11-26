@@ -28,7 +28,7 @@ describe("販売を再開した後のショップのページ", () => {
     const page = readFileSync(resolve("src/app/shop/page.tsx"), "utf8");
     expect(page).toContain("SHOP_PAUSED ? <ShopCatalog /> : <><PurchasePanel shopRoot /><WhyOnline /></>");
   });
-  it("共通設定のファイルは休止のまま", () => {
-    expect(readFileSync(resolve("src/features/shop/policy.ts"), "utf8")).toContain("export const SHOP_PAUSED = true;");
+  it("共通設定のファイルは再開済み（2026-11-26 店主の指示）", () => {
+    expect(readFileSync(resolve("src/features/shop/policy.ts"), "utf8")).toContain("export const SHOP_PAUSED = false;");
   });
 });

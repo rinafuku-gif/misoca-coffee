@@ -9,8 +9,8 @@ describe("confirmed shipping window without reopening checkout", () => {
     expect(source).toContain("7日以内に発送");
     expect(source).not.toContain("3日以内に発送");
   });
-  it("keeps shopping paused and shipping charges unchanged", () => {
-    expect(SHOP_PAUSED).toBe(true);
+  it("keeps shipping charges unchanged after reopening (2026-11-26)", () => {
+    expect(SHOP_PAUSED).toBe(false);
     const source = readFileSync(resolve("src/app/tokushoho/page.tsx"), "utf8");
     expect(source).toContain("全国一律 ¥370（¥5,000以上で送料無料）");
   });

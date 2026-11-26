@@ -34,8 +34,8 @@ describe("ショップの「オンラインで頼むと、いいこと」の段"
     expect(catalog).toContain("全国一律 ¥370");
     expect(catalog).toContain("¥5,000以上で送料無料");
   });
-  it("販売を休止している間は、ショップのページの「配送について」の段の直前に1回だけ出す", () => {
-    expect(SHOP_PAUSED).toBe(true);
+  it("休止に戻したときのために、ShopCatalog の中では「配送について」の段の直前に1回だけ置く（いまは再開中）", () => {
+    expect(SHOP_PAUSED).toBe(false);
     const catalog = read("src/features/shop/components/ShopCatalog.tsx");
     expect(catalog.match(/<WhyOnline \/>/g)).toHaveLength(1);
     const section = catalog.indexOf("<WhyOnline />");
@@ -43,12 +43,7 @@ describe("ショップの「オンラインで頼むと、いいこと」の段"
     expect(section).toBeGreaterThan(-1);
     expect(shipping).toBeGreaterThan(section);
     expect(catalog.slice(section, shipping).match(/<section[ >]/g)).toHaveLength(1);
-    // 実際に /shop のページを描画しても、休止のお知らせ・新しい段・配送についての順に1回ずつ出る。
-    const html = renderToStaticMarkup(<ShopPage />);
-    expect(html.split(heading)).toHaveLength(2);
-    expect(html.indexOf("焙煎豆の通販を一時お休みさせていただきます")).toBeGreaterThan(-1);
-    expect(html.indexOf(heading)).toBeGreaterThan(html.indexOf("焙煎豆の通販を一時お休みさせていただきます"));
-    expect(html.indexOf("配送について")).toBeGreaterThan(html.indexOf(heading));
+    // 再開中のページの描画は why-online-reopened.test.tsx が確かめる。
   });
   it("30日分の容量の案内は、この段に入れない", () => {
     const html = renderToStaticMarkup(<WhyOnline />);

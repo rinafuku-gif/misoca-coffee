@@ -24,13 +24,14 @@ describe("数量の制限", () => {
     expect(CheckoutInputSchema.safeParse({ items: [item, item] }).success).toBe(false);
   });
 });
-describe("休止中の注文", () => {
-  it("共通設定は休止中", () => expect(SHOP_PAUSED).toBe(true));
+// 2026-11-26 販売を再開（店主の指示）。旧決済の経路は再開しない。
+describe("再開後も旧決済は閉じたまま", () => {
+  it("共通設定は再開済み", () => expect(SHOP_PAUSED).toBe(false));
   it.each([JSON.stringify({ items: [item] }), "invalid-json"])("bodyを処理せず停止し外部部品を呼ばない", async body => {
     const { POST } = await import("@/app/api/checkout/route");
     const response = await POST(new NextRequest("http://localhost/api/checkout", { method: "POST", body }));
-    expect(response.status).toBe(503);
-    expect((await response.json()).code).toBe("SHOP_PAUSED");
+    expect(response.status).toBe(410);
+    expect((await response.json()).code).toBe("LEGACY_CHECKOUT_DISABLED");
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(mocks.stripe).not.toHaveBeenCalled();
     expect(mocks.products).not.toHaveBeenCalled();

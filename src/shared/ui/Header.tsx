@@ -68,7 +68,7 @@ const mobileItemVariants = {
 };
 
 // Pages without dark hero images need the header to always show dark text
-const LIGHT_BG_PAGES = ["/shop/gift-ticket", "/shop/hario-switch", "/shop/success"];
+const LIGHT_BG_PAGES = ["/shop", "/shop/gift-ticket", "/shop/hario-switch", "/shop/success"];
 
 export function Header() {
   const pathname = usePathname();
