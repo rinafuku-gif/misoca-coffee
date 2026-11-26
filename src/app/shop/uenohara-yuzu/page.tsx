@@ -452,9 +452,8 @@ export default function UenoharaYuzuPage() {
           <div className="flex flex-col md:flex-row gap-14 md:gap-20 items-center">
             <ScrollReveal direction="left" className="w-full md:w-1/2">
               <div className="relative aspect-[4/3] overflow-hidden">
-                {/* TODO: 上野原ゆず専用画像に差し替え（古民家・長屋門の外観） */}
                 <Image
-                  src="/images/about/kominka.jpg"
+                  src="/images/about/house-garden.jpg"
                   alt="築300年の古民家・長屋門"
                   fill
                   className="object-cover hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
