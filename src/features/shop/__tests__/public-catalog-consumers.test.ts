@@ -11,8 +11,21 @@ describe('every public consumer respects revocable media and nullable reference 
   const source=readFileSync(path,'utf8');
   expect(source).toContain('ProductSchema.array().max(500).safeParse');
   expect(source).toContain(`catalogPriceLabel(${item})`);
-  expect(source).toContain(`unoptimized={${item}.image.startsWith("/api/notion-image/")}`);
+  // ShopCatalog draws its photos through the shared ProductPhoto (checked below).
+  expect(source).toContain(path.endsWith('ShopCatalog.tsx')?`<ProductPhoto image={${item}.image}`:`unoptimized={${item}.image.startsWith("/api/notion-image/")}`);
   expect(source).not.toContain('fallbackProducts');
   expect(source).toContain('商品を読み込めませんでした');
+ });
+ it('the shared product photo bypasses the optimizer for the revocable image route, and both shop screens use it',()=>{
+  const parts=readFileSync('src/features/shop/components/shop-catalog-parts.tsx','utf8');
+  expect(parts.match(/<Image\s[\s\S]*?\/>/g)).toHaveLength(1);
+  expect(parts).toContain('unoptimized={image.startsWith("/api/notion-image/")}');
+  expect(parts).toContain('onError={onError}');
+  for(const path of ['src/features/shop/components/ShopCatalog.tsx','src/features/shop/components/BeanCard.tsx','src/features/shop/components/BeanDetailModal.tsx','src/features/shop/components/CartDrawer.tsx']){
+   const source=readFileSync(path,'utf8');expect(source,path).toContain('<ProductPhoto ');
+   // Product photos only through ProductPhoto (ShopCatalog keeps its fixed /images photos).
+   expect(source,path).not.toMatch(/src=\{(product|selectedProduct|item\.product|d\?)\.image/);
+   if(!path.endsWith('ShopCatalog.tsx'))expect(source,path).not.toMatch(/<Image\s/);
+  }
  });
 });

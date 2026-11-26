@@ -50,14 +50,14 @@ export function CheckoutCancellationPanel({ purchaseKey, pending = false, state 
     <h2 className={purchaseUi.heading}>{effectiveState === "closed" ? "決済中止の結果" : effectiveState === "payment_review" ? "店舗での確認が必要です" : "決済をやめたいとき"}</h2>
     {effectiveState !== "none" ? <p className="mt-3 leading-relaxed">{cancellationCopy[effectiveState]}</p> : <p className="mt-3 leading-relaxed">未払いの決済受付を閉じるよう依頼します。支払い済みや処理中の場合は店舗での確認が必要で、ここから自動返金はしません。</p>}
     {orderReference ? <p className="mt-3 break-all text-sm">注文番号：{orderReference}</p> : null}
-    {effectiveState === "payment_review" ? <a className="mt-3 inline-flex min-h-12 items-center underline" href="mailto:misocacoffee@gmail.com">店舗へ問い合わせる（メールアプリを開く）</a> : null}
+    {effectiveState === "payment_review" ? <a className={`mt-3 ${purchaseUi.link}`} href="mailto:misocacoffee@gmail.com">店舗へ問い合わせる（メールアプリを開く）</a> : null}
     {notice ? <p role="status" className={`mt-3 ${purchaseUi.notice}`}>{notice}</p> : null}
     {effectiveState !== "closed" && effectiveState !== "payment_review" ? repeat ? <button disabled={busy} className={`mt-4 ${purchaseUi.secondary}`} onClick={() => { void submit(); }}>{busy ? "中止の結果を確認中…" : "同じ中止依頼を再確認"}</button> : <>
       {!open ? <button className={`mt-4 ${purchaseUi.secondary}`} onClick={() => setOpen(true)}>決済中止の内容を確認</button> : <div className={`mt-4 space-y-4 ${purchaseUi.inset}`}>
         <p className="leading-relaxed">この注文の決済受付の中止を依頼します。確認中は別の決済へ進みません。支払済みなら取消・返金せず、店舗の確認へ回すことを理解してください。</p>
         <label className="flex min-h-12 items-start gap-3 py-2"><input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} className={purchaseUi.checkbox} /><span>この注文の決済中止を依頼する内容を確認しました</span></label>
         <button disabled={!confirmed || busy} className={purchaseUi.primary} onClick={() => { void submit(); }}>{busy ? "中止を確認中…" : "確認して決済中止を依頼"}</button>
-        <button disabled={busy} className="ml-3 min-h-12 underline" onClick={() => { setOpen(false); setConfirmed(false); }}>戻る</button>
+        <button disabled={busy} className={`ml-3 ${purchaseUi.link}`} onClick={() => { setOpen(false); setConfirmed(false); }}>戻る</button>
       </div>}
     </> : null}
     <p className="mt-4 text-sm leading-relaxed">{effectiveState === "closed" ? "買い直す場合は、商品を選ぶ画面で内容と金額を確認してください。" : effectiveState === "payment_review" ? "取消・返金の可否は、支払いや商品の準備状況を確認してから店舗が判断します。" : "表示を閉じるだけでは取消になりません。受付終了を確認できるまで、同じ商品を買い直さないでください。"}</p>

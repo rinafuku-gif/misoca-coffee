@@ -17,6 +17,9 @@ async function publicKind(page: RecordValue): Promise<"product" | "journal" | nu
     const authority=process.env.MISOCA_SITE_VISIBILITY_AUTHORITY??'notion';
     if(authority==='emdash'){
       if(product!=='db3bf8892b8544cf9cb50c8403d283c9'||!process.env.MISOCA_SITE_PRODUCT_CATALOG_URL||!process.env.MISOCA_SITE_CATALOG_READ_KEY)return null;
+      // Owner's decision: a bean is on sale (and its photo public) while its
+      // Notion EC販売ステータス is 販売中. The published catalog stays an alternative.
+      if(sale?.type==='status'&&record(sale.status)?.name==='販売中')return 'product';
       const catalog=await readWebsitePublishedCatalog(process.env.MISOCA_SITE_PRODUCT_CATALOG_URL,process.env.MISOCA_SITE_CATALOG_READ_KEY);
       return catalog.some(product=>id(product.sourceId)===id(page.id))?'product':null;
     }

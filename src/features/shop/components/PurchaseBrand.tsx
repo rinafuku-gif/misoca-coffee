@@ -11,22 +11,27 @@ export function PurchaseSelectionSummary({ count }: { count: number }) {
   </div>;
 }
 
+/** Logo and the way back to /shop, for the screens shown without the site
+ * header (/shop/order, /shop/success). */
+export function PurchaseBrandBar() {
+  return <div className="mb-6 flex flex-wrap items-center justify-between gap-x-5 gap-y-2 border-b border-usuzumi pb-6 sm:mb-8">
+    <a href="/shop" aria-label="三十日珈琲のショップへ" className="inline-flex min-h-12 items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-karekusa">
+      <Image src="/images/logo-circle-green.jpg" alt="" width={40} height={40} className="h-10 w-10" />
+      <Image src="/images/logo-text-dark.png" alt="三十日珈琲 Shared Roasting" width={130} height={48} className="h-10 w-auto" />
+    </a>
+    <a href="/shop" className={purchaseUi.link}>ショップの案内へ戻る</a>
+  </div>;
+}
+
 /** The two links back to the shop are plain anchors on purpose. They render
  * only on the purchase and order-status pages, which are not measured; leaving
  * those pages must be a full page load so that a measured page and an
  * unmeasured page never share one loaded document (see SiteMeasurement). */
 export function PurchaseBrandHeader({ title, description, shopIntroduction = false, shopRoot = false }: { title: string; description: string; shopIntroduction?: boolean; shopRoot?: boolean }) {
   return <header className="pb-10 sm:pb-12">
-    {!shopRoot ? <div className="mb-6 flex flex-wrap items-center justify-between gap-x-5 gap-y-2 border-b border-usuzumi pb-6 sm:mb-8">
-      <a href="/shop" aria-label="三十日珈琲のショップへ" className="inline-flex min-h-12 items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-karekusa">
-        <Image src="/images/logo-circle-green.jpg" alt="" width={40} height={40} className="h-10 w-10" />
-        <Image src="/images/logo-text-dark.png" alt="三十日珈琲 Shared Roasting" width={130} height={48} className="h-10 w-auto" />
-      </a>
-      <a href="/shop" className={purchaseUi.link}>ショップの案内へ戻る</a>
-    </div> : null}
+    {!shopRoot ? <PurchaseBrandBar /> : null}
     {shopIntroduction ? <>
       <PageHero title="ONLINE SHOP" subtitle={title} image="/images/experience/coffee-beans-close.jpg" compact />
-      <p className="mt-3 text-xs leading-relaxed text-haicha">ショップ共通のイメージ写真です。各商品の実物写真ではありません。</p>
       <p className="mx-auto mt-10 max-w-2xl text-[15px] leading-loose tracking-wide text-karekusa sm:mt-14 sm:text-center sm:text-base">{description}</p>
     </> : <div>
     <div>

@@ -91,14 +91,56 @@ describe("public Notion image boundary", () => {
     mocks.fetch.mockImplementation(async(input:string,init?:RequestInit)=>{if(input===signed){expect(new Headers(init?.headers).has('authorization')).toBe(false);return new Response(png,{headers:{'content-type':'image/png'}});}expect(input).toBe('https://management.example.invalid/api/site-products/catalog');expect(new Headers(init?.headers).get('authorization')).toBe('Bearer '+'a'.repeat(64));return Response.json({format:2,products:[{sourceId:root,name:'公開の豆',origin:'',farm:'',variety:'',process:'',description:''}]});});
     expect((await readPath()).status).toBe(200);expect(mocks.fetch).toHaveBeenCalledTimes(2);
   });
-  it('revokes a managed image during fetch and never falls back to Notion 販売中',async()=>{
+  // 2026-11-26 owner's decision: under EmDash a product photo is ALSO public while
+  // the Notion EC販売ステータス is 販売中. A page that is neither published nor 販売中
+  // is still revoked during the fetch.
+  it('revokes a managed image during fetch when the page is not 販売中',async()=>{
     let time=Date.now()+100000;vi.spyOn(Date,'now').mockImplementation(()=>time);
     vi.stubEnv('MISOCA_SITE_VISIBILITY_AUTHORITY','emdash');vi.stubEnv('MISOCA_SITE_PRODUCT_CATALOG_URL','https://management.example.invalid/api/site-products/catalog');vi.stubEnv('MISOCA_SITE_CATALOG_READ_KEY','a'.repeat(64));vi.stubEnv('NOTION_DATABASE_ID','db3bf889-2b85-44cf-9cb5-0c8403d283c9');
-    const value=page();value.parent.data_source_id='db3bf889-2b85-44cf-9cb5-0c8403d283c9';mocks.page.mockResolvedValue(value);let visible=true;
+    const value=page('product','完売');value.parent.data_source_id='db3bf889-2b85-44cf-9cb5-0c8403d283c9';mocks.page.mockResolvedValue(value);let visible=true;
     mocks.fetch.mockImplementation(async(input:string)=>{if(input===signed){visible=false;time+=30000;return new Response(png,{headers:{'content-type':'image/png'}});}return Response.json({format:2,products:visible?[{sourceId:root,name:'公開の豆',origin:'',farm:'',variety:'',process:'',description:''}]:[]});});
     expect((await readPath()).status).toBe(404);expect(mocks.fetch).toHaveBeenCalledTimes(3);
     mocks.fetch.mockClear();expect((await readPath()).status).toBe(404);expect(mocks.fetch).not.toHaveBeenCalled();
     time+=30000;mocks.fetch.mockResolvedValue(Response.json({private:'PRIVATE_PROVIDER_DIAGNOSTIC'},{status:503}));expect((await readPath()).status).toBe(404);
+  });
+  describe('EmDash mode: Notion 販売中 also makes a product photo public',()=>{
+    const fixed='db3bf889-2b85-44cf-9cb5-0c8403d283c9';
+    beforeEach(()=>{vi.stubEnv('MISOCA_SITE_VISIBILITY_AUTHORITY','emdash');vi.stubEnv('MISOCA_SITE_PRODUCT_CATALOG_URL','https://management.example.invalid/api/site-products/catalog');vi.stubEnv('MISOCA_SITE_CATALOG_READ_KEY','a'.repeat(64));vi.stubEnv('NOTION_DATABASE_ID',fixed);});
+    const onSale=(status='販売中')=>{const value=page('product',status);value.parent.data_source_id=fixed;return value;};
+    it.each(['path','query'])('serves a 販売中 bean via %s without reading the published catalog',async route=>{
+      mocks.page.mockResolvedValue(onSale());
+      const response=route==='path'?await readPath():await query(request(`/api/notion-image?pageId=${root}&property=${encodeURIComponent('画像')}`));
+      expect(response.status).toBe(200);expect(new Uint8Array(await response.arrayBuffer())).toEqual(png);
+      expect(response.headers.get('cache-control')).toBe('private, no-store');
+      expect(mocks.fetch).toHaveBeenCalledTimes(1);expect(mocks.fetch).toHaveBeenCalledWith(signed,expect.objectContaining({credentials:'omit',redirect:'error'}));
+      expect(mocks.page).toHaveBeenCalledTimes(2);
+    });
+    it.each(['完売','準備中','販売中 ','販売'])('a page with status %s is refused unless the published catalog lists it',async status=>{
+      mocks.page.mockResolvedValue(onSale(status));
+      mocks.fetch.mockImplementation(async(input:string)=>input===signed?new Response(png,{headers:{'content-type':'image/png'}}):Response.json({format:2,products:[]}));
+      expect((await readPath()).status).toBe(404);expect(mocks.fetch).not.toHaveBeenCalledWith(signed,expect.anything());
+    });
+    it('a select-type or missing 販売中 property is not a sale state',async()=>{
+      const value=onSale();mocks.page.mockResolvedValue({...value,properties:{...value.properties,EC販売ステータス:{type:'select',select:{name:'販売中'}}}});
+      mocks.fetch.mockImplementation(async()=>Response.json({format:2,products:[]}));
+      expect((await readPath()).status).toBe(404);
+      const {EC販売ステータス:_omitted,...rest}=value.properties as Record<string,unknown>;void _omitted;mocks.page.mockResolvedValue({...value,properties:rest});
+      expect((await readPath()).status).toBe(404);expect(mocks.fetch).not.toHaveBeenCalledWith(signed,expect.anything());
+    });
+    it('discards the bytes when the bean stops being 販売中 during the fetch',async()=>{
+      mocks.page.mockResolvedValue(onSale());
+      mocks.fetch.mockImplementation(async(input:string)=>{if(input===signed){mocks.page.mockResolvedValue(onSale('完売'));return new Response(png,{headers:{'content-type':'image/png'}});}return Response.json({format:2,products:[]});});
+      expect((await readPath()).status).toBe(404);
+    });
+    it('keeps every other guard: wrong source, trashed page, external file, unsafe host, foreign origin',async()=>{
+      for(const value of [{...onSale(),parent:{type:'data_source_id',data_source_id:products}},{...onSale(),in_trash:true},{...onSale(),archived:true}]){mocks.page.mockResolvedValue(value);expect((await readPath()).status).toBe(404);}
+      vi.stubEnv('NOTION_DATABASE_ID',products);mocks.page.mockResolvedValue({...onSale(),parent:{type:'data_source_id',data_source_id:products}});expect((await readPath()).status).toBe(404);
+      vi.stubEnv('NOTION_DATABASE_ID',fixed);
+      const external=onSale();external.properties.画像={type:'files',files:[{type:'external',external:{url:signed}} as never]};mocks.page.mockResolvedValue(external);expect((await readPath()).status).toBe(404);
+      const unsafe=onSale();unsafe.properties.画像!.files=[file('https://attacker.invalid/x.png')];mocks.page.mockResolvedValue(unsafe);expect((await readPath()).status).toBe(404);
+      mocks.page.mockResolvedValue(onSale());expect((await readPath(root,{origin:'https://attacker.invalid'})).status).toBe(403);
+      expect(mocks.fetch).not.toHaveBeenCalledWith(signed,expect.anything());
+    });
   });
   it('cannot serve managed product images with missing read credentials or the old anonymous index',async()=>{
     vi.stubEnv('MISOCA_SITE_VISIBILITY_AUTHORITY','emdash');vi.stubEnv('MISOCA_SITE_PRODUCT_INDEX_URL','https://management.example.invalid/api/site-products/index');vi.stubEnv('MISOCA_SITE_PRODUCT_CATALOG_URL','');vi.stubEnv('MISOCA_SITE_CATALOG_READ_KEY','');vi.stubEnv('NOTION_DATABASE_ID','db3bf889-2b85-44cf-9cb5-0c8403d283c9');const value=page();value.parent.data_source_id='db3bf889-2b85-44cf-9cb5-0c8403d283c9';mocks.page.mockResolvedValue(value);expect((await readPath()).status).toBe(404);expect(mocks.fetch).not.toHaveBeenCalled();

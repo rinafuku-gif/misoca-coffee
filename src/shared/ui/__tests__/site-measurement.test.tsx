@@ -68,13 +68,17 @@ describe("計測するページと計測しないページの行き来は、ペ�
   });
   const components = "src/features/shop/components";
   // Everything the two pages render (their imports, followed by hand).
-  const insideOnly = ["PurchaseBrand.tsx", "PurchaserStatusPanel.tsx", "CheckoutCancellationPanel.tsx", "PurchaseTerms.tsx", "ProductPublicationDetails.tsx", "UnlistedCartItems.tsx"].map(name => join(components, name));
+  const insideOnly = ["PurchaseBrand.tsx", "PurchaserStatusPanel.tsx", "CheckoutCancellationPanel.tsx", "PurchaseTerms.tsx", "ProductPublicationDetails.tsx", "UnlistedCartItems.tsx",
+    // 2026-11-26: the purchase screen's cards, detail and cart (and their shared parts).
+    "BeanCard.tsx", "BeanDetailModal.tsx", "CartDrawer.tsx", "shop-catalog-parts.tsx"].map(name => join(components, name));
 
   it("2つのページが使う部品は、この一覧のとおり（増えたらこの試験を見直す）", () => {
     expect(read("src/app/shop/order/page.tsx")).toContain('from "@/features/shop/components/PurchasePanel"');
     expect(read("src/app/shop/success/page.tsx")).toContain('from "@/features/shop/components/PurchaserStatusPanel"');
     const imported = (file: string) => [...read(join(components, file)).matchAll(/from "\.\/([A-Za-z]+)"/g)].map(match => match[1]).filter(name => /^[A-Z]/.test(name)).sort();
-    expect(imported("PurchasePanel.tsx")).toEqual(["CheckoutCancellationPanel", "ProductPublicationDetails", "PurchaseBrand", "PurchaseTerms", "UnlistedCartItems"]);
+    expect(imported("PurchasePanel.tsx")).toEqual(["BeanCard", "BeanDetailModal", "CartDrawer", "CheckoutCancellationPanel", "PurchaseBrand", "PurchaseTerms", "UnlistedCartItems"]);
+    // Lower-case modules are not caught by the pattern above; list them by hand.
+    expect([...read(join(components, "PurchasePanel.tsx")).matchAll(/from "\.\/([a-z][a-z-]*)"/g)].map(match => match[1]).sort()).toEqual(["shop-catalog-parts"]);
     expect(imported("PurchaserStatusPanel.tsx")).toEqual(["CheckoutCancellationPanel", "ProductPublicationDetails", "PurchaseBrand", "PurchaseTerms"]);
     const known = new Set(insideOnly.map(path => path.slice(components.length + 1, -".tsx".length)));
     for (const path of insideOnly) for (const name of imported(path.slice(components.length + 1))) expect(known.has(name), `${path} → ${name}`).toBe(true);

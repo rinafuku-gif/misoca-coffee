@@ -36,10 +36,11 @@ describe("購入画面のブランドと商品情報", () => {
     expect((luminance("C8973E") + 0.05) / (luminance("2A2A2A") + 0.05)).toBeGreaterThanOrEqual(4.5);
     expect(purchaseUi.primary).not.toMatch(/hover:(bg-|text-)/);
   });
-  it("購入入口だけに既存ショップ写真を置き、商品実物と誤認させない", () => {
+  it("購入入口だけに既存ショップ写真を置く（写真の注記は2026-11-26に外した）", () => {
     const html = renderToStaticMarkup(<PurchaseBrandHeader title="珈琲を選ぶ" description="数量を選ぶ" shopIntroduction />);
     expect(html).toContain("coffee-beans-close.jpg");
-    expect(html).toContain("各商品の実物写真ではありません");
+    expect(html).not.toContain("各商品の実物写真ではありません");
+    expect(html).not.toContain("ショップ共通のイメージ写真です");
     expect(html).toContain("三十日珈琲 Shared Roasting");
     expect(html).toContain("ショップの案内へ戻る");
     expect(html).toContain("py-16 md:py-24");

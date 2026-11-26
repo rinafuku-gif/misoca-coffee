@@ -14,7 +14,7 @@ describe("販売を再開した後のショップのページ", () => {
   it("購入の画面の下に「オンラインで頼むと、いいこと」の段が1回だけ続く", async () => {
     const { default: ShopPage } = await import("@/app/shop/page");
     const html = renderToStaticMarkup(<ShopPage />);
-    const panel = html.indexOf("珈琲を選ぶ"), panelEnd = html.indexOf("</main>"), section = html.indexOf(heading);
+    const panel = html.indexOf("焙煎したてをお届け"), panelEnd = html.indexOf("</main>"), section = html.indexOf(heading);
     expect(panel).toBeGreaterThan(-1);
     expect(panelEnd).toBeGreaterThan(panel);
     expect(section).toBeGreaterThan(panelEnd);

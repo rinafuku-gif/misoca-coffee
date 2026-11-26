@@ -10,6 +10,7 @@ import {ProductSchema,canPurchaseCatalogProduct,catalogPriceLabel,type Product} 
 import { SHOP_PAUSED } from "@/features/shop/policy";
 import { useLegacyCart } from "@/features/shop/use-legacy-cart";
 import { WhyOnline } from "@/features/shop/components/WhyOnline";
+import { FreshnessStrip, NewArrivalBanner, ProductPhoto } from "@/features/shop/components/shop-catalog-parts";
 const FREE_SHIPPING_THRESHOLD = 5000;
 const SHIPPING_COST = 370;
 
@@ -149,45 +150,7 @@ export default function ShopCatalog() {
       />
 
       {/* New Arrival Banner — ゆずインフューズドコーヒー */}
-      <section className="bg-tsuchikabe py-12 md:py-16 border-b border-usuzumi/30">
-        <div className="max-w-4xl mx-auto px-6 md:px-8">
-          <ScrollReveal>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              <div>
-                <p className="font-[family-name:var(--font-display)] text-[11px] tracking-[0.5em] text-gold font-light mb-3 uppercase">
-                  New Arrival
-                </p>
-                <h2 className="font-serif text-lg md:text-xl text-konsumi tracking-wider font-light mb-3">
-                  新商品: 上野原ゆずインフューズドコーヒー
-                </h2>
-                <p className="text-sm text-haicha leading-[2] tracking-wide">
-                  山梨県上野原市の規格外ゆずを生豆に漬け込んでから焙煎した一杯。
-                  {SHOP_PAUSED && (
-                    <span className="block mt-1">
-                      焙煎豆の通販は休止中ですが、新商品の詳細ページは公開しています。
-                    </span>
-                  )}
-                </p>
-              </div>
-              <Link
-                href="/shop/uenohara-yuzu"
-                className="inline-flex items-center gap-3 border border-karekusa/30 text-karekusa text-xs tracking-[0.15em] px-7 py-3.5 hover:bg-karekusa hover:text-white transition-all duration-500 flex-shrink-0 min-h-[44px]"
-              >
-                商品ページを見る
-                <svg
-                  className="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                >
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </Link>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
+      <NewArrivalBanner paused={SHOP_PAUSED} />
 
       {/* Pause Notice — 焙煎豆販売の一時休止のお知らせ */}
       {SHOP_PAUSED && (
@@ -219,16 +182,7 @@ export default function ShopCatalog() {
       )}
 
       {/* Freshness Promise */}
-      {!SHOP_PAUSED && (
-        <section className="bg-konsumi py-6 overflow-hidden">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <p className="text-white/80 text-sm md:text-base tracking-wider font-light">
-              すべてスペシャルティグレード ／ ご注文後7日以内に発送 ／ 全国一律
-              ¥370（¥5,000以上で送料無料）
-            </p>
-          </div>
-        </section>
-      )}
+      {!SHOP_PAUSED && <FreshnessStrip />}
 
       {/* Bean Lineup */}
       <section className="py-36 md:py-52 overflow-hidden">
@@ -337,24 +291,7 @@ export default function ShopCatalog() {
                     <div className="group cursor-pointer" onClick={() => setSelectedProduct(product)}>
                       {/* Image */}
                       <div className="relative aspect-[4/5] overflow-hidden mb-6">
-                        {product.image && !failedImages.has(product.id) ? (
-                          <Image
-                            src={product.image}
-                            unoptimized={product.image.startsWith("/api/notion-image/")}
-                            alt={product.name}
-                            fill
-                            className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                            onError={() => setFailedImages((prev) => new Set(prev).add(product.id))}
-                          />
-                        ) : (
-                          <div className="absolute inset-0 bg-tsuchikabe/40 flex flex-col items-center justify-center gap-3">
-                            <svg className="w-10 h-10 text-haicha/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <span className="text-[10px] tracking-[0.2em] text-haicha/40">NO IMAGE</span>
-                          </div>
-                        )}
+                        <ProductPhoto image={product.image} alt={product.name} failed={failedImages.has(product.id)} onError={() => setFailedImages((prev) => new Set(prev).add(product.id))} sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out" />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-700" />
 
                         {/* Roast Badge */}
@@ -739,24 +676,7 @@ export default function ShopCatalog() {
 
               {/* Product Image */}
               <div className="relative aspect-[16/10] overflow-hidden">
-                {selectedProduct.image && !failedImages.has(selectedProduct.id) ? (
-                  <Image
-                    src={selectedProduct.image}
-                    unoptimized={selectedProduct.image.startsWith("/api/notion-image/")}
-                    alt={selectedProduct.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 672px"
-                    onError={() => setFailedImages((prev) => new Set(prev).add(selectedProduct.id))}
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-tsuchikabe/40 flex flex-col items-center justify-center gap-3">
-                    <svg className="w-12 h-12 text-haicha/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span className="text-[11px] tracking-[0.2em] text-haicha/40">NO IMAGE</span>
-                  </div>
-                )}
+                <ProductPhoto image={selectedProduct.image} alt={selectedProduct.name} failed={failedImages.has(selectedProduct.id)} onError={() => setFailedImages((prev) => new Set(prev).add(selectedProduct.id))} sizes="(max-width: 768px) 100vw, 672px" variant="modal" />
                 <span className="absolute top-4 left-4 bg-konsumi/80 text-white text-[10px] px-3 py-1.5 tracking-wider">
                   {selectedProduct.roast}
                 </span>
@@ -1004,23 +924,7 @@ export default function ShopCatalog() {
                           className="flex gap-4 pb-5 border-b border-usuzumi/20"
                         >
                           <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
-                            {item.product.image && !failedImages.has(item.product.id) ? (
-                              <Image
-                                src={item.product.image}
-                                unoptimized={item.product.image.startsWith("/api/notion-image/")}
-                                alt={item.product.name}
-                                fill
-                                className="object-cover"
-                                sizes="80px"
-                                onError={() => setFailedImages((prev) => new Set(prev).add(item.product.id))}
-                              />
-                            ) : (
-                              <div className="absolute inset-0 bg-tsuchikabe/40 flex items-center justify-center">
-                                <svg className="w-6 h-6 text-haicha/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                              </div>
-                            )}
+                            <ProductPhoto image={item.product.image} alt={item.product.name} failed={failedImages.has(item.product.id)} onError={() => setFailedImages((prev) => new Set(prev).add(item.product.id))} sizes="80px" variant="thumb" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <h4 className="font-serif text-sm text-konsumi tracking-wide font-light mb-0.5 truncate">
