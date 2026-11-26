@@ -8,7 +8,7 @@ import { z } from "zod";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import { buyerProductPublicationSchema } from "../product-publication-view";
-import { BEAN_DISPLAY_PATH, beanDisplayResponseSchema, joinCatalogWithDisplay, type BeanDisplay } from "../bean-display";
+import { BEAN_DISPLAY_PATH, beanDisplayResponseSchema, groupCatalogItems, joinCatalogWithDisplay, type BeanDisplay } from "../bean-display";
 import { drawerLines, quantityAfterAdd } from "../bean-cart";
 import { BeanCard, type BeanItem } from "./BeanCard";
 import { BeanDetailModal } from "./BeanDetailModal";
@@ -266,21 +266,27 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
       <section id="bean-lineup" className="py-24 md:py-36 overflow-hidden scroll-mt-20" aria-label="商品と数量">
         <div className="max-w-6xl mx-auto px-6 md:px-8">
           <ScrollReveal>
-            <div className="text-center mb-16 md:mb-24">
-              <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">Coffee Beans</p>
-              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6">コーヒー豆</h2>
-              <p className="mx-auto max-w-2xl text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide">商品について読みながら、お好きな珈琲をお選びください。送料と合計は、お支払いの前に確認できます。</p>
-            </div>
+            <p className="mx-auto mb-16 max-w-2xl text-center text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide md:mb-24">商品について読みながら、お好きな珈琲をお選びください。送料と合計は、お支払いの前に確認できます。</p>
           </ScrollReveal>
           {!catalog.acceptingOrders ? <p className={`${purchaseUi.notice} mb-10`}>{receptionPauseNotice(catalog.reception) ?? "現在は注文を受け付けていません。金額の確認はできますが、決済へは進めません。"}</p> : null}
           {catalogStale ? <p className="mb-10 text-sm leading-loose text-haicha">現在は更新前の商品一覧です。更新できるまで決済には進めません。選択から外す操作はできます。</p> : null}
-          {!beans.length ? <p className="py-16 text-center text-sm text-haicha">現在選べる商品はありません。</p> : <ul className="grid gap-14 sm:grid-cols-2 md:grid-cols-3 md:gap-x-10 md:gap-y-16">
-            {beans.map((item, i) => <li key={item.skuId}><ScrollReveal delay={(i % 3) * 0.1} className="h-full">
-              <BeanCard item={item} quantity={qtyOf(item.skuId)} blocked={blocked} added={added === item.skuId}
-                imageFailed={failedImages.has(item.skuId)} onImageError={() => failImage(item.skuId)}
-                onOpen={() => setDetailSku(item.skuId)} onAdd={() => addOne(item)} />
-            </ScrollReveal></li>)}
-          </ul>}
+          {!beans.length ? <p className="py-16 text-center text-sm text-haicha">現在選べる商品はありません。</p> : <div className="space-y-24 md:space-y-32">
+            {groupCatalogItems(beans).map(group => <section key={group.key} aria-labelledby={`product-group-${group.key}`}>
+              <ScrollReveal>
+                <div className="text-center mb-12 md:mb-16">
+                  <div aria-hidden="true" className="w-8 h-px bg-gold/40 mx-auto mb-6" />
+                  <h2 id={`product-group-${group.key}`} className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">{group.heading}</h2>
+                </div>
+              </ScrollReveal>
+              <ul className="grid gap-14 sm:grid-cols-2 md:grid-cols-3 md:gap-x-10 md:gap-y-16">
+                {group.items.map((item, i) => <li key={item.skuId}><ScrollReveal delay={(i % 3) * 0.1} className="h-full">
+                  <BeanCard item={item} quantity={qtyOf(item.skuId)} blocked={blocked} added={added === item.skuId}
+                    imageFailed={failedImages.has(item.skuId)} onImageError={() => failImage(item.skuId)}
+                    onOpen={() => setDetailSku(item.skuId)} onAdd={() => addOne(item)} />
+                </ScrollReveal></li>)}
+              </ul>
+            </section>)}
+          </div>}
           <div className="mx-auto mt-16 max-w-3xl">
             <UnlistedCartItems lines={unlistedCartLines(session.cart, catalog.items.map(item => item.skuId), catalogLabels)} busy={busy} onRemove={skuId => quantity(skuId, 0)} />
           </div>

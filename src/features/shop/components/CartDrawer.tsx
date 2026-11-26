@@ -68,7 +68,7 @@ export function CartDrawer({ open, lines, count, busy, locked, stale, images, fa
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-serif text-sm leading-relaxed tracking-wide text-konsumi break-words">{line.item ? line.item.name : line.label}</p>
-                  {line.item ? <p className="text-xs text-haicha">{line.item.unit} ／ 1点 {yen(line.item.unitPrice)}</p> : <p className="text-xs leading-relaxed text-haicha">一覧に表示されていない選択</p>}
+                  {line.item ? <p className="text-xs text-haicha">{yen(line.item.unitPrice)} / {line.item.unit}</p> : <p className="text-xs leading-relaxed text-haicha">一覧に表示されていない選択</p>}
                   <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
                     <div className="flex items-center gap-1.5">
                       <button type="button" className={stepper} disabled={disabled} aria-label={`${line.label}の数量を1つ減らす`} onClick={() => onChange(line.skuId, line.quantity - 1)}>−</button>

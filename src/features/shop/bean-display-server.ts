@@ -1,8 +1,8 @@
 // Server only. Read-only: no Notion write, no price, stock or order decision.
-import { notion } from "@/shared/notion/client";
+import { notion, getSelect } from "@/shared/notion/client";
 import { boundedExternal } from "./ledger/timeout";
 import { readNotionProductFields } from "./notion-product-fields";
-import { beanDisplaySchema, type BeanDisplay } from "./bean-display";
+import { beanDisplaySchema, type BeanDisplay, type ProductCategory } from "./bean-display";
 
 const FIXED_PRODUCT_SOURCE = "db3bf8892b8544cf9cb50c8403d283c9";
 export const BEAN_DISPLAY_TIMEOUT_MS = 8000;
@@ -20,6 +20,18 @@ function productSource(): string {
   const source = pageId(process.env.NOTION_DATABASE_ID?.trim());
   if (!process.env.NOTION_API_KEY || !source || authority === "emdash" && source !== FIXED_PRODUCT_SOURCE) return fail();
   return source;
+}
+
+/** 「商品の種類」 (select): 豆／ドリップバッグ／その他. Missing or empty = 豆.
+ * A value the site does not know is null, so the purchase screen groups the
+ * item by its SKU instead of guessing. */
+export function productCategory(props: Record<string, RecordValue>): ProductCategory | null {
+  const prop = props["商品の種類"];
+  if (!prop) return "豆";
+  if (prop.type !== "select") return null;
+  const kind = getSelect(prop);
+  if (!kind) return "豆";
+  return kind === "豆" || kind === "ドリップバッグ" || kind === "その他" ? kind : null;
 }
 
 /** One live page of the product source whose EC販売ステータス is 販売中. The
@@ -47,7 +59,7 @@ export async function readSellingBeanDisplays(): Promise<BeanDisplay[]> {
     const fields = readNotionProductFields(page.id, page.props);
     // Only a Notion-hosted file goes through the checked image route; an
     // external URL is not shown (it is not an allowed image source here).
-    const parsed = beanDisplaySchema.safeParse({ ...fields, image: fields.image === `/api/notion-image/${page.id}` ? fields.image : "" });
+    const parsed = beanDisplaySchema.safeParse({ ...fields, image: fields.image === `/api/notion-image/${page.id}` ? fields.image : "", category: productCategory(page.props) });
     if (parsed.success) { seen.add(page.id); items.push(parsed.data); }
   }
   return items;

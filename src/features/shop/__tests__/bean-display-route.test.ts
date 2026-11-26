@@ -44,12 +44,30 @@ describe("販売中の豆の表示データ（読み取りのみ）", () => {
     ] });
     const items = await readSellingBeanDisplays();
     expect(items).toEqual([
-      { id: pageA.replaceAll("-", ""), name: "架空の豆", origin: "架空産地", roast: "中煎り・深煎り", flavor: "架空の風味", process: "架空精製", variety: "架空品種", region: "架空地域", farm: "架空農園", altitude: "1,000m", description: "架空の説明", image: `/api/notion-image/${pageA.replaceAll("-", "")}` },
+      { id: pageA.replaceAll("-", ""), name: "架空の豆", origin: "架空産地", roast: "中煎り・深煎り", flavor: "架空の風味", process: "架空精製", variety: "架空品種", region: "架空地域", farm: "架空農園", altitude: "1,000m", description: "架空の説明", image: `/api/notion-image/${pageA.replaceAll("-", "")}`, category: "豆" },
       expect.objectContaining({ id: pageB.replaceAll("-", ""), image: "" }),
     ]);
     const json = JSON.stringify(items);
     for (const secret of ["900", "123", "private@", "sig=secret", "drive.example"]) expect(json).not.toContain(secret);
     expect(mocks.query).toHaveBeenCalledWith(expect.objectContaining({ data_source_id: fixed.replaceAll("-", ""), page_size: 100, filter: { property: "EC販売ステータス", status: { equals: "販売中" } } }));
+  });
+  it("「商品の種類」を category に入れる。項目なし・空は豆、知らない値・別の型は null。販売中なら豆以外も返す", async () => {
+    const kind = (value: unknown) => ({ extra: { 商品の種類: value } });
+    const ids = ["a", "b", "c", "d", "e", "f", "0"].map(c => `${c.repeat(8)}-${c.repeat(4)}-4${c.repeat(3)}-8${c.repeat(3)}-${c.repeat(12)}`);
+    mocks.query.mockResolvedValue({ object: "list", results: [
+      page(ids[0], kind({ type: "select", select: { name: "ドリップバッグ" } })),
+      page(ids[1], kind({ type: "select", select: { name: "その他" } })),
+      page(ids[2], kind({ type: "select", select: { name: "豆" } })),
+      page(ids[3], kind({ type: "select", select: null })),
+      page(ids[4]),
+      page(ids[5], kind({ type: "select", select: { name: "ギフト" } })),
+      page(ids[6], kind({ type: "multi_select", multi_select: [{ name: "ドリップバッグ" }] })),
+      page("12121212-1212-4212-8212-121212121212", { status: "完売", ...kind({ type: "select", select: { name: "ドリップバッグ" } }) }),
+    ] });
+    const items = await readSellingBeanDisplays();
+    expect(items.map(item => item.category)).toEqual(["ドリップバッグ", "その他", "豆", "豆", "豆", null, null]);
+    // Bean-only fields stay whatever Notion has; nothing is invented for other kinds.
+    expect(JSON.stringify(items)).not.toContain("1212121212");
   });
   it.each([
     ["鍵が無い", { NOTION_API_KEY: "" }],
