@@ -12,6 +12,8 @@ export const checkoutCopy = {
   // Coordinator (round 3): cancel not settled in one request / Stripe refused the payment page.
   restartRetry: "まだ終えられませんでした。もう一度押してください。",
   refused: "お支払い画面を開けませんでした。もう一度お試しください。",
+  // 400 INVALID_REQUEST for the purchase form (CHECKOUT-FORM-WIRE.md §3).
+  formRefused: "入力を受け付けられませんでした。入力を確かめてください。",
   // Spec §画面 2–3.
   toCheckout: "購入手続きへ",
   checkoutHeading: "購入手続き",

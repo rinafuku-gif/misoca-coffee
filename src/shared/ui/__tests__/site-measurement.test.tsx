@@ -19,7 +19,7 @@ const at = (pathname: string, gaId?: string) => {
 describe("購入のページと注文状況のページは計測しない", () => {
   beforeEach(() => { place.pathname = "/"; });
 
-  it.each(["/shop/order", "/shop/success", "/shop/order/", "/shop/success/anything"])("%s では計測の部品を1つも出さない", pathname => {
+  it.each(["/shop/order", "/shop/success", "/shop/order/", "/shop/success/anything", "/shop/order-cancel"])("%s では計測の部品を1つも出さない", pathname => {
     expect(isUnmeasuredPath(pathname)).toBe(true);
     expect(at(pathname, "G-TEST")).toBe("");
   });
@@ -72,13 +72,15 @@ describe("計測するページと計測しないページの行き来は、ペ�
     // 2026-11-26: the purchase screen's cards, detail and cart (and their shared parts).
     "BeanCard.tsx", "BeanDetailModal.tsx", "CartDrawer.tsx", "shop-catalog-parts.tsx",
     // 2026-11-27: the compact checkout section and the pending-payment banner.
-    "CheckoutParts.tsx"].map(name => join(components, name));
+    "CheckoutParts.tsx",
+    // 2026-11-27: the purchase form (購入者・お届け先・送り主・備考・メルマガ).
+    "CheckoutForm.tsx"].map(name => join(components, name));
 
   it("2つのページが使う部品は、この一覧のとおり（増えたらこの試験を見直す）", () => {
     expect(read("src/app/shop/order/page.tsx")).toContain('from "@/features/shop/components/PurchasePanel"');
     expect(read("src/app/shop/success/page.tsx")).toContain('from "@/features/shop/components/PurchaserStatusPanel"');
     const imported = (file: string) => [...read(join(components, file)).matchAll(/from "\.\/([A-Za-z]+)"/g)].map(match => match[1]).filter(name => /^[A-Z]/.test(name)).sort();
-    expect(imported("PurchasePanel.tsx")).toEqual(["BeanCard", "BeanDetailModal", "CartDrawer", "CheckoutParts", "PurchaseBrand", "PurchaseTerms", "UnlistedCartItems"]);
+    expect(imported("PurchasePanel.tsx")).toEqual(["BeanCard", "BeanDetailModal", "CartDrawer", "CheckoutForm", "CheckoutParts", "PurchaseBrand", "PurchaseTerms", "UnlistedCartItems"]);
     // Lower-case modules are not caught by the pattern above; list them by hand.
     expect([...read(join(components, "PurchasePanel.tsx")).matchAll(/from "\.\/([a-z][a-z-]*)"/g)].map(match => match[1]).sort()).toEqual(["shop-catalog-parts", "use-page-top"]);
     expect([...read(join(components, "PurchaserStatusPanel.tsx")).matchAll(/from "\.\/([a-z][a-z-]*)"/g)].map(match => match[1])).toEqual(["use-page-top"]);
@@ -106,7 +108,9 @@ describe("計測するページと計測しないページの行き来は、ペ�
       "src/shared/ui/SiteMeasurement.tsx",            // the exclusion itself
       "src/shared/ui/SiteShell.tsx",                  // chooses the page frame, no link
     ]);
-    for (const path of ["src/shared/ui/Header.tsx", "src/shared/ui/SiteShell.tsx"]) expect((read(path).match(/\/shop\/(order|success)/g) ?? []).length, path).toBeLessThanOrEqual(2);
+    // SiteShell also names /shop/order-cancel (2026-11-27: the cancel-request page has no site frame either).
+    expect((read("src/shared/ui/Header.tsx").match(/\/shop\/(order|success)/g) ?? []).length).toBeLessThanOrEqual(2);
+    expect((read("src/shared/ui/SiteShell.tsx").match(/\/shop\/(order|success)/g) ?? []).length).toBeLessThanOrEqual(3);
   });
 
   it("2つのページから外へ出るリンクは、読み込み直しになる書き方だけ", () => {

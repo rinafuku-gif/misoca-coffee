@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { CHECKOUT_REFUSED_ERROR, isCheckoutRefused, readRestartOutcome } from "../checkout-outcome";
+import { CHECKOUT_REFUSED_ERROR, isAttemptConflict, isCheckoutRefused, isFormRefused, readRestartOutcome } from "../checkout-outcome";
 import { checkoutCopy, checkoutTermsRows, methodShortCopy, statusCopy } from "../checkout-copy";
 import { CheckoutTerms, MethodPicker, PaymentPendingBanner } from "../components/CheckoutParts";
 import { PurchaserStatusPanel, STATUS_POLL_LIMIT_MS, STATUS_POLL_MS } from "../components/PurchaserStatusPanel";
@@ -41,6 +41,23 @@ describe("サーバーの答えの読み方（1か所の変換・2026-11-27 決�
       [true, { checkoutUrl: "https://checkout.stripe.com/c/x", status: status({ payment: "closed" }) }],
       [true, { checkoutUrl: null, status: { payment: "closed" } }],
     ] as const) expect(isCheckoutRefused(ok, body)).toBe(false);
+  });
+});
+
+describe("入力つきの決済の答え（CHECKOUT-FORM-WIRE.md §3）", () => {
+  it("400 INVALID_REQUEST は入力の拒否（注文なし）。409 ATTEMPT_CONFLICT は同じ鍵で違う入力", () => {
+    expect(isFormRefused(false, { error: "INVALID_REQUEST" })).toBe(true);
+    expect(isAttemptConflict(false, { error: "ATTEMPT_CONFLICT" })).toBe(true);
+    for (const [ok, body] of [[true, { error: "INVALID_REQUEST" }], [false, { error: "SERVICE_UNAVAILABLE" }], [false, null]] as const) { expect(isFormRefused(ok, body)).toBe(false); expect(isAttemptConflict(ok, body)).toBe(false); }
+  });
+  it("入力の拒否はバナーを出さず、支払いボタンのそばに1行。違う入力の 409 は1回だけ、前を終えて新しい鍵で続ける", () => {
+    expect(panel).toContain("if (isFormRefused(result.ok, result.body)) { save({ ...latest, attempt: null, viewKey: null }); setFormRefused(true); setSubmitted(true); openCheckout(); return; }");
+    expect(panel).toContain("{formRefused ? <p role=\"alert\"");
+    expect(panel).toContain("if (isAttemptConflict(result.ok, result.body)) { await replaceAttempt(attempt); return; }");
+    expect(panel).toContain("if (conflictHandled.current) { showPending(); return; }");
+    expect(panel).toContain("const outcome = await endAttempt(previous.purchaseKey);");
+    expect(panel).toContain("const purchaseKey = newPurchaseKey(), current = readPurchaseSession(sessionStorage);");
+    expect(panel.match(/send\("cancel"/g)).toHaveLength(1);
   });
 });
 

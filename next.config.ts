@@ -103,6 +103,14 @@ const nextConfig: NextConfig = {
       ],
     },
     {
+      // Postcode → address files (Japan Post public data, refreshed by replacing the files).
+      source: "/postal-addresses/:path*",
+      headers: [
+        { key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=2592000" },
+        { key: "X-Content-Type-Options", value: "nosniff" },
+      ],
+    },
+    {
       source: "/images/:path*",
       headers: [
         { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },

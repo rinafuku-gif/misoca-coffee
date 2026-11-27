@@ -3,7 +3,7 @@ import { z } from "zod";
 import { purchaserStatusSchema, purchaseCancellationResultSchema, RECEIVING_METHODS, DELIVERY_METHODS_HEADER, RECEPTION_HEADER } from "../purchaser-status";
 import { buyerProductPublicationSchema } from "../product-publication-view";
 
-const paths = new Set(["catalog", "quote", "checkout", "status", "cancel"].map(action => `/api/ec/purchase/${action}`));
+const paths = new Set(["catalog", "quote", "checkout", "status", "cancel", "cancel-request"].map(action => `/api/ec/purchase/${action}`));
 export const PURCHASE_WEBHOOK_PATH = "/api/ec/webhook";
 const privateHeaders = { "cache-control": "no-store, private", "referrer-policy": "no-referrer",
   "x-content-type-options": "nosniff", "x-robots-tag": "noindex, nofollow" };
@@ -58,9 +58,12 @@ const quotation = z.object({ items: z.array(z.object({ skuId: z.string(), name: 
   shipping: z.number().int().nonnegative(), total: z.number().int().nonnegative(), acceptedQuote: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
 const checkoutUrl = z.string().url().refine(raw => { const url = new URL(raw); return url.protocol === "https:" && url.hostname === "checkout.stripe.com"
   && !url.username && !url.password && !url.port && /^\/[a-z]\/pay\/cs_[A-Za-z0-9_]+$/.test(url.pathname); });
+// 発送前のキャンセル受付 (CHECKOUT-FORM-SPEC-A): the shop page /shop/order-cancel relays the link's order number and token.
+const cancelRequest = z.object({ orderReference: z.string().min(1).max(128), state: z.enum(["open", "requested", "recorded", "shipped", "closed"]),
+  items: z.array(z.object({ name: z.string(), unit: z.string(), quantity: z.number().int().positive() }).strict()).max(20), total: z.number().int().nonnegative() }).strict();
 const schemas = {
   catalog, quote: quotation, checkout: z.object({ checkoutUrl: checkoutUrl.nullable(), status: purchaserStatusSchema }).strict(),
-  status: z.object({ status: purchaserStatusSchema }).strict(), cancel: purchaseCancellationResultSchema,
+  status: z.object({ status: purchaserStatusSchema }).strict(), cancel: purchaseCancellationResultSchema, "cancel-request": cancelRequest,
   webhook: z.object({ received: z.literal(true), duplicate: z.boolean().optional(), ignored: z.boolean().optional(),
     quarantined: z.boolean().optional(), reviewRequired: z.boolean().optional() }).strict(),
 };

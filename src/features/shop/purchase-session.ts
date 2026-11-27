@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PURCHASE_STORAGE_KEY, RECEIVING_METHODS, type BuyerStatus, type PurchaseCancellationResult } from "./purchaser-status";
+import { checkoutFormWireSchema } from "./checkout-form";
 
 export const PURCHASE_SESSION_KEY = "misoca-ec-purchase-session-v1";
 export const cartLinesSchema = z.array(z.object({ skuId: z.string().min(1).max(128), quantity: z.number().int().min(1).max(20) }).strict()).max(20).refine(lines => new Set(lines.map(l => l.skuId)).size === lines.length);
@@ -7,7 +8,9 @@ export const cartLinesSchema = z.array(z.object({ skuId: z.string().min(1).max(1
  * cart and a shipping attempt are stored exactly as before. The attempt keeps
  * its own copy: returning to the same payment must send the same method. */
 const receivingMethodSchema = z.enum(RECEIVING_METHODS).optional();
-export const purchaseAttemptSchema = z.object({ purchaseKey: z.string().regex(/^[a-f0-9]{64}$/), lines: cartLinesSchema, acceptedQuote: z.string().regex(/^[a-f0-9]{64}$/), settledOrderId: z.string().optional(), cancelRequested: z.literal(true).optional(), deliveryMethod: receivingMethodSchema }).strict();
+// form: the purchase form exactly as first sent, so 「お支払いに戻る」 resends the same
+// request. Present only once the form is on the wire (CHECKOUT_FORM_ON_WIRE).
+export const purchaseAttemptSchema = z.object({ purchaseKey: z.string().regex(/^[a-f0-9]{64}$/), lines: cartLinesSchema, acceptedQuote: z.string().regex(/^[a-f0-9]{64}$/), settledOrderId: z.string().optional(), cancelRequested: z.literal(true).optional(), deliveryMethod: receivingMethodSchema, form: checkoutFormWireSchema.optional() }).strict();
 const sessionSchema = z.object({ version: z.literal(1), cart: cartLinesSchema, attempt: purchaseAttemptSchema.nullable(), history: z.array(z.object({ purchaseKey: z.string().regex(/^[a-f0-9]{64}$/), orderReference: z.string() }).strict()).max(1000), viewKey: z.string().regex(/^[a-f0-9]{64}$/).nullable(), deliveryMethod: receivingMethodSchema }).strict();
 export type PurchaseSession = z.infer<typeof sessionSchema>;
 export type PurchaseAttempt = z.infer<typeof purchaseAttemptSchema>;

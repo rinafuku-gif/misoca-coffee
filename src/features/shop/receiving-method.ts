@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { RECEIVING_METHODS, physicalCopy, type BuyerStatus } from "./purchaser-status";
+import type { CheckoutFormWire } from "./checkout-form";
 
 /** Website-only rules and wording for the receiving method
  * (配送／上野原市内お届け／店頭受け取り).
@@ -48,9 +49,11 @@ export function quoteRequestBody(lines: CartLines, method: DeliveryMethod) {
 }
 /** Built only from the saved attempt, so returning to the same payment sends
  * the same method as the first request (or none, for shipping). */
-export function checkoutRequestBody(attempt: { purchaseKey: string; lines: CartLines; acceptedQuote: string; deliveryMethod?: ReceivingMethod }) {
+export function checkoutRequestBody(attempt: { purchaseKey: string; lines: CartLines; acceptedQuote: string; deliveryMethod?: ReceivingMethod; form?: CheckoutFormWire }) {
   const body = { purchaseKey: attempt.purchaseKey, lines: attempt.lines, acceptedQuote: attempt.acceptedQuote };
-  return attempt.deliveryMethod === undefined ? body : { ...body, deliveryMethod: attempt.deliveryMethod };
+  const withMethod = attempt.deliveryMethod === undefined ? body : { ...body, deliveryMethod: attempt.deliveryMethod };
+  // PROVISIONAL key until CHECKOUT-FORM-WIRE.md: absent unless the attempt carries the form.
+  return attempt.form === undefined ? withMethod : { ...withMethod, form: attempt.form };
 }
 
 // ---------------------------------------------------------------------------

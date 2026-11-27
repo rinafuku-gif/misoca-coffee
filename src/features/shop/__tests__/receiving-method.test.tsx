@@ -48,7 +48,7 @@ describe("受け取り方法を選ぶ欄が出る条件", () => {
     expect(panel).toContain("selectableMethods(catalog.deliveryMethods, session.cart.some(line => physicalSkus.has(line.skuId)))");
     expect(panel).toContain('if (item.kind === "physical") skus.add(item.skuId); else skus.delete(item.skuId);');
     expect(panel).toContain("const method = requestedMethod(session?.deliveryMethod, methodChoices);");
-    expect(panel).toContain("<MethodPicker methods={methodChoices} value={method} disabled={busy} onChange={chooseMethod} />");
+    expect(panel).toContain("<MethodPicker methods={methodChoices} value={method} disabled={busy} unavailable={unavailableMethods} onChange={chooseMethod} />");
     expect(read("src/features/shop/policy.ts")).not.toMatch(/DELIVERY|RECEIVING|deliveryMethod/i);
     for (const path of ["src/features/shop/receiving-method.ts", "src/features/shop/components/PurchasePanel.tsx", "src/features/shop/components/PurchaseTerms.tsx"]) expect(read(path), path).not.toMatch(/process\.env|NEXT_PUBLIC/);
   });
@@ -175,7 +175,7 @@ describe("方法ごとの依頼の本文", () => {
     expect(panel).toContain('const result = await send("quote", quoteRequestBody(session.cart, method));');
     expect(panel).toContain('const result = await send("checkout", checkoutRequestBody(attempt));');
     expect(panel.match(/send\("(quote|checkout)"/g)).toHaveLength(2);
-    expect(panel).toContain('acceptedQuote: currentQuotation.acceptedQuote, ...(method === "shipping" ? {} : { deliveryMethod: method }) };');
+    expect(panel).toContain('acceptedQuote: currentQuotation.acceptedQuote, ...(method === "shipping" ? {} : { deliveryMethod: method }), form: checkoutFormWire(form, method) };');
     // 商品一覧・状況の本文は今までと同じ。
     expect(panel).toContain('await post("catalog", {})');
     expect(panel).toContain('await send("status", { purchaseKey: session.attempt.purchaseKey })');

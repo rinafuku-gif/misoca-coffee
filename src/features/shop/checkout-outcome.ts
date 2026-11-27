@@ -34,3 +34,16 @@ export function isCheckoutRefused(ok: boolean, body: unknown): boolean {
   const status = purchaserStatusSchema.safeParse(body.status);
   return status.success && status.data.payment === "closed" && status.data.cancellation === "none";
 }
+
+/** CHECKOUT-FORM-WIRE.md §3: the form broke a rule (or 上野原市内お届け with another
+ * postcode). The input is checked before anything is accepted, so no order or
+ * payment page exists for this request: the attempt is dropped and the
+ * customer fixes the form and presses again. */
+export function isFormRefused(ok: boolean, body: unknown): boolean {
+  return !ok && !!body && typeof body === "object" && "error" in body && body.error === "INVALID_REQUEST";
+}
+/** §3: the same purchaseKey came back with different input. The previous
+ * checkout is ended (/cancel) and a new key is used — within the same press. */
+export function isAttemptConflict(ok: boolean, body: unknown): boolean {
+  return !ok && !!body && typeof body === "object" && "error" in body && body.error === "ATTEMPT_CONFLICT";
+}

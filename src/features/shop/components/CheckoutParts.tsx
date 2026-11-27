@@ -4,8 +4,8 @@ import { purchaseUi } from "./purchase-ui";
 
 /** Receiving method, short. Native radios sharing one name (Tab enters the
  * group, arrows move); choosing one asks for the new total right away. */
-export function MethodPicker({ methods, value, disabled = false, onChange }: {
-  methods: readonly DeliveryMethod[]; value: DeliveryMethod; disabled?: boolean; onChange(method: DeliveryMethod): void;
+export function MethodPicker({ methods, value, disabled = false, unavailable = [], onChange }: {
+  methods: readonly DeliveryMethod[]; value: DeliveryMethod; disabled?: boolean; unavailable?: readonly DeliveryMethod[]; onChange(method: DeliveryMethod): void;
 }) {
   if (!methods.length) return null;
   return <fieldset disabled={disabled} className="min-w-0">
@@ -13,7 +13,7 @@ export function MethodPicker({ methods, value, disabled = false, onChange }: {
     <ul className="mt-2 divide-y divide-usuzumi/60 border-y border-usuzumi">
       {methods.map(method => <li key={method}>
         <label htmlFor={`checkout-method-${method}`} className="flex min-h-12 cursor-pointer items-start gap-3 py-3">
-          <input id={`checkout-method-${method}`} type="radio" name="checkout-method" value={method} checked={value === method} onChange={() => onChange(method)} className={purchaseUi.checkbox} />
+          <input id={`checkout-method-${method}`} type="radio" name="checkout-method" value={method} checked={value === method} disabled={unavailable.includes(method) && value !== method} onChange={() => onChange(method)} className={purchaseUi.checkbox} />
           <span className="min-w-0 text-sm"><span className="block text-sumi">{receivingCopy.methods[method].label}</span><span className="block text-xs leading-relaxed text-haicha">{methodShortCopy[method]}</span></span>
         </label>
       </li>)}

@@ -23,7 +23,9 @@ import { allowedCheckoutLocation, applyCheckoutCancellation, markCheckoutCancell
 import { catalogDeliveryMethodsSchema, checkoutRequestBody, quoteRequestBody, receivingCopy, requestedMethod, selectableMethods, shippingFeeLabel, type DeliveryMethod } from "../receiving-method";
 import { catalogReceptionSchema, receptionPauseNotice } from "../reception-notice";
 import { checkoutCopy } from "../checkout-copy";
-import { isCheckoutRefused, readRestartOutcome } from "../checkout-outcome";
+import { checkoutFormWire, emptyCheckoutForm, localDeliveryAllowed, readCheckoutFormDraft, validateCheckoutForm, writeCheckoutFormDraft, type CheckoutFormDraft, type FormField } from "../checkout-form";
+import { CheckoutFormFields, fieldId } from "./CheckoutForm";
+import { isAttemptConflict, isCheckoutRefused, isFormRefused, readRestartOutcome } from "../checkout-outcome";
 import { usePageStartsAtTop } from "./use-page-top";
 
 const product = z.object({ skuId: z.string(), name: z.string(), unit: z.string(), unitPrice: z.number().int().nonnegative(), kind: z.enum(["physical", "gift"]), maxQuantity: z.number().int().min(0).max(20), publication: buyerProductPublicationSchema.optional() }).strict();
@@ -65,6 +67,14 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
   // 「お支払い画面を開けませんでした」: kept apart from `notice` so the total that is
   // asked for right after does not wipe it; cleared on the next press.
   const [refused, setRefused] = useState(false);
+  // The purchase form. Errors show under a field once it was left, or for every
+  // field after 「お支払いへ進む」 was pressed with something missing.
+  const [form, setForm] = useState<CheckoutFormDraft>(emptyCheckoutForm);
+  const [touched, setTouched] = useState(new Set<FormField>()); const [submitted, setSubmitted] = useState(false);
+  // The server refused the form (400): one short line next to the pay button.
+  const [formRefused, setFormRefused] = useState(false);
+  // 409 ATTEMPT_CONFLICT is answered once per press (no loops).
+  const conflictHandled = useRef(false);
   // Presentation only: Notion display rows, photo failures, the open detail and
   // the cart panel. None of it is sent with a quote or a checkout.
   const [displays, setDisplays] = useState<BeanDisplay[]>([]);
@@ -102,7 +112,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
         const result = await post("catalog", {});
         if (!result.ok) throw new Error("CATALOG_UNAVAILABLE");
         const loaded = catalogSchema.parse(result.body);
-        if (live) { rememberCatalog(loaded); setSession(saved); setCatalog(loaded); }
+        if (live) { rememberCatalog(loaded); setSession(saved); setCatalog(loaded); setForm(readCheckoutFormDraft(sessionStorage)); }
       } catch (error) {
         if (live) { setFatal(true); setNotice(purchaseNotice(error, checkoutCopy.loadFailed)); }
       } finally { if (live) setBusy(false); }
@@ -182,6 +192,10 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     // the same key replayed: 200 with no page and payment closed). Clear the
     // attempt; the next 「お支払いへ進む」 starts a new one with a new key.
     if (isCheckoutRefused(result.ok, result.body)) { save({ ...latest, attempt: null, viewKey: null }); setRefused(true); openCheckout(); return; }
+    // The form broke a rule: nothing was accepted, so no banner; fix and press again.
+    if (isFormRefused(result.ok, result.body)) { save({ ...latest, attempt: null, viewKey: null }); setFormRefused(true); setSubmitted(true); openCheckout(); return; }
+    // Same key, different input: end the old checkout and continue with a new key.
+    if (isAttemptConflict(result.ok, result.body)) { await replaceAttempt(attempt); return; }
     if (!result.ok) {
       const recovered = recoverRejectedCheckout(latest, attempt.purchaseKey, result.body, { isNewPurchase });
       if (recovered) { save(recovered.session); await refreshCatalog(recovered.notice); return; }
@@ -193,28 +207,56 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     if (typeof result.body.checkoutUrl !== "string" || !allowedCheckoutLocation(result.body.checkoutUrl, location.origin)) throw new Error("CHECKOUT_DESTINATION_INVALID");
     window.location.assign(result.body.checkoutUrl);
   }
+  function newPurchaseKey() {
+    const bytes = crypto.getRandomValues(new Uint8Array(32)); return Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
+  }
+  /** Shows the form's problems (all fields) and moves to the first one. */
+  function formProblems(target: DeliveryMethod) {
+    const invalid = Object.keys(validateCheckoutForm(form, target)) as FormField[];
+    if (invalid.length) { setSubmitted(true); requestAnimationFrame(() => document.getElementById(fieldId(invalid[0]))?.focus()); }
+    return invalid.length > 0;
+  }
   async function begin() {
     if (!session || session.attempt || !currentQuotation || catalogStale || !catalog?.acceptingOrders) return;
-    setRefused(false);
-    const bytes = crypto.getRandomValues(new Uint8Array(32)); const purchaseKey = Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
-    const attempt: PurchaseAttempt = { purchaseKey, lines: session.cart, acceptedQuote: currentQuotation.acceptedQuote, ...(method === "shipping" ? {} : { deliveryMethod: method }) };
+    setRefused(false); setFormRefused(false); conflictHandled.current = false;
+    if (formProblems(method)) return;
+    const purchaseKey = newPurchaseKey();
+    const attempt: PurchaseAttempt = { purchaseKey, lines: session.cart, acceptedQuote: currentQuotation.acceptedQuote, ...(method === "shipping" ? {} : { deliveryMethod: method }), form: checkoutFormWire(form, method) };
     // Save the exact attempt atomically BEFORE an external outcome can become unknown.
     save({ ...session, attempt, viewKey: purchaseKey }); await checkout(attempt, true);
+  }
+  /** 409 ATTEMPT_CONFLICT: end the previous checkout (one cancel request), then
+   * the same lines, quote and method with the current form under a NEW key. */
+  async function replaceAttempt(previous: PurchaseAttempt) {
+    if (conflictHandled.current) { showPending(); return; }
+    conflictHandled.current = true;
+    const outcome = await endAttempt(previous.purchaseKey);
+    if (outcome !== "ended") return;
+    const target = previous.deliveryMethod ?? "shipping";
+    if (formProblems(target)) { openCheckout(); return; }
+    const purchaseKey = newPurchaseKey(), current = readPurchaseSession(sessionStorage);
+    const attempt: PurchaseAttempt = { purchaseKey, lines: previous.lines, acceptedQuote: previous.acceptedQuote, ...(previous.deliveryMethod ? { deliveryMethod: previous.deliveryMethod } : {}), form: checkoutFormWire(form, target) };
+    save({ ...current, attempt, viewKey: purchaseKey }); await checkout(attempt, true);
   }
   // 「やり直す」: ONE cancel request for the previous checkout (never resent by
   // itself). Ended → straight back to the checkout section, cart kept.
   async function restart() {
     if (!session?.attempt) return;
-    const key = session.attempt.purchaseKey; cancellationIntents.current.add(key);
+    if (await endAttempt(session.attempt.purchaseKey) === "ended") { setQuotation(null); openCheckout(); }
+  }
+  /** ONE cancel request for a previous checkout. ended → the attempt is cleared
+   * (cart kept); toStatus → the status page; retry → one line on the banner. */
+  async function endAttempt(key: string): Promise<"ended" | "toStatus" | "retry"> {
+    cancellationIntents.current.add(key);
     setSession(markCheckoutCancellation(sessionStorage, key));
     const result = await send("cancel", { purchaseKey: key, confirmed: true });
     const outcome = readRestartOutcome(result.ok, result.body);
-    if (outcome.kind === "toStatus") { save({ ...readPurchaseSession(sessionStorage), viewKey: key }); location.assign("/shop/success"); return; }
+    if (outcome.kind === "toStatus") { save({ ...readPurchaseSession(sessionStorage), viewKey: key }); location.assign("/shop/success"); return "toStatus"; }
     if (outcome.kind === "ended") {
       const next = applyCheckoutCancellation(sessionStorage, key, outcome.result);
-      if (!next.attempt) { cancellationIntents.current.delete(key); setSession(next); setQuotation(null); openCheckout(); return; }
+      if (!next.attempt) { cancellationIntents.current.delete(key); setSession(next); return "ended"; }
     }
-    setNotice(checkoutCopy.restartRetry);
+    setNotice(checkoutCopy.restartRetry); showPending(); return "retry";
   }
   async function anotherOrder() {
     if (!session?.attempt) return;
@@ -263,6 +305,14 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     setAdded(item.skuId); clearTimeout(addedTimer.current); addedTimer.current = setTimeout(() => setAdded(null), 1200);
   }
   const lines = catalog && session ? drawerLines(session.cart, catalog.items, catalogLabels) : [];
+  function changeForm(update: (current: CheckoutFormDraft) => CheckoutFormDraft) {
+    setFormRefused(false);
+    setForm(previous => { const next = update(previous); writeCheckoutFormDraft(sessionStorage, next); return next; });
+  }
+  const allErrors = validateCheckoutForm(form, method);
+  const shownErrors = Object.fromEntries(Object.entries(allErrors).filter(([field]) => submitted || touched.has(field as FormField)));
+  // 上野原市内お届け needs a complete Uenohara postcode; told at once while typing.
+  const unavailableMethods = localDeliveryAllowed(form.postalCode) === false ? ["local_delivery" as const] : [];
   const pending = Boolean(session?.attempt && !session.attempt.settledOrderId);
   const shell = "mx-auto max-w-3xl px-6 md:px-8";
   const noticeBlock = notice ? <div role="alert" className={`${purchaseUi.notice} mb-6`}><p>{notice}</p>{notice.includes("配送条件") || notice.includes("発送できる数量") ? <a href="/contact" className={`mt-2 ${purchaseUi.link}`}>配送について相談する</a> : null}</div> : null;
@@ -332,17 +382,20 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
             <span className="min-w-0 break-words">{item.name} <span className="text-haicha">{item.unit} × {item.quantity}</span></span>
             <span className="shrink-0">{money(item.unitPrice * item.quantity)}</span>
           </li>)}</ul>
-          <MethodPicker methods={methodChoices} value={method} disabled={busy} onChange={chooseMethod} />
+          <MethodPicker methods={methodChoices} value={method} disabled={busy} unavailable={unavailableMethods} onChange={chooseMethod} />
           {currentQuotation ? <div id="purchase-quote" aria-live="polite">
             <dl className="space-y-2">
               <div className="flex items-baseline justify-between gap-4 text-sm"><dt>{shippingFeeLabel(quotedMethod)}</dt><dd>{money(currentQuotation.shipping)}</dd></div>
               <div className="flex flex-wrap items-baseline justify-between gap-4 text-sm"><dt>合計</dt><dd className={purchaseUi.statusTitle}>{money(currentQuotation.total)}</dd></div>
             </dl>
           </div> : busy ? <p role="status" className="text-sm text-haicha">確認しています…</p> : <button type="button" className={purchaseUi.link} disabled={busy || catalogStale} onClick={() => { void run(preview); }}>{checkoutCopy.quoteRetry}</button>}
+          <CheckoutFormFields form={form} method={method} errors={shownErrors} disabled={busy} onChange={changeForm} onBlur={field => setTouched(previous => new Set(previous).add(field))} />
           <CheckoutTerms method={currentQuotation ? quotedMethod : method} />
         </div>}
         checkoutFooter={<>
           {!catalog.acceptingOrders ? <p className="text-sm text-sumi">{receptionPauseNotice(catalog.reception) ?? "現在は注文を受け付けていません。"}</p> : null}
+          {formRefused ? <p role="alert" className="text-sm text-sumi">{checkoutCopy.formRefused}</p> : null}
+          {currentQuotation ? <p className="flex items-baseline justify-between gap-4 text-sm"><span className="text-haicha">合計</span><span className="font-serif text-xl text-konsumi">{money(currentQuotation.total)}</span></p> : null}
           <button className={`${button} w-full`} disabled={busy || catalogStale || !currentQuotation || !catalog.acceptingOrders || Boolean(session.attempt)} onClick={() => { void run(begin); }}>{checkoutCopy.pay}</button>
         </>} />
     </> : null}
