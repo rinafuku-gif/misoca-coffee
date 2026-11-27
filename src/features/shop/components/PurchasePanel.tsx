@@ -27,6 +27,7 @@ import { checkoutFormWire, emptyCheckoutForm, localDeliveryAllowed, readCheckout
 import { CheckoutFormFields, fieldId } from "./CheckoutForm";
 import { isAttemptConflict, isCheckoutRefused, isFormRefused, readRestartOutcome } from "../checkout-outcome";
 import { usePageStartsAtTop } from "./use-page-top";
+import { readShopItemKey, shopItemTarget } from "../shop-item-link";
 
 const product = z.object({ skuId: z.string(), name: z.string(), unit: z.string(), unitPrice: z.number().int().nonnegative(), kind: z.enum(["physical", "gift"]), maxQuantity: z.number().int().min(0).max(20), publication: buyerProductPublicationSchema.optional() }).strict();
 // deliveryMethods: present only when the management side offers receiving methods. Absent, or not in the agreed
@@ -304,6 +305,26 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     if (next === null || !quantity(item.skuId, next)) return;
     setAdded(item.skuId); clearTimeout(addedTimer.current); addedTimer.current = setTimeout(() => setAdded(null), 1200);
   }
+  // /shop?item=<key> (from a product page): once the catalog is shown, move once to
+  // that product and mark it. Without a known key nothing happens (the page stays at
+  // the top). Never while a checkout is unfinished or the cart panel is open.
+  const [linkedSku, setLinkedSku] = useState<string | null>(null);
+  const itemLinkHandled = useRef(false);
+  const goToLinkedItem = useEffectEvent(() => {
+    if (!shopRoot || session?.attempt || cartOpen) return;
+    const target = shopItemTarget(readShopItemKey(window.location.search), beans);
+    if (!target) return;
+    requestAnimationFrame(() => {
+      const element = "sku" in target ? document.querySelector(`[data-sku="${CSS.escape(target.sku)}"]`) : document.getElementById(`product-group-${target.group}`);
+      if (!element) return;
+      if ("sku" in target) setLinkedSku(target.sku);
+      element.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+    });
+  });
+  useEffect(() => {
+    if (!catalog || !session || itemLinkHandled.current) return;
+    itemLinkHandled.current = true; goToLinkedItem();
+  }, [catalog, session]);
   const lines = catalog && session ? drawerLines(session.cart, catalog.items, catalogLabels) : [];
   function changeForm(update: (current: CheckoutFormDraft) => CheckoutFormDraft) {
     setFormRefused(false);
@@ -348,7 +369,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
                 </div>
               </ScrollReveal>
               <ul className="grid gap-14 sm:grid-cols-2 md:grid-cols-3 md:gap-x-10 md:gap-y-16">
-                {group.items.map((item, i) => <li key={item.skuId}><ScrollReveal delay={(i % 3) * 0.1} className="h-full">
+                {group.items.map((item, i) => <li key={item.skuId} data-sku={item.skuId} className={linkedSku === item.skuId ? "outline outline-2 outline-offset-8 outline-gold-dark" : undefined}><ScrollReveal delay={(i % 3) * 0.1} className="h-full">
                   <BeanCard item={item} quantity={qtyOf(item.skuId)} blocked={blocked} added={added === item.skuId}
                     imageFailed={failedImages.has(item.skuId)} onImageError={() => failImage(item.skuId)}
                     onOpen={() => setDetailSku(item.skuId)} onAdd={() => addOne(item)} />
