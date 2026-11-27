@@ -117,7 +117,9 @@ describe("購入画面の流れ（安全のきまりは変えない）", () => {
     expect(panel.match(/run\(restart\)/g)).toHaveLength(1);
     // 1手続き1キー: 鍵は begin() で1回だけ作り、お支払いに戻るは同じ記録を送る。
     expect(panel.match(/crypto\.getRandomValues/g)).toHaveLength(1);
-    expect(panel).toContain('credentials: "omit"');
+    // 購入の通信は1か所（purchase-catalog.ts の postPurchase）。Cookie を送らない。
+    expect(panel).toContain("postPurchase as post");
+    expect(readFileSync("src/features/shop/purchase-catalog.ts", "utf8")).toContain('credentials: "omit"');
   });
   it("断られたときは注文を残さず、同じボタンをもう一度押せる", () => {
     expect(panel).toContain("if (isCheckoutRefused(result.ok, result.body)) { save({ ...latest, attempt: null, viewKey: null }); setRefused(true); openCheckout(); return; }");

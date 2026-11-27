@@ -7,8 +7,8 @@ import Link from "next/link";
 import { z } from "zod";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
-import { buyerProductPublicationSchema } from "../product-publication-view";
-import { BEAN_DISPLAY_PATH, beanDisplayResponseSchema, groupCatalogItems, joinCatalogWithDisplay, type BeanDisplay } from "../bean-display";
+import { groupCatalogItems, joinCatalogWithDisplay, readBeanDisplays, type BeanDisplay } from "../bean-display";
+import { catalogProductSchema, catalogSchema, postPurchase as post, type Catalog } from "../purchase-catalog";
 import { cartSubtotal, drawerLines, quantityAfterAdd } from "../bean-cart";
 import { BeanCard, type BeanItem } from "./BeanCard";
 import { BeanDetailModal } from "./BeanDetailModal";
@@ -20,8 +20,8 @@ import { PurchaseLegalLinks } from "./PurchaseTerms";
 import { UnlistedCartItems } from "./UnlistedCartItems";
 import { recoverRejectedCheckout, unlistedCartLines, shippingFailureNotice } from "../purchase-recovery";
 import { allowedCheckoutLocation, applyCheckoutCancellation, markCheckoutCancellation, purchaseKeyForStatus, readPurchaseSession, reconcilePurchasedCart, withDeliveryMethod, writePurchaseSession, type PurchaseAttempt, type PurchaseSession } from "../purchase-session";
-import { catalogDeliveryMethodsSchema, checkoutRequestBody, quoteRequestBody, receivingCopy, requestedMethod, selectableMethods, shippingFeeLabel, type DeliveryMethod } from "../receiving-method";
-import { catalogReceptionSchema, receptionPauseNotice } from "../reception-notice";
+import { checkoutRequestBody, quoteRequestBody, receivingCopy, requestedMethod, selectableMethods, shippingFeeLabel, type DeliveryMethod } from "../receiving-method";
+import { receptionPauseNotice } from "../reception-notice";
 import { checkoutCopy } from "../checkout-copy";
 import { checkoutFormWire, emptyCheckoutForm, localDeliveryAllowed, readCheckoutFormDraft, validateCheckoutForm, writeCheckoutFormDraft, type CheckoutFormDraft, type FormField } from "../checkout-form";
 import { CheckoutFormFields, fieldId } from "./CheckoutForm";
@@ -29,29 +29,13 @@ import { isAttemptConflict, isCheckoutRefused, isFormRefused, readRestartOutcome
 import { usePageStartsAtTop } from "./use-page-top";
 import { readShopItemKey, shopItemTarget } from "../shop-item-link";
 
-const product = z.object({ skuId: z.string(), name: z.string(), unit: z.string(), unitPrice: z.number().int().nonnegative(), kind: z.enum(["physical", "gift"]), maxQuantity: z.number().int().min(0).max(20), publication: buyerProductPublicationSchema.optional() }).strict();
-// deliveryMethods: present only when the management side offers receiving methods. Absent, or not in the agreed
-// shape = shipping only, as before (it never fails the catalog). reception: present only when the reception
-// switch is open AND the site asked for it. Absent, or not in the agreed shape, keeps the fixed sentence (G-4).
-// Neither ever fails the catalog itself. Every other field is checked as strictly as before.
-export const catalogSchema = z.object({ items: z.array(product).max(50), nextOffset: z.number().int().nonnegative().nullable(), acceptingOrders: z.boolean(), deliveryMethods: catalogDeliveryMethodsSchema, reception: catalogReceptionSchema }).strict();
-const quotationSchema = z.object({ items: z.array(product.omit({ maxQuantity: true }).extend({ quantity: z.number().int().min(1).max(20) })).max(20), total: z.number().int().nonnegative(), shipping: z.number().int().nonnegative(), acceptedQuote: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
-type Catalog = z.infer<typeof catalogSchema>; type Quotation = z.infer<typeof quotationSchema>;
+export { catalogSchema };
+const quotationSchema = z.object({ items: z.array(catalogProductSchema.omit({ maxQuantity: true }).extend({ quantity: z.number().int().min(1).max(20) })).max(20), total: z.number().int().nonnegative(), shipping: z.number().int().nonnegative(), acceptedQuote: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
+type Quotation = z.infer<typeof quotationSchema>;
 const money = (value: number) => `¥${value.toLocaleString("ja-JP")}`;
 const button = purchaseUi.primary;
 function purchaseNotice(error: unknown, fallback: string) {
   return error instanceof Error && error.message === "PURCHASE_BUSY" ? checkoutCopy.busy : fallback;
-}
-async function post(action: string, body: unknown) {
-  const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 15000);
-  try {
-    const response = await fetch(`/api/ec/purchase/${action}`, { method: "POST", headers: { "content-type": "application/json" }, credentials: "omit", cache: "no-store", body: JSON.stringify(body), signal: controller.signal });
-    if (response.status === 429) {
-      await response.body?.cancel();
-      throw new Error("PURCHASE_BUSY");
-    }
-    return { ok: response.ok, body: await response.json() };
-  } finally { clearTimeout(timer); }
 }
 export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {}) {
   const [session, setSession] = useState<PurchaseSession | null>(null);
@@ -93,14 +77,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     // Optional display data. A failure only means cards without photos; it never
     // blocks, hides or changes what the catalog sells.
     let live = true; const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 10000);
-    void (async () => {
-      try {
-        const response = await fetch(BEAN_DISPLAY_PATH, { credentials: "omit", signal: controller.signal });
-        if (!response.ok) { await response.body?.cancel(); return; }
-        const parsed = beanDisplayResponseSchema.safeParse(await response.json());
-        if (live && parsed.success) setDisplays(parsed.data.items);
-      } catch { /* Keep the cards without display data. */ } finally { clearTimeout(timer); }
-    })();
+    void readBeanDisplays(controller.signal).then(items => { if (live && items.length) setDisplays(items); }).finally(() => clearTimeout(timer));
     return () => { live = false; clearTimeout(timer); controller.abort(); clearTimeout(addedTimer.current); };
   }, []);
   useEffect(() => {

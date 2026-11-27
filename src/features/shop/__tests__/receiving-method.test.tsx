@@ -136,9 +136,14 @@ describe("購入画面が商品一覧の応答を読むとき（ブラウザ側�
     expect(catalogSchema.safeParse({ ...plain, items: "x", deliveryMethods: ["store_pickup", "shipping"] }).success).toBe(false);
   });
   it("この読み方は、購入画面の商品一覧の検査の中の deliveryMethods だけに使う", () => {
-    expect(panel).toContain("acceptingOrders: z.boolean(), deliveryMethods: catalogDeliveryMethodsSchema, reception: catalogReceptionSchema }).strict();");
-    expect(panel.match(/catalogDeliveryMethodsSchema/g)).toHaveLength(2);
+    // 商品一覧の形は1か所（purchase-catalog.ts）にあり、購入画面とトップページが同じものを使う。
+    const catalogSource = read("src/features/shop/purchase-catalog.ts");
+    expect(catalogSource).toContain("acceptingOrders: z.boolean(), deliveryMethods: catalogDeliveryMethodsSchema, reception: catalogReceptionSchema }).strict();");
+    expect(catalogSource.match(/catalogDeliveryMethodsSchema/g)).toHaveLength(2);
+    expect(panel).not.toContain("catalogDeliveryMethodsSchema");
+    expect(panel).toContain('import { catalogProductSchema, catalogSchema, postPurchase as post, type Catalog } from "../purchase-catalog";');
     expect(panel.match(/catalogSchema\.parse\(/g)).toHaveLength(3);
+    expect(catalogSource.match(/catalogSchema\.parse\(/g)).toHaveLength(1);
     expect(catalogDeliveryMethodsSchema.parse(undefined)).toBeUndefined();
     expect(catalogDeliveryMethodsSchema.parse(["shipping", "store_pickup"])).toEqual(["shipping", "store_pickup"]);
     // 写した受け渡し部品（管理側と同じ内容に保つファイル）は、この読み方を使わない。

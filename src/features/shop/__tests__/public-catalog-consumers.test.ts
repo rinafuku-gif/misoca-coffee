@@ -7,14 +7,28 @@ describe('every public consumer respects revocable media and nullable reference 
   expect(covers).toHaveLength(1);
   expect(covers[0][0]).toContain('unoptimized={post.coverImage.startsWith("/api/notion-image/")}');
  });
- it.each([['src/app/page.tsx','item'],['src/features/shop/components/ShopCatalog.tsx','product']])('public catalog validates API and does not invent fallback rows in %s',(path,item)=>{
+ it.each([['src/features/shop/components/ShopCatalog.tsx','product']])('public catalog validates API and does not invent fallback rows in %s',(path,item)=>{
   const source=readFileSync(path,'utf8');
   expect(source).toContain('ProductSchema.array().max(500).safeParse');
   expect(source).toContain(`catalogPriceLabel(${item})`);
   // ShopCatalog draws its photos through the shared ProductPhoto (checked below).
-  expect(source).toContain(path.endsWith('ShopCatalog.tsx')?`<ProductPhoto image={${item}.image}`:`unoptimized={${item}.image.startsWith("/api/notion-image/")}`);
+  expect(source).toContain(`<ProductPhoto image={${item}.image}`);
   expect(source).not.toContain('fallbackProducts');
   expect(source).toContain('商品を読み込めませんでした');
+ });
+ it('the home page lists the shop\'s own purchase catalog (not /api/products), with the shop\'s price label and photo, and no invented rows',()=>{
+  const source=readFileSync('src/app/page.tsx','utf8');
+  expect(source).not.toContain('/api/products');
+  expect(source).toContain('readPurchaseCatalog()');
+  expect(source).toContain('setProducts(homeShopLineup(catalog.items));');
+  expect(source).toContain('{yen(item.unitPrice)}');
+  expect(source).toContain('<span className="text-xs text-haicha ml-2">/ {item.unit}</span>');
+  expect(source).toContain('<ProductPhoto image={item.display?.image ?? ""}');
+  expect(source).toContain('<Link href={shopItemHrefFor(item.skuId)}');
+  expect(source).not.toMatch(/src=\{item\.image/);
+  expect(source).not.toContain('fallbackProducts');
+  // 読み込み中・読めない・0件の言葉は今までどおり。
+  for(const words of ['商品を読み込み中...','商品を読み込めませんでした','現在掲載している商品はありません'])expect(source).toContain(words);
  });
  it('the shared product photo bypasses the optimizer for the revocable image route, and both shop screens use it',()=>{
   const parts=readFileSync('src/features/shop/components/shop-catalog-parts.tsx','utf8');

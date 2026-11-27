@@ -1,9 +1,13 @@
-/** Links that open the shop at one product: `/shop?item=<key>`.
+/** Links that open the shop at one product: `/shop?item=<value>`.
  *
- * Only the keys listed here are understood; any other value (or none) leaves the
- * shop exactly as before: it starts at the top. The product is found by its
- * catalog name after the catalog has loaded, so nothing about prices, stock or
- * the cart is decided here. */
+ * Two kinds of value are understood; any other value (or none) leaves the shop
+ * exactly as before: it starts at the top.
+ * - a named key from `shopItemLinks` (e.g. `yuzu-drip-bag`, printed on cards as a
+ *   QR code via the yuzu page). Found by its catalog name; keep these working.
+ * - a catalog SKU id (`bn_<32 hex>_300` or `gd_<32 hex>_1`), the stable id of a
+ *   product (its Notion page id inside). Found by that id.
+ * The product is looked up after the catalog has loaded, so nothing about prices,
+ * stock or the cart is decided here. */
 export const SHOP_ITEM_PARAM = "item";
 
 export const shopItemLinks = {
@@ -11,23 +15,47 @@ export const shopItemLinks = {
 } as const;
 
 export type ShopItemKey = keyof typeof shopItemLinks;
+/** A catalog SKU id, as the purchase catalog names a product. */
+export type ShopItemSku = `bn_${string}_300` | `gd_${string}_1`;
+export type ShopItemRef = ShopItemKey | ShopItemSku;
 
-export function shopItemHref(key: ShopItemKey): string {
-  return `/shop?${SHOP_ITEM_PARAM}=${key}`;
+const SKU_ID = /^(?:bn_[a-f0-9]{32}_300|gd_[a-f0-9]{32}_1)$/;
+export const isShopItemSku = (value: string): value is ShopItemSku => SKU_ID.test(value);
+
+export function shopItemHref(ref: ShopItemRef): string {
+  return `/shop?${SHOP_ITEM_PARAM}=${ref}`;
 }
 
-/** The requested key from a `location.search` string, or null. */
-export function readShopItemKey(search: string): ShopItemKey | null {
+/** The shop link for a catalog item: at that product when its SKU id has the
+ * stable shape, otherwise the shop's top (never an unchecked value in the link). */
+export function shopItemHrefFor(skuId: string): string {
+  return isShopItemSku(skuId) ? shopItemHref(skuId) : "/shop";
+}
+
+/** The requested key or SKU id from a `location.search` string, or null. */
+export function readShopItemKey(search: string): ShopItemRef | null {
   const value = new URLSearchParams(search).get(SHOP_ITEM_PARAM);
-  return value !== null && Object.hasOwn(shopItemLinks, value) ? value as ShopItemKey : null;
+  if (value === null) return null;
+  if (Object.hasOwn(shopItemLinks, value)) return value as ShopItemKey;
+  return isShopItemSku(value) ? value : null;
+}
+
+/** The catalog item a key or SKU id stands for (undefined when it is not listed now). */
+export function findShopItem<T extends { skuId: string; name: string }>(ref: ShopItemRef, items: readonly T[]): T | undefined {
+  if (Object.hasOwn(shopItemLinks, ref)) {
+    const name = shopItemLinks[ref as ShopItemKey].name;
+    return items.find(candidate => candidate.name === name);
+  }
+  return items.find(candidate => candidate.skuId === ref);
 }
 
 /** Where to go once the catalog is shown: the product itself (highlighted), or,
- * when it is not in the catalog right now, the heading of its group if that is
- * shown. null = stay at the top. */
-export function shopItemTarget(key: ShopItemKey | null, items: readonly { skuId: string; name: string }[]): { sku: string } | { group: string } | null {
-  if (key === null) return null;
-  const link = shopItemLinks[key];
-  const item = items.find(candidate => candidate.name === link.name);
-  return item ? { sku: item.skuId } : { group: link.group };
+ * when it is not in the catalog right now, the heading of its group if known
+ * (a bean SKU → コーヒー豆). null = stay at the top. */
+export function shopItemTarget(ref: ShopItemRef | null, items: readonly { skuId: string; name: string }[]): { sku: string } | { group: string } | null {
+  if (ref === null) return null;
+  const item = findShopItem(ref, items);
+  if (item) return { sku: item.skuId };
+  if (Object.hasOwn(shopItemLinks, ref)) return { group: shopItemLinks[ref as ShopItemKey].group };
+  return ref.startsWith("bn_") ? { group: "beans" } : null;
 }

@@ -3,7 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { ProductSchema, catalogPriceLabel, type Product } from "@/features/shop/product-schema";
+import { readPurchaseCatalog, type CatalogProduct } from "@/features/shop/purchase-catalog";
+import { joinCatalogWithDisplay, readBeanDisplays, type BeanDisplay } from "@/features/shop/bean-display";
+import { homeShopLineup } from "@/features/shop/home-shop-lineup";
+import { shopItemHrefFor } from "@/features/shop/shop-item-link";
+import { yen } from "@/features/shop/components/BeanCard";
+import { ProductPhoto } from "@/features/shop/components/shop-catalog-parts";
 import { HeroSlideshow } from "@/shared/ui/HeroSlideshow";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import homeContent from "@content/pages/home.json";
@@ -43,7 +48,10 @@ interface JournalEntry {
 }
 
 export default function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
+  // ONLINE SHOP: the same purchase catalog as the shop (ゆずのドリップバッグ + 焙煎豆2つ).
+  const [products, setProducts] = useState<CatalogProduct[]>([]);
+  const [productDisplays, setProductDisplays] = useState<BeanDisplay[]>([]);
+  const [failedProductImages, setFailedProductImages] = useState<Set<string>>(new Set());
   const [productsState, setProductsState] = useState<"loading" | "ready" | "error">("loading");
   const [journals, setJournals] = useState<JournalEntry[]>([]);
   const [journalState, setJournalState] = useState<"loading" | "ready" | "error">("loading");
@@ -51,17 +59,18 @@ export default function Home() {
 
   useEffect(() => {
     let active = true;
-    fetch("/api/products")
-      .then(async (res) => {
-        if (!res.ok) throw new Error("CATALOG_UNAVAILABLE");
-        const parsed = ProductSchema.array().max(500).safeParse(await res.json());
-        if (!parsed.success) throw new Error("CATALOG_INVALID");
+    const displayController = new AbortController();
+    const displayTimer = setTimeout(() => displayController.abort(), 10000);
+    readPurchaseCatalog()
+      .then((catalog) => {
         if (active) {
-          setProducts(parsed.data.slice(0, 3));
+          setProducts(homeShopLineup(catalog.items));
           setProductsState("ready");
         }
       })
       .catch(() => { if (active) setProductsState("error"); });
+    // Photos and names for the cards (optional, as on the shop): a failure only means no photo.
+    void readBeanDisplays(displayController.signal).then((items) => { if (active) setProductDisplays(items); }).finally(() => clearTimeout(displayTimer));
 
     fetch("/api/journal", { cache: "no-store" })
       .then((res) => { if (!res.ok) throw new Error("JOURNAL_UNAVAILABLE"); return res.json(); })
@@ -70,7 +79,7 @@ export default function Home() {
         if (active) { setJournals(data.slice(0, 3)); setJournalState("ready"); }
       })
       .catch(() => { if (active) { setJournals([]); setJournalState("error"); } });
-    return () => { active = false; };
+    return () => { active = false; clearTimeout(displayTimer); displayController.abort(); };
   }, []);
 
   return (
@@ -365,31 +374,22 @@ export default function Home() {
             </p>
           ) : null}
           <div className="grid md:grid-cols-3 gap-10 md:gap-14">
-            {products.map((item, i) => (
-              <ScrollReveal key={item.name} direction="up" delay={i * 0.15}>
-                <div className="group cursor-pointer">
+            {joinCatalogWithDisplay(products, productDisplays).map((item, i) => (
+              <ScrollReveal key={item.skuId} direction="up" delay={i * 0.15}>
+                <Link href={shopItemHrefFor(item.skuId)} className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-karekusa">
                   <div className="relative aspect-[4/5] overflow-hidden mb-6">
-                    {item.image ? (
-                      <Image
-                        src={item.image}
-                        unoptimized={item.image.startsWith("/api/notion-image/")}
-                        alt={item.name}
-                        fill
-                        className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-tsuchikabe/40 flex items-center justify-center text-[10px] tracking-[0.2em] text-haicha/40">NO IMAGE</div>
-                    )}
+                    <ProductPhoto image={item.display?.image ?? ""} alt={item.name} failed={failedProductImages.has(item.skuId)}
+                      onError={() => setFailedProductImages((previous) => new Set(previous).add(item.skuId))}
+                      sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out" />
                   </div>
                   <h3 className="font-serif text-base text-konsumi mb-3 tracking-wider font-light">
                     {item.name}
                   </h3>
                   <p className="text-karekusa text-sm tracking-wider">
-                    {catalogPriceLabel(item)}
-                    <span className="text-[10px] text-haicha/50 ml-2">/ 100g</span>
+                    {yen(item.unitPrice)}
+                    <span className="text-xs text-haicha ml-2">/ {item.unit}</span>
                   </p>
-                </div>
+                </Link>
               </ScrollReveal>
             ))}
           </div>

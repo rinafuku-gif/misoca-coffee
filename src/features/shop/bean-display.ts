@@ -19,6 +19,16 @@ export const beanDisplaySchema = z.object({
 export type BeanDisplay = z.infer<typeof beanDisplaySchema>;
 export const beanDisplayResponseSchema = z.object({ items: z.array(beanDisplaySchema).max(100) }).strict();
 export const BEAN_DISPLAY_PATH = "/api/shop/bean-display";
+/** The display rows for the browser (shop and home page). Optional data: any
+ * failure gives [] (cards without photos); it never blocks the catalog. */
+export async function readBeanDisplays(signal: AbortSignal): Promise<BeanDisplay[]> {
+  try {
+    const response = await fetch(BEAN_DISPLAY_PATH, { credentials: "omit", signal });
+    if (!response.ok) { await response.body?.cancel(); return []; }
+    const parsed = beanDisplayResponseSchema.safeParse(await response.json());
+    return parsed.success ? parsed.data.items : [];
+  } catch { return []; }
+}
 
 export type ProductCategory = NonNullable<BeanDisplay["category"]>;
 
