@@ -1,0 +1,18 @@
+{
+  "_note": "お問い合わせのページ（/contact）の文。トップページの「LINEでのお問い合わせが便利です」の欄も同じ文を読む（二重に持たない）。",
+  "hero": {
+    "title": "CONTACT",
+    "subtitle": "お問い合わせ",
+    "description": "ご質問・ご相談をお送りください。予約の確定は担当者との確認後です。"
+  },
+  "line": {
+    "eyebrow": "Recommended",
+    "heading": "LINEでのお問い合わせが便利です",
+    "bodyLine1": "焙煎体験の日程・人数のご相談やご質問は、LINE公式アカウントからも受け付けています。",
+    "bodyLine2": "お気軽にメッセージをお送りください。",
+    "href": "https://lin.ee/ihDBxM8",
+    "buttonLabel": "LINE公式アカウントを友だち追加",
+    "instagramNote": "Instagram DM（@misoca_coffee）でもお問い合わせいただけます",
+    "formLinkLabel": "お問い合わせフォーム"
+  }
+}

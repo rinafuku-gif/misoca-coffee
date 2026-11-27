@@ -9,6 +9,7 @@ import { homeShopLineup } from "@/features/shop/home-shop-lineup";
 import { shopItemHrefFor } from "@/features/shop/shop-item-link";
 import { yen } from "@/features/shop/components/BeanCard";
 import { ProductPhoto } from "@/features/shop/components/shop-catalog-parts";
+import { LineRecommendation } from "@/features/contact/LineRecommendation";
 import { HeroSlideshow } from "@/shared/ui/HeroSlideshow";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import homeContent from "@content/pages/home.json";
@@ -509,6 +510,9 @@ export default function Home() {
           </ScrollReveal>
         </div>
       </section>
+
+      {/* ─── 11. Contact (the contact page's LINE block, words from content/pages/contact.json) ─── */}
+      <LineRecommendation variant="home" />
     </>
   );
 }

@@ -13,7 +13,9 @@ describe("ヘッダー: オンラインショップと焙煎体験の予約を�
     const nav = source.slice(source.indexOf("const navItems"), source.indexOf("];", source.indexOf("const navItems")));
     expect(nav).not.toContain("オンラインショップ");
     expect(nav).not.toContain('"/shop"');
-    for (const label of ["体験する", "コーヒースタンド", "知る", "アクセス", "LINE"]) expect(nav).toContain(label);
+    for (const label of ["体験する", "コーヒースタンド", "知る", "アクセス", "お問い合わせ"]) expect(nav).toContain(label);
+    // 2026-11-28: the menu's LINE became お問い合わせ (/contact, where LINE is offered first).
+    expect(nav).toContain('{ href: "/contact", label: "お問い合わせ" }'); expect(nav).not.toContain("lin.ee");
     const html = renderToStaticMarkup(<Header />);
     const desktopNav = html.slice(html.indexOf('<nav class="hidden lg:flex'), html.indexOf("</nav>"));
     expect(desktopNav).not.toContain(headerCtaCopy.shop);
@@ -24,7 +26,7 @@ describe("ヘッダー: オンラインショップと焙煎体験の予約を�
     const [shop, experience] = anchors(html);
     expect(shop).toContain('href="/shop"'); expect(shop).toContain(`>${headerCtaCopy.shop}</a>`);
     expect(experience).toContain('href="/experience#reservation"'); expect(experience).toContain(`>${headerCtaCopy.experience}</a>`);
-    const size = "inline-block whitespace-nowrap px-4 xl:px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300";
+    const size = "inline-block whitespace-nowrap px-3 xl:px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300";
     expect(shop).toContain(`class="${size} bg-karekusa/90 hover:bg-karekusa text-white"`);
     expect(experience).toContain(`class="${size} bg-gold/90 hover:bg-gold text-white"`);
   });

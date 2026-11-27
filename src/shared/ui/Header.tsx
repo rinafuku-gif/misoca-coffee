@@ -37,7 +37,7 @@ const navItems: NavItem[] = [
     ],
   },
   { href: "/access", label: "アクセス" },
-  { href: "https://lin.ee/ihDBxM8", label: "LINE" },
+  { href: "/contact", label: "お問い合わせ" },
 ];
 
 const sidebarVariants = {
@@ -71,8 +71,8 @@ const mobileItemVariants = {
 export const headerCtaCopy = { shop: "オンラインショップ", experience: "焙煎体験を予約する" } as const;
 const ctaLook = {
   bar: {
-    shop: "inline-block whitespace-nowrap px-4 xl:px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-karekusa/90 hover:bg-karekusa text-white",
-    experience: "inline-block whitespace-nowrap px-4 xl:px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-gold/90 hover:bg-gold text-white",
+    shop: "inline-block whitespace-nowrap px-3 xl:px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-karekusa/90 hover:bg-karekusa text-white",
+    experience: "inline-block whitespace-nowrap px-3 xl:px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-gold/90 hover:bg-gold text-white",
   },
   drawer: {
     shop: "block w-full text-center bg-karekusa hover:bg-karekusa-dark text-white py-3.5 text-sm font-medium tracking-wide transition-colors",
@@ -193,7 +193,7 @@ export function Header() {
               >
                 {item.children ? (
                   <button
-                    className={`relative whitespace-nowrap px-3 xl:px-4 py-2 text-sm tracking-wide transition-colors duration-300 group ${
+                    className={`relative whitespace-nowrap px-2 xl:px-4 py-2 text-sm tracking-wide transition-colors duration-300 group ${
                       scrolled
                         ? "text-sumi hover:text-karekusa"
                         : "text-white/90 hover:text-white"
@@ -201,7 +201,7 @@ export function Header() {
                   >
                     {item.label}
                     <span
-                      className={`absolute bottom-0 left-3 right-3 xl:left-4 xl:right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
+                      className={`absolute bottom-0 left-2 right-2 xl:left-4 xl:right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
                         scrolled ? "bg-karekusa" : "bg-white"
                       }`}
                     />
@@ -211,7 +211,7 @@ export function Header() {
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`relative whitespace-nowrap px-3 xl:px-4 py-2 text-sm tracking-wide transition-colors duration-300 group inline-block ${
+                    className={`relative whitespace-nowrap px-2 xl:px-4 py-2 text-sm tracking-wide transition-colors duration-300 group inline-block ${
                       scrolled
                         ? "text-sumi hover:text-karekusa"
                         : "text-white/90 hover:text-white"
@@ -219,7 +219,7 @@ export function Header() {
                   >
                     {item.label}
                     <span
-                      className={`absolute bottom-0 left-3 right-3 xl:left-4 xl:right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
+                      className={`absolute bottom-0 left-2 right-2 xl:left-4 xl:right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
                         scrolled ? "bg-karekusa" : "bg-white"
                       }`}
                     />
@@ -227,7 +227,7 @@ export function Header() {
                 ) : (
                   <Link
                     href={item.href}
-                    className={`relative whitespace-nowrap px-3 xl:px-4 py-2 text-sm tracking-wide transition-colors duration-300 group inline-block ${
+                    className={`relative whitespace-nowrap px-2 xl:px-4 py-2 text-sm tracking-wide transition-colors duration-300 group inline-block ${
                       scrolled
                         ? "text-sumi hover:text-karekusa"
                         : "text-white/90 hover:text-white"
@@ -235,7 +235,7 @@ export function Header() {
                   >
                     {item.label}
                     <span
-                      className={`absolute bottom-0 left-3 right-3 xl:left-4 xl:right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
+                      className={`absolute bottom-0 left-2 right-2 xl:left-4 xl:right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
                         scrolled ? "bg-karekusa" : "bg-white"
                       }`}
                     />
