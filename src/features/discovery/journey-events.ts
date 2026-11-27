@@ -1,8 +1,8 @@
 import { contactReceiptSchema } from "@/features/contact/contract";
 
-const publicPages = new Set(["/", "/experience", "/stand", "/shop", "/contact", "/catering", "/mobile-roasting", "/community", "/about", "/access", "/faq", "/shop/gift-ticket"]);
+const publicPages = new Set(["/", "/experience", "/stand", "/shop", "/contact", "/catering", "/mobile-roasting", "/about", "/access", "/faq", "/shop/gift-ticket"]);
 const destinations = new Map([["/experience", "experience"], ["/stand", "stand"], ["/shop", "shop"], ["/contact", "contact"], ["/catering", "catering"], ["/mobile-roasting", "mobile_roasting"]]);
-const surfaces = new Set(["header", "footer", "visit_choices", "contact", "experience", "mobile_roasting", "community", "gift_ticket"]);
+const surfaces = new Set(["header", "footer", "visit_choices", "contact", "experience", "mobile_roasting", "gift_ticket"]);
 export type JourneyEvent = { name: "journey_click" | "inquiry_received" | "inquiry_result_unknown"; params: Record<string, string> };
 export type JourneyRuntime = { enabled: boolean; pageUrl: string; siteOrigin: string; gtag?: (command: "event", name: JourneyEvent["name"], params: Record<string, string>) => void };
 const path = (value: string) => value === "/" ? value : value.replace(/\/$/, "");

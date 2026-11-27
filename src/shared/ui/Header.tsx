@@ -34,7 +34,6 @@ const navItems: NavItem[] = [
     children: [
       { href: "/about", label: "三十日珈琲について" },
       { href: "/blog", label: "ジャーナル" },
-      { href: "/community", label: "コミュニティ" },
     ],
   },
   { href: "/access", label: "アクセス" },

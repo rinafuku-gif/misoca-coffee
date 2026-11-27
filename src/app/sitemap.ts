@@ -12,7 +12,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/catering`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${baseUrl}/mobile-roasting`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${baseUrl}/about`, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${baseUrl}/community`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${baseUrl}/access`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${baseUrl}/faq`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${baseUrl}/contact`, changeFrequency: "yearly", priority: 0.5 },

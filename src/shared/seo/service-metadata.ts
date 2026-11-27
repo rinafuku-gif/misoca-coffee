@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { siteOrigin } from "./site-entities";
 
-type ServicePath = "/experience" | "/about" | "/catering" | "/mobile-roasting" | "/faq" | "/community" | "/privacy" | "/terms" | "/tokushoho" | "/contact";
+type ServicePath = "/experience" | "/about" | "/catering" | "/mobile-roasting" | "/faq" | "/privacy" | "/terms" | "/tokushoho" | "/contact";
 
 // Use the existing editorial text, not generated claims, prices or availability.
 // Nested metadata is replaced by Next.js, so each social block is complete.

@@ -35,6 +35,20 @@ const nextConfig: NextConfig = {
       destination: "/shop",
       permanent: true,
     },
+    // The community page was removed (2026-11-28, 店主「必ずコミュニティというページに
+    // たどり着かないように」). Every address at or under /community (any trailing slash,
+    // any letter case) moves permanently to the about page, whose story (people connected
+    // through coffee) is the nearest and which sits in the same 「知る」 menu.
+    {
+      source: "/community",
+      destination: "/about",
+      permanent: true,
+    },
+    {
+      source: "/community/:path*",
+      destination: "/about",
+      permanent: true,
+    },
   ],
   headers: async () => [
     {

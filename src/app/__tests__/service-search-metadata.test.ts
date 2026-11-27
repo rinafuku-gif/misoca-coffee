@@ -6,7 +6,6 @@ import { metadata as about } from "../about/page";
 import { metadata as catering } from "../catering/page";
 import { metadata as mobile } from "../mobile-roasting/page";
 import { metadata as faq } from "../faq/page";
-import { metadata as community } from "../community/page";
 import { metadata as privacy } from "../privacy/page";
 import { metadata as terms } from "../terms/page";
 import { metadata as legal } from "../tokushoho/page";
@@ -27,7 +26,6 @@ const pages = [
   ["/faq", faq, faqContent],
 ] as const;
 const informationPages = [
-  ["/community", community, "コミュニティ"],
   ["/privacy", privacy, "プライバシーポリシー"],
   ["/terms", terms, "利用規約"],
   ["/tokushoho", legal, "特定商取引法に基づく表記"],
@@ -65,7 +63,8 @@ describe("service and FAQ search/share metadata", () => {
   });
   it("does not reuse the service or homepage canonical for information pages", () => {
     const urls = [...pages, ...informationPages].map(([, value]) => value.alternates?.canonical);
-    expect(new Set(urls).size).toBe(10);
+    // 2026-11-28: the community page was removed (10 → 9 pages).
+    expect(new Set(urls).size).toBe(9);
     expect(urls).not.toContain(siteOrigin + "/");
   });
 });
