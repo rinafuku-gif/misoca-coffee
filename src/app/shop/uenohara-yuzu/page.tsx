@@ -3,18 +3,20 @@ import Link from "next/link";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import { siteOrigin, structuredDataJson } from "@/shared/seo/site-entities";
 import { PickupGuideText } from "@/features/shop/components/PickupGuideText";
+import { shopItemHref } from "@/features/shop/shop-item-link";
 import {
-  aboutCopy, enjoyCopy, faqItems, heroCopy, processCopy, shopHref, tasteCopy, yuzuDripBag, yuzuPagePhotos,
+  aboutCopy, enjoyCopy, faqItems, heroCopy, processCopy, tasteCopy, yuzuPagePhotos, yuzuProducts,
 } from "./yuzu-lp-content";
+import { YuzuCatalogProvider, YuzuPrice } from "./yuzu-catalog";
 
-// 売りたいものはドリップバッグ（ゆずインフューズド）1つ。
+// 売るのは、ゆずインフューズドコーヒーのドリップバッグと焙煎豆300gの2つ。
 // 最初の画面 → 味 → 作り方 → 飲み方 → もう一度買う → よくある質問 → 最後に小さく三十日珈琲について。
 
 const pageUrl = `${siteOrigin}/shop/uenohara-yuzu`;
 
 // 金の地に墨の文字（購入画面の主ボタンと同じ組み合わせ。白文字はコントラストが足りない）。
 const buyButton =
-  "inline-flex min-h-12 w-full sm:w-auto items-center justify-center gap-3 border border-gold bg-gold px-8 py-3 text-base font-medium tracking-wide text-sumi transition-colors duration-300 hover:underline hover:underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
+  "inline-flex min-h-12 shrink-0 items-center justify-center gap-2 sm:gap-3 border border-gold bg-gold px-5 sm:px-7 py-3 text-base font-medium tracking-wide text-sumi transition-colors duration-300 hover:underline hover:underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
 // 英字の節ラベルはサイト共通の飾り（読む文ではない）。読み上げからは外す。
 const label = "font-[family-name:var(--font-display)] text-[11px] tracking-[0.5em] uppercase font-light";
 const h2 = "font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light leading-[1.7] text-balance";
@@ -28,35 +30,35 @@ function ArrowRight() {
   );
 }
 
-/** 商品名・量・焙煎度・値段と買うボタン。最初の画面ともう一度買う所で同じものを出す。
- * 左の小さなカードの絵は飾り（同じ絵を大きく、説明付きで別に出している）。thumb で出し分ける。 */
-function BuyBox({ thumb = "", priority = false }: { thumb?: string; priority?: boolean }) {
+/** 2つの商品（ドリップバッグ・焙煎豆300g）から選んで買う枠。最初の画面ともう一度買う所で同じものを出す。
+ * 値段はショップと同じ商品一覧から読む（YuzuPrice）。ボタンはショップのその商品の欄へ直接送る。 */
+function BuyBox() {
   return (
-    <div className="border border-white/25 px-5 py-6 md:px-7 md:py-7">
-      <div className="flex items-start gap-4">
-        <div className={`relative w-20 shrink-0 aspect-[55/91] ${thumb}`}>
-          <Image src={yuzuPagePhotos.cardFront.src} alt="" fill priority={priority} className="object-cover" sizes="80px" />
-        </div>
-        <div className="min-w-0">
-          <p className="font-serif text-lg md:text-xl text-white tracking-wider font-light">
-            {yuzuDripBag.nameParts[0]}<span className="inline-block">{yuzuDripBag.nameParts[1]}</span>
-          </p>
-          <p className="mt-2 text-base text-white/80 tracking-wide">
-            {yuzuDripBag.unit}（{yuzuDripBag.amount}）<span className="inline-block">／{yuzuDripBag.roast}</span>
-          </p>
-          <p className="mt-4 flex items-baseline gap-2 text-white">
-            <span className="font-serif text-3xl md:text-4xl font-light tracking-wider">{yuzuDripBag.price}</span>
-            <span className="text-base text-white/80">（{yuzuDripBag.tax}）</span>
-          </p>
-        </div>
-      </div>
-      <div className="mt-6">
-        <Link href={shopHref} className={buyButton}>
-          {heroCopy.buy}
-          <ArrowRight />
-        </Link>
-      </div>
-      <p className="mt-4 text-base text-white/80 leading-[1.9] tracking-wide">{heroCopy.where}</p>
+    <div className="border border-white/25 px-5 py-5 md:px-7 md:py-6">
+      <ul aria-label="選べる商品" className="-mt-4 divide-y divide-white/20">
+        {yuzuProducts.map(product => (
+          <li key={product.key} className="py-5">
+            <p className="font-serif text-lg md:text-xl text-white tracking-wider font-light">
+              {product.title[0]}<span className="inline-block">{product.title[1]}</span>
+            </p>
+            <p className="mt-1 text-base text-white/80 leading-[1.8] tracking-wide">
+              {product.detail}{product.note ? <span className="block">{product.note}</span> : null}
+            </p>
+            {/* 値段とボタンは横に並べる。スマホのボタンは「買う」だけ見せる（読み上げは「〜を買う」） */}
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <p className="flex flex-wrap items-baseline gap-x-2 text-white">
+                <YuzuPrice product={product.ref} fallbackPrice={product.fallbackPrice} tax={heroCopy.tax} />
+              </p>
+              <Link href={shopItemHref(product.ref)} aria-label={product.buy} className={buyButton}>
+                <span aria-hidden="true" className="sm:hidden">買う</span>
+                <span aria-hidden="true" className="hidden sm:inline">{product.buy}</span>
+                <ArrowRight />
+              </Link>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-1 text-base text-white/80 leading-[1.9] tracking-wide">{heroCopy.where}</p>
       <p className="mt-1 text-base text-white/80 leading-[1.9] tracking-wide">{heroCopy.shipping}</p>
     </div>
   );
@@ -65,15 +67,16 @@ function BuyBox({ thumb = "", priority = false }: { thumb?: string; priority?: b
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
-    {
+    // 値段は書いてある値（fallbackPrice）。画面の値段はショップの商品一覧から読む
+    ...yuzuProducts.map(product => ({
       "@type": "Product",
-      name: yuzuDripBag.name,
-      description: `${heroCopy.lead}${yuzuDripBag.unit}（${yuzuDripBag.amount}）。${yuzuDripBag.roast}。`,
-      image: `${siteOrigin}${yuzuPagePhotos.cardFront.src}`,
+      name: product.shopName,
+      description: `${product.title.join("")}。${product.detail}。${tasteCopy.body[1]}`,
+      ...(product.key === "drip" ? { image: `${siteOrigin}${yuzuPagePhotos.cardFront.src}` } : {}),
       brand: { "@id": `${siteOrigin}/#organization` },
-      offers: { "@type": "Offer", price: "250", priceCurrency: "JPY", url: `${siteOrigin}${shopHref}` },
+      offers: { "@type": "Offer", price: String(product.fallbackPrice), priceCurrency: "JPY", url: `${siteOrigin}${shopItemHref(product.ref)}` },
       url: pageUrl,
-    },
+    })),
     {
       "@type": "FAQPage",
       mainEntity: faqItems.map(item => ({ "@type": "Question", name: item.q, acceptedAnswer: { "@type": "Answer", text: item.a } })),
@@ -84,6 +87,7 @@ const structuredData = {
 export default function UenoharaYuzuPage() {
   return (
     // 日本語を文節で折り返す（対応しないブラウザでは今までどおりの折り返し）
+    <YuzuCatalogProvider>
     <div className="[word-break:auto-phrase]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredDataJson(structuredData) }} />
 
@@ -97,11 +101,11 @@ export default function UenoharaYuzuPage() {
               {heroCopy.title}
             </h1>
             <p className="text-base text-white/85 leading-[2] tracking-wide mb-8">{heroCopy.lead}</p>
-            <BuyBox thumb="md:hidden" priority />
+            <BuyBox />
           </div>
-          {/* 商品に付いているカードの表と裏（実際に印刷したもの） */}
+          {/* ドリップバッグに付いているカードの表と裏（実際に印刷したもの） */}
           <div className="grid grid-cols-2 gap-4 md:gap-6">
-            {[{ card: yuzuPagePhotos.cardFront, caption: "パッケージのカード（表）" }, { card: yuzuPagePhotos.cardBack, caption: "パッケージのカード（裏）" }].map(({ card, caption }) => (
+            {[{ card: yuzuPagePhotos.cardFront, caption: "ドリップバッグのカード（表）" }, { card: yuzuPagePhotos.cardBack, caption: "ドリップバッグのカード（裏）" }].map(({ card, caption }) => (
               <figure key={card.src}>
                 <Image src={card.src} alt={card.alt} width={card.width} height={card.height} priority
                   className="w-full h-auto" sizes="(max-width: 768px) 45vw, (max-width: 1152px) 25vw, 270px" />
@@ -190,6 +194,7 @@ export default function UenoharaYuzuPage() {
                 ))}
               </dl>
               <p className="mt-3 text-base text-karekusa tracking-wide">{enjoyCopy.brew.note}</p>
+              <p className="mt-3 text-base text-karekusa tracking-wide">{enjoyCopy.beans}</p>
             </ScrollReveal>
             <ScrollReveal delay={0.1}>
               <div className="relative aspect-[4/3] overflow-hidden">
@@ -214,7 +219,7 @@ export default function UenoharaYuzuPage() {
         <div className="max-w-xl mx-auto px-6 md:px-8">
           <ScrollReveal>
             <h2 id="yuzu-buy-again" className="font-serif text-xl md:text-2xl text-white tracking-wider font-light leading-[1.7] mb-8 text-center text-balance">
-              まずは1袋、ゆずの香りをためしてみませんか。
+              {heroCopy.choose}
             </h2>
             <BuyBox />
           </ScrollReveal>
@@ -253,5 +258,6 @@ export default function UenoharaYuzuPage() {
         </div>
       </section>
     </div>
+    </YuzuCatalogProvider>
   );
 }

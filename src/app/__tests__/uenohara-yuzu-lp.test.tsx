@@ -3,34 +3,78 @@ import { renderToStaticMarkup } from "react-dom/server";
 import YuzuPage from "../shop/uenohara-yuzu/page";
 import { metadata } from "../shop/uenohara-yuzu/layout";
 import { statSync } from "node:fs";
-import { enjoyCopy, faqItems, heroCopy, yuzuPagePhotos } from "../shop/uenohara-yuzu/yuzu-lp-content";
+import { enjoyCopy, faqItems, heroCopy, yuzuPagePhotos, yuzuProducts } from "../shop/uenohara-yuzu/yuzu-lp-content";
+import { yuzuPriceView } from "../shop/uenohara-yuzu/yuzu-catalog";
+import { isShopItemSku, shopItemTarget } from "@/features/shop/shop-item-link";
+import { readFileSync } from "node:fs";
 import { pickupInstagramHref, pickupPlace } from "@/features/shop/receiving-method";
 
 const html = renderToStaticMarkup(<YuzuPage />);
 // 画面に出る部分だけ（検索向けのデータは除く）
 const visible = html.replace(/<script[\s\S]*?<\/script>/g, "");
 const sectionIds = [...visible.matchAll(/<section aria-labelledby="([^"]+)"/g)].map(match => match[1]);
+const BEAN_SKU = "bn_2c30f0fdafad802f83a2dccc697c564e_300";
 
-describe("ゆずインフューズドのドリップバッグを売るページ", () => {
-  it("最初の画面に、商品名・量・値段・買うボタンがある", () => {
+describe("ゆずインフューズドコーヒー（ドリップバッグ・焙煎豆300g）を売るページ", () => {
+  it("最初の画面で、ドリップバッグと焙煎豆300gから選べる。名前・量・値段・買うボタンがある", () => {
     const first = visible.slice(0, visible.indexOf('aria-labelledby="yuzu-taste"'));
-    expect(first).toContain('ドリップバッグ<span class="inline-block">（ゆずインフューズド）</span>');
-    expect(first).toContain('1袋（1杯分・10g）<span class="inline-block">／中浅煎り</span>');
-    expect(first).toContain("¥250");
+    expect(first).toContain('ドリップバッグ<span class="inline-block">（1杯分・10g）</span>');
+    expect(first).toContain("1袋／中浅煎り");
+    expect(first).toContain('焙煎豆<span class="inline-block">（300g）</span>');
+    expect(first).toContain("300g・豆／中浅煎り");
+    expect(first).toContain("ドリップバッグ1袋と同じ10gで1杯淹れると、約30杯分。");
+    // JavaScript なしで読んだときは書いてある値段（ショップの値と同じ）
+    expect(first).toContain(">¥250<"); expect(first).toContain(">¥3,000<");
     expect(first).toContain('href="/shop?item=yuzu-drip-bag"');
-    expect(first).toContain("オンラインショップで買う");
+    expect(first).toContain(`href="/shop?item=${BEAN_SKU}"`);
+    expect(first.indexOf("ドリップバッグを買う")).toBeLessThan(first.indexOf("焙煎豆を買う"));
   });
 
   it("節の順番：買う → 味 → 作り方 → 飲み方 → もう一度買う → 質問 → 最後に三十日珈琲について", () => {
     expect(sectionIds).toEqual(["yuzu-title", "yuzu-taste", "yuzu-process", "yuzu-enjoy", "yuzu-buy-again", "yuzu-faq", "yuzu-about"]);
-    expect(html.match(/オンラインショップで買う/g)).toHaveLength(2);
-    // 2つの買うボタンは、どちらもショップのこの商品の欄へ送るリンク
+    // 買うボタンは2か所×2商品。どれもショップのその商品の欄へ送るリンク（ショップの先頭へは送らない）
+    expect(visible.match(/>ドリップバッグを買う</g)).toHaveLength(2);
+    expect(visible.match(/>焙煎豆を買う</g)).toHaveLength(2);
     expect(visible.match(/href="\/shop\?item=yuzu-drip-bag"/g)).toHaveLength(2);
+    expect(visible.match(new RegExp(`href="/shop\\?item=${BEAN_SKU}"`, "g"))).toHaveLength(2);
     expect(visible).not.toContain('href="/shop"');
     expect(html.indexOf('href="/about"')).toBeGreaterThan(html.indexOf('aria-labelledby="yuzu-faq"'));
   });
 
-  it("売るのはドリップバッグだけ。準備中の商品や別の売り場への案内を出さない", () => {
+  it("豆のリンクは、ショップが欄まで送る商品IDの形。ショップに無いときはコーヒー豆の見出しへ", () => {
+    const beans = yuzuProducts.find(product => product.key === "beans")!;
+    expect(beans.ref).toBe(BEAN_SKU);
+    expect(isShopItemSku(beans.ref)).toBe(true);
+    expect(shopItemTarget(beans.ref, [{ skuId: BEAN_SKU, name: beans.shopName }])).toEqual({ sku: BEAN_SKU });
+    expect(shopItemTarget(beans.ref, [])).toEqual({ group: "beans" });
+  });
+
+  it("画面の値段はショップと同じ商品一覧から読む。読めないときだけ書いてある値段、並んでいない・在庫なしは値段を出さない", () => {
+    const catalog = readFileSync("src/app/shop/uenohara-yuzu/yuzu-catalog.tsx", "utf8");
+    expect(catalog).toContain("readPurchaseCatalog()");
+    expect(catalog).toContain('from "@/features/shop/purchase-catalog"');
+    const drip = { skuId: "gd_" + "4".repeat(32) + "_1", name: "ドリップバッグ（ゆずインフューズド）", unitPrice: 280, maxQuantity: 20 };
+    const bean = { skuId: BEAN_SKU, name: "上野原産ゆずインフューズド (kenya)", unitPrice: 3200, maxQuantity: 20 };
+    expect(yuzuPriceView(null, "yuzu-drip-bag", 250)).toEqual({ kind: "price", price: 250 });
+    expect(yuzuPriceView([drip, bean], "yuzu-drip-bag", 250)).toEqual({ kind: "price", price: 280 });
+    expect(yuzuPriceView([drip, bean], BEAN_SKU, 3000)).toEqual({ kind: "price", price: 3200 });
+    expect(yuzuPriceView([drip], BEAN_SKU, 3000)).toEqual({ kind: "notListed" });
+    expect(yuzuPriceView([{ ...bean, maxQuantity: 0 }], BEAN_SKU, 3000)).toEqual({ kind: "soldOut" });
+  });
+
+  it("よくある質問に、豆のまま（粉は並んでいない）・豆の保存・注文後に焙煎を、サイトの文で答える", () => {
+    const faq = visible.slice(visible.indexOf('aria-labelledby="yuzu-faq"'));
+    expect(faq).toContain("ショップで選べるのは豆のまま（300g・豆）で、粉に挽いたものは並んでいません。");
+    expect(faq).toContain("保管は冷暗所で十分です。冷凍もできます。コーヒー豆がおいしく飲めるのは、焙煎からおよそ1か月です。");
+    expect(faq).toContain("焙煎豆は、ご注文をいただいてから焙煎することを基本にしています。");
+    expect(faq).toContain("「コーヒー豆」の欄の「上野原産ゆずインフューズド (kenya)」");
+    // 豆の淹れ方の分量は書かない（カードの分量はドリップバッグのもの）
+    const enjoy = visible.slice(visible.indexOf('aria-labelledby="yuzu-enjoy"'), visible.indexOf('aria-labelledby="yuzu-buy-again"'));
+    expect(enjoy).toContain("ドリップバッグの淹れ方");
+    expect(enjoy).toContain("焙煎豆は、ハンドドリップやエアロプレスなど、お好みの抽出方法でどうぞ。");
+  });
+
+  it("準備中の商品や別の売り場への案内を出さない", () => {
     for (const text of ["準備中", "ふるさと納税", "取扱店舗", "ギフト箱", "3個セット", "焙煎豆 100g", "/experience"]) expect(html).not.toContain(text);
   });
 
@@ -70,9 +114,9 @@ describe("ゆずインフューズドのドリップバッグを売るページ"
       const file = statSync(`public${card.src}`);
       expect(file.size).toBeLessThan(400 * 1024);
     }
-    expect(first).toContain("パッケージのカード（表）");
+    expect(first).toContain("ドリップバッグのカード（表）");
     expect(first).not.toContain(encodeURIComponent(yuzuPagePhotos.pour.src));
-    expect(first).toContain("パッケージのカード（裏）");
+    expect(first).toContain("ドリップバッグのカード（裏）");
     expect(html).toContain(`"image":"https://misoca-coffee.vercel.app${yuzuPagePhotos.cardFront.src}"`);
   });
 
