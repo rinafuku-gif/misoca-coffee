@@ -49,7 +49,7 @@ describe("購入用のタブ内保存とカート整理", () => {
   });
 });
 describe("決済画面の移動先を限定", () => {
-  it.each(["https://checkout.stripe.com/c/dummy", "https://checkout.stripe.com/pay/test"])("Stripeの既知ホストは許可 %s", url => { expect(allowedCheckoutLocation(url, "https://example.invalid")).toBe(true); });
+  it.each(["https://checkout.stripe.com/g/pay/cs_test_dummy", "https://checkout.stripe.com/pay/test"])("Stripeの既知ホストは許可 %s", url => { expect(allowedCheckoutLocation(url, "https://example.invalid")).toBe(true); });
   it.each(["javascript:alert(1)", "https://checkout.stripe.com.evil.invalid/c/x", "https://attacker@checkout.stripe.com/c/x", "http://checkout.stripe.com/c/x", "https://checkout.stripe.com:8443/c/x", "/shop/success"])("他の移動先は拒否 %s", url => { expect(allowedCheckoutLocation(url, "https://example.invalid")).toBe(false); });
   it("模擬決済への例外は厳密なloopbackの検証先だけ", () => {
     const url = "http://127.0.0.1:3133/fixture/payment?order=fixture";

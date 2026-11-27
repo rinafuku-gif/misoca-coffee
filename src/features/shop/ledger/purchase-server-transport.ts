@@ -57,7 +57,7 @@ const quotation = z.object({ items: z.array(z.object({ skuId: z.string(), name: 
   unitPrice: z.number().int().nonnegative(), kind: z.enum(["physical", "gift"]), publication: buyerProductPublicationSchema.optional() }).strict()).max(20),
   shipping: z.number().int().nonnegative(), total: z.number().int().nonnegative(), acceptedQuote: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
 const checkoutUrl = z.string().url().refine(raw => { const url = new URL(raw); return url.protocol === "https:" && url.hostname === "checkout.stripe.com"
-  && !url.username && !url.password && !url.port && url.pathname.startsWith("/c/"); });
+  && !url.username && !url.password && !url.port && /^\/[a-z]\/pay\/cs_[A-Za-z0-9_]+$/.test(url.pathname); });
 const schemas = {
   catalog, quote: quotation, checkout: z.object({ checkoutUrl: checkoutUrl.nullable(), status: purchaserStatusSchema }).strict(),
   status: z.object({ status: purchaserStatusSchema }).strict(), cancel: purchaseCancellationResultSchema,

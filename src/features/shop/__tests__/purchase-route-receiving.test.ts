@@ -35,7 +35,7 @@ describe("サイトの受け口は、受け取り方法の項目を落とさず�
     const answers: Record<string, unknown> = {
       catalog: { items: [], nextOffset: null, acceptingOrders: true },
       quote: { items: [], shipping: 0, total: 2900, acceptedQuote },
-      checkout: { checkoutUrl: "https://checkout.stripe.com/c/dummy", status: orderStatus },
+      checkout: { checkoutUrl: "https://checkout.stripe.com/g/pay/cs_test_dummy", status: orderStatus },
       status: { status: orderStatus },
       cancel: { cancellation: "not_created", orderMayExist: false },
     };
@@ -108,8 +108,8 @@ describe("サイトの受け口は、受け取り方法の項目を落とさず�
     for (const receiving of ["store_pickup", "local_delivery"]) {
       answer = () => ({ status: { ...orderStatus, receiving } });
       expect(await relay("status", JSON.stringify({ purchaseKey }))).toEqual({ status: 200, text: JSON.stringify({ status: { ...orderStatus, receiving } }) });
-      answer = () => ({ checkoutUrl: "https://checkout.stripe.com/c/dummy", status: { ...orderStatus, receiving } });
-      expect(await relay("checkout", "{}")).toEqual({ status: 200, text: JSON.stringify({ checkoutUrl: "https://checkout.stripe.com/c/dummy", status: { ...orderStatus, receiving } }) });
+      answer = () => ({ checkoutUrl: "https://checkout.stripe.com/g/pay/cs_test_dummy", status: { ...orderStatus, receiving } });
+      expect(await relay("checkout", "{}")).toEqual({ status: 200, text: JSON.stringify({ checkoutUrl: "https://checkout.stripe.com/g/pay/cs_test_dummy", status: { ...orderStatus, receiving } }) });
     }
     for (const receiving of ["shipping", "drone", null]) {
       answer = () => ({ status: { ...orderStatus, receiving } });
