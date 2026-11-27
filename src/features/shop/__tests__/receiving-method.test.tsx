@@ -4,16 +4,20 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
-  DELIVERY_METHODS, catalogDeliveryMethodsSchema, checkoutRequestBody, deliveryMethodsSchema, physicalStatusView, pickupPlace, pickupPlaceGuide, quoteRequestBody, receivingCopy,
+  DELIVERY_METHODS, catalogDeliveryMethodsSchema, checkoutRequestBody, deliveryMethodsSchema, physicalStatusView, pickupInstagramHref, pickupPlace, pickupPlaceGuide, quoteRequestBody, receivingCopy,
   receivingLegalNotice, receivingTerms, requestedMethod, selectableMethods, shippingFeeLabel, shippingFeeNotation, showsShippingWindow, type DeliveryMethod,
 } from "../receiving-method";
 import { PurchaseConditions, PurchaseLegalLinks, ReceivingMethodChoice, purchaseConditions } from "../components/PurchaseTerms";
 import { catalogSchema } from "../components/PurchasePanel";
 import { PhysicalStatus } from "../components/PurchaserStatusPanel";
+import { PickupGuideText } from "../components/PickupGuideText";
 import { physicalCopy, purchaserStatusSchema, RECEIVING_METHODS, type BuyerStatus } from "../purchaser-status";
 import { PURCHASE_SESSION_KEY, applyCheckoutCancellation, markCheckoutCancellation, readPurchaseSession, reconcilePurchasedCart, withDeliveryMethod, writePurchaseSession, type PurchaseSession } from "../purchase-session";
 import TermsPage from "@/app/terms/page";
 import TokushohoPage from "@/app/tokushoho/page";
+/** 案内文の「Instagram」だけがリンクになった形（画面ではこの形で出る）。 */
+const linkedGuide = renderToStaticMarkup(<PickupGuideText text={pickupPlaceGuide} />);
+const plain = (html: string) => html.replace(/<[^>]+>/g, "");
 
 const read = (path: string) => readFileSync(resolve(path), "utf8");
 const sha256 = (text: string) => createHash("sha256").update(text).digest("hex");
@@ -341,7 +345,7 @@ describe("条件の欄は、選んだ方法に合わせる", () => {
   it("店頭受け取りは、規約と同じ文・受け取りの場所・住所の入力が無いことを出す", () => {
     const html = renderToStaticMarkup(<PurchaseConditions method="store_pickup" />);
     expect(html).toContain(`<dt class="text-haicha">受け取り</dt><dd>${receivingTerms.storePickup}${receivingTerms.storePickupHold}</dd>`);
-    expect(html).toContain(`<dt class="text-haicha">受け取り場所</dt><dd>${pickupPlaceGuide}</dd>`);
+    expect(html).toContain(`<dt class="text-haicha">受け取り場所</dt><dd>${linkedGuide}</dd>`);
     expect(html).toContain('<dt class="text-haicha">お名前</dt><dd>住所の入力はありません。次のStripeの画面でお名前を入力します。</dd>');
     expect(html).toContain(`${purchaseConditions.customerReturn}${receivingTerms.storePickupDefect}`);
     expect(html).not.toContain(purchaseConditions.shipping);
@@ -369,11 +373,11 @@ describe("注文の状況の画面は、応答の receiving に合わせる", ()
   it("店頭受け取りは、見出しを「商品の受け取り」に替え、準備中とご用意済みの文を読み替える", () => {
     for (const physical of ["awaiting_preparation", "preparing", "packed"] as const) {
       const html = renderToStaticMarkup(<PhysicalStatus status={{ ...status, physical, receiving: "store_pickup" }} />);
-      expect(html).toBe(`<div><dt class="font-semibold">商品の受け取り</dt><dd class="mt-1 leading-relaxed">焙煎とご用意を進めています。ご用意ができましたらメールでお知らせします</dd><dd class="mt-1 text-sm leading-relaxed text-karekusa">${pickupPlaceGuide}</dd></div>`);
+      expect(html).toBe(`<div><dt class="font-semibold">商品の受け取り</dt><dd class="mt-1 leading-relaxed">焙煎とご用意を進めています。ご用意ができましたらメールでお知らせします</dd><dd class="mt-1 text-sm leading-relaxed text-karekusa">${linkedGuide}</dd></div>`);
     }
     const ready = renderToStaticMarkup(<PhysicalStatus status={{ ...status, physical: "handed_over", receiving: "store_pickup" }} />);
     expect(ready).toContain("ご用意ができました。営業日に見晴亭でお受け取りください");
-    expect(ready).toContain(pickupPlaceGuide);
+    expect(ready).toContain(linkedGuide); expect(plain(ready)).toContain(pickupPlaceGuide);
     expect(ready).not.toContain("配送事業者");
   });
   it("上野原市内お届けは、準備中とお届け済みの文を読み替え、場所の案内は出さない", () => {
@@ -448,9 +452,10 @@ describe("利用規約 第3条と特定商取引法の表記", () => {
     const legal = renderToStaticMarkup(<TokushohoPage />);
     expect(legal).toContain("配送のほか、上野原市内お届け・店頭受け取りは、購入画面で選べるときにご利用いただけます");
     // その一文は、市内お届け・店頭受け取りに初めて触れる行より前にある。
-    expect(legal.indexOf(receivingLegalNotice.methods)).toBeLessThan(legal.indexOf(receivingLegalNotice.fee));
-    expect(legal.indexOf(receivingLegalNotice.fee)).toBeLessThan(legal.indexOf(receivingLegalNotice.handover));
-    expect(legal.indexOf(receivingLegalNotice.handover)).toBeLessThan(legal.indexOf(receivingLegalNotice.place));
+    const text = plain(legal);
+    expect(text.indexOf(receivingLegalNotice.methods)).toBeLessThan(text.indexOf(receivingLegalNotice.fee));
+    expect(text.indexOf(receivingLegalNotice.fee)).toBeLessThan(text.indexOf(receivingLegalNotice.handover));
+    expect(text.indexOf(receivingLegalNotice.handover)).toBeLessThan(text.indexOf(receivingLegalNotice.place));
   });
   it("特商法の表記は、既存の送料と引き渡し時期の文を残し、その後ろに続ける", () => {
     const source = read("src/app/tokushoho/page.tsx");
@@ -459,12 +464,31 @@ describe("利用規約 第3条と特定商取引法の表記", () => {
   });
 });
 
+describe("営業日の最新情報の「Instagram」はリンク（注文ありがとうの画面・購入画面の条件・特商法の表記）", () => {
+  it("Instagram の語だけがリンク。新しいタブで開き、rel は noopener noreferrer。文は一字も変わらない", () => {
+    expect(linkedGuide).toBe(`見晴亭（〒409-0113 山梨県上野原市新田1053-3・上野原駅北口から徒歩すぐ）。コーヒースタンドの営業日（毎週水曜 8:00〜9:30／10:30〜16:00）にお渡しします。営業日の最新情報は <a href="${pickupInstagramHref}" target="_blank" rel="noopener noreferrer" aria-label="Instagram（新しいタブで開きます）" class="text-karekusa underline decoration-usuzumi underline-offset-4 hover:decoration-karekusa focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-karekusa">Instagram</a> でご確認ください。`);
+    expect(plain(linkedGuide)).toBe(pickupPlaceGuide);
+    expect(pickupInstagramHref).toBe("https://www.instagram.com/misoca_coffeestand");
+    // Instagram を含まない文はそのまま（リンクを足さない）。
+    expect(renderToStaticMarkup(<PickupGuideText text={receivingTerms.storePickup} />)).toBe(receivingTerms.storePickup);
+  });
+  it("3つの画面に出る。注文ありがとうの画面（ご用意中・ご用意済み）、購入画面の条件、特商法の表記", () => {
+    for (const physical of ["preparing", "handed_over"] as const) expect(renderToStaticMarkup(<PhysicalStatus status={{ ...status, physical, receiving: "store_pickup" }} />)).toContain(`href="${pickupInstagramHref}" target="_blank" rel="noopener noreferrer"`);
+    expect(renderToStaticMarkup(<PurchaseConditions method="store_pickup" />)).toContain(`href="${pickupInstagramHref}" target="_blank" rel="noopener noreferrer"`);
+    const legal = renderToStaticMarkup(<TokushohoPage />);
+    expect(legal.match(/href="https:\/\/www\.instagram\.com\/misoca_coffeestand"/g)).toHaveLength(1);
+    expect(legal).toContain(`href="${pickupInstagramHref}" target="_blank" rel="noopener noreferrer"`);
+  });
+});
+
 describe("店の場所と営業の案内は、サイトに載っている内容だけを使う", () => {
   const texts = [pickupPlaceGuide, ...Object.values(receivingTerms), receivingLegalNotice.methods, receivingLegalNotice.fee, receivingLegalNotice.handover, receivingLegalNotice.place,
     ...Object.values(receivingCopy.methods).flatMap(method => [method.name, method.label, method.description]),
     ...Object.values(receivingCopy.conditions).flatMap(rows => rows.map(row => row.text)), ...Object.values(receivingCopy.status.preparing), ...Object.values(receivingCopy.status.handedOver)];
   it("コーヒースタンドのページの営業情報と同じ", () => {
-    const stand = JSON.parse(read("content/pages/stand.json")) as { info: { days: string; hours: string; location: string; address: string }; followUs: { bodyLine1: string } };
+    const stand = JSON.parse(read("content/pages/stand.json")) as { info: { days: string; hours: string; location: string; address: string }; followUs: { bodyLine1: string; igHref: string } };
+    // 「営業日の最新情報は Instagram」のリンク先は、コーヒースタンドのページで営業日を知らせているアカウントと同じ。
+    expect(pickupInstagramHref).toBe(stand.followUs.igHref);
     expect(stand.info.address).toBe(pickupPlace.address);
     expect(stand.info.location).toBe(`${pickupPlace.name}（${pickupPlace.access}）`);
     expect(stand.info.days).toBe(`${pickupPlace.days}日`);

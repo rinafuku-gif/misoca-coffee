@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/shared/ui/PageHero";
 import { serviceMetadata } from "@/shared/seo/service-metadata";
 import { receivingLegalNotice } from "@/features/shop/receiving-method";
+import { PickupGuideText } from "@/features/shop/components/PickupGuideText";
 
 export const metadata: Metadata = serviceMetadata("/tokushoho", {
   title: "特定商取引法に基づく表記",
@@ -31,7 +32,7 @@ export default function TokushohoPage() {
               ].map(([dt, dd]) => (
                 <div key={dt} className="flex border-b border-usuzumi/30 pb-4">
                   <dt className="w-40 text-haicha flex-shrink-0">{dt}</dt>
-                  <dd className="text-sumi min-w-0 break-words">{dd}</dd>
+                  <dd className="text-sumi min-w-0 break-words"><PickupGuideText text={dd} /></dd>
                 </div>
               ))}
             </dl>

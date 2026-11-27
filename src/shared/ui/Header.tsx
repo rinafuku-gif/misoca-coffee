@@ -27,7 +27,6 @@ const navItems: NavItem[] = [
       { href: "/mobile-roasting", label: "出張焙煎体験" },
     ],
   },
-  { label: "オンラインショップ", href: "/shop" },
   { label: "コーヒースタンド", href: "/stand" },
   {
     label: "知る",
@@ -67,6 +66,31 @@ const mobileItemVariants = {
   }),
 };
 
+/** ヘッダーの2つのボタン。焙煎体験（金の塗り）は今までと同じ見た目・位置のまま、
+ * その手前に同じ大きさ・同じ文字組みのオンラインショップ（枯草色の塗り）を置いて同じ格にする。
+ * 金は「最も価値のある情報だけ」（DESIGN.md）なので2つ目には使わない。 */
+export const headerCtaCopy = { shop: "オンラインショップ", experience: "焙煎体験を予約する" } as const;
+const ctaLook = {
+  bar: {
+    shop: "inline-block whitespace-nowrap px-4 xl:px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-karekusa/90 hover:bg-karekusa text-white",
+    experience: "inline-block whitespace-nowrap px-4 xl:px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-gold/90 hover:bg-gold text-white",
+  },
+  drawer: {
+    shop: "block w-full text-center bg-karekusa hover:bg-karekusa-dark text-white py-3.5 text-sm font-medium tracking-wide transition-colors",
+    experience: "block w-full text-center bg-gold hover:bg-gold-dark text-white py-3.5 text-sm font-medium tracking-wide transition-colors",
+  },
+} as const;
+export function HeaderCtas({ pathname, variant, onNavigate }: { pathname: string | null; variant: "bar" | "drawer"; onNavigate?: () => void }) {
+  const look = ctaLook[variant];
+  const experience = pathname === "/experience"
+    ? <a href="#reservation" className={look.experience} onClick={onNavigate}>{headerCtaCopy.experience}</a>
+    : <Link href="/experience#reservation" className={look.experience} onClick={onNavigate}>{headerCtaCopy.experience}</Link>;
+  const shop = <Link href="/shop" className={look.shop} onClick={onNavigate}>{headerCtaCopy.shop}</Link>;
+  return variant === "bar"
+    ? <div className="hidden lg:flex items-center gap-2">{shop}{experience}</div>
+    : <div className="space-y-3">{experience}{shop}</div>;
+}
+
 // Pages without dark hero images need the header to always show dark text
 const LIGHT_BG_PAGES = ["/shop", "/shop/gift-ticket", "/shop/hario-switch", "/shop/success"];
 
@@ -84,8 +108,9 @@ export function Header() {
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    // The first reading of the scroll position waits for the next frame (no setState inside the effect body).
+    const frame = requestAnimationFrame(handleScroll);
+    return () => { cancelAnimationFrame(frame); window.removeEventListener("scroll", handleScroll); };
   }, [handleScroll]);
 
   useEffect(() => {
@@ -169,7 +194,7 @@ export function Header() {
               >
                 {item.children ? (
                   <button
-                    className={`relative px-4 py-2 text-sm tracking-wide transition-colors duration-300 group ${
+                    className={`relative whitespace-nowrap px-3 xl:px-4 py-2 text-sm tracking-wide transition-colors duration-300 group ${
                       scrolled
                         ? "text-sumi hover:text-karekusa"
                         : "text-white/90 hover:text-white"
@@ -177,7 +202,7 @@ export function Header() {
                   >
                     {item.label}
                     <span
-                      className={`absolute bottom-0 left-4 right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
+                      className={`absolute bottom-0 left-3 right-3 xl:left-4 xl:right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
                         scrolled ? "bg-karekusa" : "bg-white"
                       }`}
                     />
@@ -187,7 +212,7 @@ export function Header() {
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`relative px-4 py-2 text-sm tracking-wide transition-colors duration-300 group inline-block ${
+                    className={`relative whitespace-nowrap px-3 xl:px-4 py-2 text-sm tracking-wide transition-colors duration-300 group inline-block ${
                       scrolled
                         ? "text-sumi hover:text-karekusa"
                         : "text-white/90 hover:text-white"
@@ -195,7 +220,7 @@ export function Header() {
                   >
                     {item.label}
                     <span
-                      className={`absolute bottom-0 left-4 right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
+                      className={`absolute bottom-0 left-3 right-3 xl:left-4 xl:right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
                         scrolled ? "bg-karekusa" : "bg-white"
                       }`}
                     />
@@ -203,7 +228,7 @@ export function Header() {
                 ) : (
                   <Link
                     href={item.href}
-                    className={`relative px-4 py-2 text-sm tracking-wide transition-colors duration-300 group inline-block ${
+                    className={`relative whitespace-nowrap px-3 xl:px-4 py-2 text-sm tracking-wide transition-colors duration-300 group inline-block ${
                       scrolled
                         ? "text-sumi hover:text-karekusa"
                         : "text-white/90 hover:text-white"
@@ -211,7 +236,7 @@ export function Header() {
                   >
                     {item.label}
                     <span
-                      className={`absolute bottom-0 left-4 right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
+                      className={`absolute bottom-0 left-3 right-3 xl:left-4 xl:right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
                         scrolled ? "bg-karekusa" : "bg-white"
                       }`}
                     />
@@ -248,22 +273,8 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Desktop CTA */}
-          {pathname === "/experience" ? (
-            <a
-              href="#reservation"
-              className="hidden lg:inline-block px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-gold/90 hover:bg-gold text-white"
-            >
-              焙煎体験を予約する
-            </a>
-          ) : (
-            <Link
-              href="/experience#reservation"
-              className="hidden lg:inline-block px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-gold/90 hover:bg-gold text-white"
-            >
-              焙煎体験を予約する
-            </Link>
-          )}
+          {/* Desktop CTA: オンラインショップ + 焙煎体験 */}
+          <HeaderCtas pathname={pathname} variant="bar" />
 
           {/* Mobile Toggle - Hamburger morphing to X */}
           <button
@@ -359,23 +370,7 @@ export function Header() {
                   initial="closed"
                   animate="open"
                 >
-                  {pathname === "/experience" ? (
-                    <a
-                      href="#reservation"
-                      className="block w-full text-center bg-gold hover:bg-gold-dark text-white py-3.5 text-sm font-medium tracking-wide transition-colors"
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      焙煎体験を予約する
-                    </a>
-                  ) : (
-                    <Link
-                      href="/experience#reservation"
-                      className="block w-full text-center bg-gold hover:bg-gold-dark text-white py-3.5 text-sm font-medium tracking-wide transition-colors"
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      焙煎体験を予約する
-                    </Link>
-                  )}
+                  <HeaderCtas pathname={pathname} variant="drawer" onNavigate={() => setMobileOpen(false)} />
                 </motion.div>
 
                 {/* Nav Items */}

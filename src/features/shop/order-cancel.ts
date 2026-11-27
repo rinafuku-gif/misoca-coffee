@@ -44,14 +44,32 @@ export function cancelDeadlineLabel(deadline: number | undefined): string | null
   return `キャンセル受付期限：${get("month")}月${get("day")}日`;
 }
 
-/** Wording: the state lines are the wire file's examples; the title after a
- * request is the coordinator's 「受け付けました」. */
+/** キャンセルのお申し込みの前後で伝えること（メールのリンクのページと注文状況のページで共通）。
+ * 事実: 申し込みの時点では未確定／お店が発送の状況を確かめる／確定したらメールで知らせ、全額を返金する
+ * （明細に出る時期はカード会社などによる）／発送の準備が進んでいればお受けできないことがあり、その場合も
+ * メールで知らせる。申し込みを受け付けたことのメールは送らない（2026-11-28 店主の判断）。日数は約束しない。 */
+export const cancelFlowCopy = {
+  before: "お申し込みの時点では、まだキャンセルは確定していません。お店で発送の状況を確かめ、キャンセルが確定したらメールでお知らせします。発送の準備が進んでいる場合は、お受けできないことがあります（その場合もメールでお知らせします）。",
+  acceptedTitle: "キャンセルのお申し込みを受け付けました",
+  requestedTitle: "キャンセルのお申し込みは受け付け済みです",
+  /** 受付後・申し込み済みのどちらでも、見出しのすぐ下に目立たせて出す。 */
+  notYet: "まだキャンセルは確定していません。キャンセルが確定したら、メールでお知らせします。",
+  stepsHeading: "このあとの流れ",
+  steps: [
+    "お店で発送の状況を確かめます。",
+    "キャンセルが確定したら、メールでお知らせし、お支払いの全額を返金します（明細に表示される時期は、カード会社などによって異なります）。",
+    "発送の準備が進んでいてお受けできない場合も、メールでお知らせします。",
+  ],
+} as const;
+
+/** Wording of the mail-link page (/shop/order-cancel). handled / expired / refused /
+ * notAvailable are the wire file's examples. */
 export const cancelCopy = {
   title: "キャンセルのお申し込み",
+  open: cancelFlowCopy.before,
   button: "キャンセルを申し込む",
-  recordedTitle: "受け付けました",
-  recorded: "お店からご連絡します。お金の払い戻しは自動では行いません。",
-  requested: "お申し込みを受け付けています。店舗からご連絡します。",
+  recordedTitle: cancelFlowCopy.acceptedTitle,
+  requestedTitle: cancelFlowCopy.requestedTitle,
   refused: "ここからはお申し込みいただけません。ご注文確認メールへの返信でご連絡ください。",
   handled: "このお申し込みは、店舗で対応が済んでいます。くわしくはお送りしたメールをご覧ください。",
   expired: "キャンセルの受付期限を過ぎています。ご注文確認メールへの返信でご連絡ください。",
@@ -64,14 +82,15 @@ export const cancelCopy = {
   back: "ショップに戻る",
 } as const;
 
-/** The order status page's part (coordinator's wording). */
+/** The order status page's part. */
 export const statusCancelCopy = {
   button: "キャンセルを申し込む",
-  confirm: "本当にキャンセルしますか？",
+  confirm: "キャンセルを申し込みますか？",
+  confirmNote: cancelFlowCopy.before,
   yes: "はい",
   no: "いいえ",
-  recorded: "キャンセルを受け付けました。お店から返金のご連絡をします。",
-  requested: "キャンセルを受け付け済みです",
+  recordedTitle: cancelFlowCopy.acceptedTitle,
+  requestedTitle: cancelFlowCopy.requestedTitle,
   retry: "少し時間をおいて、もう一度お試しください。",
 } as const;
 /** What the status page shows for a preview/record answer. Anything other than

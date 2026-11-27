@@ -1,3 +1,4 @@
+import { PickupGuideText } from "./PickupGuideText";
 import { purchaseUi } from "./purchase-ui";
 import { receivingCopy, receivingTerms, type DeliveryMethod } from "../receiving-method";
 
@@ -63,7 +64,7 @@ export function PurchaseConditions({ method = "shipping" }: { method?: DeliveryM
       {method === "shipping" ? <>
         <div><dt className="text-haicha">発送</dt><dd>{purchaseConditions.shipping}{purchaseConditions.shippingReason}</dd></div>
         <div><dt className="text-haicha">お届け先</dt><dd>発送する商品があるときは、次のStripeの画面で入力します（日本国内のみ）。</dd></div>
-      </> : receivingCopy.conditions[method].map(row => <div key={row.term}><dt className="text-haicha">{row.term}</dt><dd>{row.text}</dd></div>)}
+      </> : receivingCopy.conditions[method].map(row => <div key={row.term}><dt className="text-haicha">{row.term}</dt><dd><PickupGuideText text={row.text} /></dd></div>)}
       <div><dt className="text-haicha">返品・交換</dt><dd>{purchaseConditions.customerReturn}{method === "store_pickup" ? receivingTerms.storePickupDefect : purchaseConditions.defect}</dd></div>
       <div><dt className="text-haicha">お問い合わせ</dt><dd><a href={`mailto:${purchaseConditions.contact}`} className="inline-flex min-h-12 items-center break-all underline underline-offset-4">{purchaseConditions.contact}</a></dd></div>
     </dl>

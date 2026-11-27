@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CANCEL_REQUEST_PATH, cancelDeadlineLabel, cancelRequestBodyByKey, readCancelRequestAnswer, statusCancelCopy, statusCancelView, type CancelRequestAction, type StatusCancelView } from "../order-cancel";
 import { purchaseUi } from "./purchase-ui";
+import { CancelFlowSteps } from "./CancelFlow";
 
 async function send(purchaseKey: string, action: CancelRequestAction) {
   const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 15000);
@@ -16,13 +17,17 @@ async function send(purchaseKey: string, action: CancelRequestAction) {
 /** The look of each state (checked separately in tests). */
 export function StatusCancelBlock({ view, confirming, busy, onAsk, onYes, onNo }: { view: StatusCancelView; confirming: boolean; busy: boolean; onAsk(): void; onYes(): void; onNo(): void }) {
   if (view.kind === "hidden") return null;
-  if (view.kind === "accepted") return <p role="status" className="mt-8 border-l-2 border-gold pl-4 text-sm leading-relaxed text-sumi">{view.recordedNow ? statusCancelCopy.recorded : statusCancelCopy.requested}</p>;
+  if (view.kind === "accepted") return <div role="status" className="mt-8 border-l-2 border-gold pl-4">
+    <p className="text-sm font-medium leading-relaxed text-sumi">{view.recordedNow ? statusCancelCopy.recordedTitle : statusCancelCopy.requestedTitle}</p>
+    <div className="mt-2"><CancelFlowSteps /></div>
+  </div>;
   const deadline = cancelDeadlineLabel(view.deadline);
   return <section aria-label={statusCancelCopy.button} className="mt-8 border-t border-usuzumi pt-6">
     {deadline ? <p className="text-sm text-karekusa">{deadline}</p> : null}
     {view.kind === "retry" ? <p role="alert" className="mt-2 text-sm text-sumi">{statusCancelCopy.retry}</p> : null}
     {confirming ? <div className="mt-3">
-      <p className="text-sm text-sumi">{statusCancelCopy.confirm}</p>
+      <p className="text-sm font-medium text-sumi">{statusCancelCopy.confirm}</p>
+      <p className="mt-1 text-sm leading-relaxed text-sumi">{statusCancelCopy.confirmNote}</p>
       <div className="mt-3 flex gap-3">
         <button type="button" className={`${purchaseUi.primary} min-w-24`} disabled={busy} onClick={onYes}>{statusCancelCopy.yes}</button>
         <button type="button" className={`${purchaseUi.secondary} min-w-24`} disabled={busy} onClick={onNo}>{statusCancelCopy.no}</button>

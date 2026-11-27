@@ -73,6 +73,9 @@ export const pickupPlace = {
   hours: "8:00〜9:30／10:30〜16:00",
   latest: "営業日の最新情報は Instagram でご確認ください",
 } as const;
+/** 「営業日の最新情報は Instagram」の Instagram。コーヒースタンドのページ（content/pages/stand.json の
+ * followUs.igHref）と同じ住所（試験で突き合わせる）。営業日のお知らせはこのアカウントで出している。 */
+export const pickupInstagramHref = "https://www.instagram.com/misoca_coffeestand";
 /** 受け取りの場所と営業の案内（購入画面の条件の欄・注文の状況の画面）。 */
 export const pickupPlaceGuide = `${pickupPlace.name}（${pickupPlace.address}・${pickupPlace.access}）。コーヒースタンドの営業日（${pickupPlace.days} ${pickupPlace.hours}）にお渡しします。${pickupPlace.latest}。`;
 

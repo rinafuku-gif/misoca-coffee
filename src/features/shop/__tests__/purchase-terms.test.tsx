@@ -25,7 +25,8 @@ describe("購入の前に見せるお届けと返品の条件", () => {
   });
   it("特定商取引法の表記は、メールアドレスの次に電話番号の行を置き、引き渡し時期を決めた文面で出す", () => {
     const html = renderToStaticMarkup(<TokushohoPage />);
-    const rows = [...html.matchAll(/<dt[^>]*>([^<]*)<\/dt><dd[^>]*>([^<]*)<\/dd>/g)].map(row => [row[1], row[2]]);
+    // 店頭受け取りの場所の行は「Instagram」がリンク。行の文はタグを外して比べる。
+    const rows = [...html.matchAll(/<dt[^>]*>([^<]*)<\/dt><dd[^>]*>(.*?)<\/dd>/g)].map(row => [row[1], row[2].replace(/<[^>]+>/g, "")]);
     expect(rows).toEqual([
       ["販売業者", "三十日珈琲（稲福良祐・後藤伸啓）"],
       ["所在地", "〒409-0115 山梨県上野原市松留939"],
@@ -41,6 +42,7 @@ describe("購入の前に見せるお届けと返品の条件", () => {
     ]);
     // 長いメールアドレスも、狭い画面で白い枠の中に折り返す。
     expect(html.match(/<dd class="text-sumi min-w-0 break-words">/g)).toHaveLength(rows.length);
+    expect(html.match(/<a [^>]*>Instagram<\/a>/g)).toHaveLength(1);
   });
   it("購入画面の発送の欄は、規約と同じ文のすぐ後ろに理由の一文を続け、注文状況の画面には足さない", () => {
     expect(purchaseConditions.shippingReason).toBe("焙煎したてをお届けするため、少しお時間をいただいています。");

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { cancelCopy, cancelDeadlineLabel, cancelRequestAnswerSchema, cancelRequestBody, cancelRequestBodyByKey, readCancelLink, readCancelRequestAnswer, statusCancelCopy, statusCancelView, type CancelRequestAnswer, type CancelView } from "../order-cancel";
+import { cancelFlowCopy, cancelCopy, cancelDeadlineLabel, cancelRequestAnswerSchema, cancelRequestBody, cancelRequestBodyByKey, readCancelLink, readCancelRequestAnswer, statusCancelCopy, statusCancelView, type CancelRequestAnswer, type CancelView } from "../order-cancel";
 import { OrderCancelView } from "../components/OrderCancelPanel";
 import { StatusCancelBlock } from "../components/StatusCancel";
 import { isUnmeasuredPath } from "@/shared/ui/SiteMeasurement";
@@ -34,12 +34,28 @@ describe("発送前のキャンセル受付（CHECKOUT-FORM-WIRE.md §5）", () 
     const html = render({ kind: "answer", answer: answer("open") });
     expect(html).toContain("FIXTURE-0001"); expect(html).toContain("（試験用）豆A"); expect(html).toContain("¥3,370");
     expect(html.match(/<button/g)).toHaveLength(1); expect(html).toContain(`>${cancelCopy.button}</button>`);
+    // 押す前に: まだ確定しないこと・お店が発送の状況を確かめること・確定したらメールで知らせること・お受けできないことがあること。
+    expect(cancelCopy.open).toBe("お申し込みの時点では、まだキャンセルは確定していません。お店で発送の状況を確かめ、キャンセルが確定したらメールでお知らせします。発送の準備が進んでいる場合は、お受けできないことがあります（その場合もメールでお知らせします）。");
+    expect(html).toContain(`<p role="status" class="mt-3 text-sm leading-relaxed text-sumi">${cancelCopy.open}</p>`);
   });
-  it("recorded: 「受け付けました」とお店から連絡する旨。ボタンなし", () => {
-    const html = render({ kind: "answer", answer: answer("recorded") }, "record");
-    expect(html).toContain(">受け付けました</h1>"); expect(html).toContain("お店からご連絡します"); expect(html).not.toContain("<button");
+  const flow = `<div class="text-sm leading-relaxed text-sumi"><p class="font-medium">${cancelFlowCopy.notYet}</p><p class="mt-4 font-medium text-konsumi">このあとの流れ</p><ol class="mt-2 list-decimal space-y-2 pl-5">${cancelFlowCopy.steps.map(step => `<li>${step}</li>`).join("")}</ol></div>`;
+  it.each([["recorded", "キャンセルのお申し込みを受け付けました"], ["requested", "キャンセルのお申し込みは受け付け済みです"]] as const)("%s: 見出しのすぐ下に「まだ確定していない・確定したらメールで知らせる」と、このあとの流れ①〜③。ボタンなし", (state, title) => {
+    const html = render({ kind: "answer", answer: answer(state) }, state === "recorded" ? "record" : "preview");
+    expect(html).toContain(`>${title}</h1><div role="status" class="mt-4">${flow}</div>`); expect(html).not.toContain("<button");
   });
-  it.each([["requested", cancelCopy.requested], ["shipped", cancelCopy.refused], ["closed", cancelCopy.refused]] as const)("%s は1行だけ・ボタンなし", (state, line) => {
+  it("言葉の約束: 受付のメールは送らない（触れない）・確定したらメールで知らせて全額を返金・明細の時期はカード会社など・お受けできない場合もメール。日数は書かない", () => {
+    expect(cancelFlowCopy.notYet).toBe("まだキャンセルは確定していません。キャンセルが確定したら、メールでお知らせします。");
+    expect(cancelFlowCopy.steps).toEqual([
+      "お店で発送の状況を確かめます。",
+      "キャンセルが確定したら、メールでお知らせし、お支払いの全額を返金します（明細に表示される時期は、カード会社などによって異なります）。",
+      "発送の準備が進んでいてお受けできない場合も、メールでお知らせします。",
+    ]);
+    const all = JSON.stringify({ cancelFlowCopy, cancelCopy, statusCancelCopy });
+    expect(all).not.toMatch(/受け付けたことを|受付のメール|このあとメール/);
+    expect(all).not.toMatch(/[0-9０-９一二三四五六七八九十]+(日|営業日|時間)以内/);
+    expect(all).not.toMatch(/自動では行いません/);
+  });
+  it.each([["shipped", cancelCopy.refused], ["closed", cancelCopy.refused]] as const)("%s は1行だけ・ボタンなし", (state, line) => {
     const html = render({ kind: "answer", answer: answer(state) });
     expect(html).toContain(line); expect(html).not.toContain("<button");
   });
@@ -90,14 +106,21 @@ describe("round 4c: 2つの返事の形・期限・注文状況のページ", ()
     for (const status of [400, 404, 503, 429, 0]) expect(statusCancelView(readCancelRequestAnswer(status, null), "preview").kind).toBe("hidden");
     expect(statusCancelView(readCancelRequestAnswer(503, null), "record", deadline)).toEqual({ kind: "retry", deadline });
   });
-  it("ボタン → その場の1行「本当にキャンセルしますか？ はい／いいえ」 → 受け付けの1行", () => {
+  it("ボタン → その場で「キャンセルを申し込みますか？」と、まだ確定しないことの説明・はい／いいえ → 受け付けとこのあとの流れ", () => {
     const block = (view: Parameters<typeof StatusCancelBlock>[0]["view"], confirming = false) => renderToStaticMarkup(<StatusCancelBlock view={view} confirming={confirming} busy={false} onAsk={() => {}} onYes={() => {}} onNo={() => {}} />);
     const open = block({ kind: "open", deadline });
     expect(open).toContain("キャンセル受付期限：12月27日"); expect(open.match(/<button/g)).toHaveLength(1); expect(open).toContain(`>${statusCancelCopy.button}</button>`);
     const asking = block({ kind: "open", deadline }, true);
     expect(asking).toContain(statusCancelCopy.confirm); expect(asking).toContain(">はい</button>"); expect(asking).toContain(">いいえ</button>"); expect(asking).not.toContain(`>${statusCancelCopy.button}</button>`);
-    expect(block({ kind: "accepted", recordedNow: true })).toContain("キャンセルを受け付けました。お店から返金のご連絡をします。");
-    expect(block({ kind: "accepted", recordedNow: false })).toContain("キャンセルを受け付け済みです");
+    expect(statusCancelCopy.confirm).toBe("キャンセルを申し込みますか？");
+    expect(asking).toContain(statusCancelCopy.confirmNote); expect(statusCancelCopy.confirmNote).toBe(cancelCopy.open);
+    expect(asking.indexOf(statusCancelCopy.confirmNote)).toBeLessThan(asking.indexOf(">はい</button>"));
+    // 受付後・申し込み済みのどちらでも、見出しのすぐ下に「まだ確定していない・確定したらメールで知らせる」と流れ①〜③。
+    for (const [recordedNow, title] of [[true, "キャンセルのお申し込みを受け付けました"], [false, "キャンセルのお申し込みは受け付け済みです"]] as const) {
+      const shown = block({ kind: "accepted", recordedNow });
+      expect(shown).toContain('role="status"'); expect(shown).toContain(`>${title}</p><div class="mt-2"><div class="text-sm leading-relaxed text-sumi"><p class="font-medium">${cancelFlowCopy.notYet}</p>`);
+      for (const step of cancelFlowCopy.steps) expect(shown).toContain(`<li>${step}</li>`);
+    }
     expect(block({ kind: "hidden" })).toBe("");
     expect(block({ kind: "open", deadline: undefined })).not.toContain("キャンセル受付期限");
   });

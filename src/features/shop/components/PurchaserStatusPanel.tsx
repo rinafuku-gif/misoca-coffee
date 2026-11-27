@@ -10,6 +10,7 @@ import { PurchaseLegalLinks, purchaseConditions } from "./PurchaseTerms";
 import { statusCopy } from "../checkout-copy";
 import { usePageStartsAtTop } from "./use-page-top";
 import { StatusCancel } from "./StatusCancel";
+import { PickupGuideText } from "./PickupGuideText";
 
 type View = { kind: "loading" | "missing" | "unavailable" | "busy" | "offline" | "ready"; status?: BuyerStatus; purchaseKey?: string };
 const yen = (value: number) => `¥${value.toLocaleString("ja-JP")}`;
@@ -30,7 +31,7 @@ async function readLatestStatus(signal: AbortSignal): Promise<StatusRead> {
  * before; with it, the wording follows the receiving method. */
 export function PhysicalStatus({ status }: { status: BuyerStatus }) {
   const physical = physicalStatusView(status);
-  return <div><dt className="font-semibold">{physical.heading}</dt><dd className="mt-1 leading-relaxed">{physical.text}</dd>{showsShippingWindow(status) ? <dd className="mt-1 text-sm leading-relaxed text-karekusa">{purchaseConditions.shipping}</dd> : null}{physical.place ? <dd className="mt-1 text-sm leading-relaxed text-karekusa">{physical.place}</dd> : null}</div>;
+  return <div><dt className="font-semibold">{physical.heading}</dt><dd className="mt-1 leading-relaxed">{physical.text}</dd>{showsShippingWindow(status) ? <dd className="mt-1 text-sm leading-relaxed text-karekusa">{purchaseConditions.shipping}</dd> : null}{physical.place ? <dd className="mt-1 text-sm leading-relaxed text-karekusa"><PickupGuideText text={physical.place} /></dd> : null}</div>;
 }
 export function PurchaserStatusPanel() {
   const [view, setView] = useState<View>({ kind: "loading" });
