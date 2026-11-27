@@ -5,7 +5,7 @@ import { beanDisplaySchema, beanDisplayResponseSchema, catalogPageId, groupCatal
 import { BeanCard } from "../components/BeanCard";
 import { BeanDetailModal } from "../components/BeanDetailModal";
 import { CartDrawer } from "../components/CartDrawer";
-import { drawerLines } from "../bean-cart";
+import { cartSubtotal, drawerLines } from "../bean-cart";
 
 const ids = { bean: "1a".repeat(16), drip: "2b".repeat(16), drip2: "3c".repeat(16), other: "4d".repeat(16) };
 const empty = { name: "", origin: "", roast: "", flavor: "", process: "", variety: "", region: "", farm: "", altitude: "", description: "", image: "" as const };
@@ -64,11 +64,12 @@ describe("豆以外の商品の見せ方", () => {
     const withAltitude = renderToStaticMarkup(<BeanDetailModal item={{ ...drip, display: { ...drip.display, altitude: "1,000m" } }} quantity={0} blocked={false} added={false} imageFailed={false} onImageError={() => {}} onAdd={() => {}} onClose={() => {}} />);
     expect(withAltitude).toContain(">標高<"); expect(withAltitude).not.toContain(">精製<");
   });
-  it("カート: 豆とドリップバッグを、それぞれの値段と単位で並べる（合計は計算しない）", () => {
+  it("カート: 豆とドリップバッグを、それぞれの値段と単位で並べ、小計だけを出す（送料・合計は出さない）", () => {
     const lines = drawerLines([{ skuId: catalog[1].skuId, quantity: 1 }, { skuId: catalog[2].skuId, quantity: 2 }], catalog, new Map());
-    const html = renderToStaticMarkup(<CartDrawer open lines={lines} count={3} busy={false} locked={false} stale={false} images={new Map()} failedImages={new Set()} onImageError={() => {}} onChange={() => {}} onClose={() => {}} onQuote={() => {}} />);
+    const html = renderToStaticMarkup(<CartDrawer open lines={lines} count={3} subtotal={cartSubtotal(lines)} busy={false} locked={false} stale={false} images={new Map()} failedImages={new Set()} onImageError={() => {}} onChange={() => {}} onClose={() => {}} onCheckout={() => {}} />);
     expect(html).toContain("¥2,700 / 300g・豆"); expect(html).toContain("¥250 / 1袋"); expect(html).toContain("カート（3点）");
-    for (const total of ["¥3,200", "¥500", "合計："]) expect(html).not.toContain(total);
+    expect(html).toMatch(/小計<\/span><span[^>]*>¥3,200</);
+    for (const total of ["合計：", "送料"]) expect(html).not.toContain(total);
   });
   it("購入画面は見出しを groupCatalogItems から出し、固定の「コーヒー豆」見出しを持たない", () => {
     const panel = readFileSync("src/features/shop/components/PurchasePanel.tsx", "utf8");

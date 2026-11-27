@@ -61,7 +61,7 @@ describe("商品一覧の reception の読み方（ブラウザ側・購入画�
   });
   it("ボタンを止めるかは、reception の形に関わらず acceptingOrders だけで決める", () => {
     const panel = read("src/features/shop/components/PurchasePanel.tsx");
-    expect(panel).toContain("disabled={busy || catalogStale || !confirmed || !catalog.acceptingOrders}");
+    expect(panel).toContain("disabled={busy || catalogStale || !currentQuotation || !catalog.acceptingOrders || Boolean(session.attempt)}");
     expect(panel).not.toMatch(/disabled=\{[^}]*reception/);
   });
   it("写した受け渡し部品（管理側と同じ内容に保つファイル）は、この読み方を使わない", () => {

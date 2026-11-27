@@ -48,17 +48,21 @@ describe("受け取り方法を選ぶ欄が出る条件", () => {
     expect(panel).toContain("selectableMethods(catalog.deliveryMethods, session.cart.some(line => physicalSkus.has(line.skuId)))");
     expect(panel).toContain('if (item.kind === "physical") skus.add(item.skuId); else skus.delete(item.skuId);');
     expect(panel).toContain("const method = requestedMethod(session?.deliveryMethod, methodChoices);");
-    expect(panel).toContain("<ReceivingMethodChoice methods={methodChoices} value={method} disabled={busy} onChange={chooseMethod} />");
+    expect(panel).toContain("<MethodPicker methods={methodChoices} value={method} disabled={busy} onChange={chooseMethod} />");
     expect(read("src/features/shop/policy.ts")).not.toMatch(/DELIVERY|RECEIVING|deliveryMethod/i);
     for (const path of ["src/features/shop/receiving-method.ts", "src/features/shop/components/PurchasePanel.tsx", "src/features/shop/components/PurchaseTerms.tsx"]) expect(read(path), path).not.toMatch(/process\.env|NEXT_PUBLIC/);
   });
-  it("選ぶ欄は、決済を始めた記録が無いあいだの画面の中、合計を確認するボタンの前に置く", () => {
-    const open = panel.indexOf("{catalog && session && !session.attempt ? <>"), chooser = panel.indexOf("<ReceivingMethodChoice "), confirm = panel.indexOf("送料を含む合計を確認</button>"), history = panel.indexOf("{session?.history.length ?");
-    expect(open).toBeGreaterThan(-1);
-    expect(chooser).toBeGreaterThan(open);
-    expect(confirm).toBeGreaterThan(chooser);
-    expect(history).toBeGreaterThan(confirm);
-    expect(panel.match(/<ReceivingMethodChoice /g)).toHaveLength(1);
+  // 2026-11-27: the choice sits in the checkout section, before the total and the
+  // pay button; choosing asks for the total at once (no separate button).
+  it("選ぶ欄は購入手続きの中、合計と「お支払いへ進む」の前に1つだけ置く", () => {
+    const section = panel.indexOf("checkout={<div"), chooser = panel.indexOf("<MethodPicker "), total = panel.indexOf("<dt>合計</dt>"), pay = panel.indexOf("{checkoutCopy.pay}</button>");
+    expect(section).toBeGreaterThan(-1);
+    expect(chooser).toBeGreaterThan(section);
+    expect(total).toBeGreaterThan(chooser);
+    expect(pay).toBeGreaterThan(total);
+    expect(panel.match(/<MethodPicker /g)).toHaveLength(1);
+    expect(panel).not.toContain("<ReceivingMethodChoice ");
+    expect(panel).not.toContain("送料を含む合計を確認");
   });
 });
 
@@ -193,7 +197,7 @@ describe("選んだ方法の保存と、決済へ戻るときの依頼", () => {
     expect(loaded.attempt?.deliveryMethod).toBe("store_pickup");
     // 決済へ戻る依頼は、保存した記録だけから作る＝最初と同じ方法を送る。
     expect(JSON.stringify(checkoutRequestBody(loaded.attempt!))).toBe(`{"purchaseKey":"${key}","lines":[{"skuId":"beans","quantity":2}],"acceptedQuote":"${quote}","deliveryMethod":"store_pickup"}`);
-    expect(panel).toContain("onClick={() => { void run(() => checkout(session.attempt!)); }}>同じ注文の決済へ戻る</button>");
+    expect(panel).toContain("onResume={() => { void run(() => checkout(session.attempt!)); }}");
   });
   it("中止の印・支払い確認・中止の結果でも、決済の記録の方法は変わらない", () => {
     const port = storage(), saved = { ...shippingSession(), cart: [{ skuId: "beans", quantity: 3 }], deliveryMethod: "local_delivery" as const, attempt: { ...shippingSession().attempt!, deliveryMethod: "local_delivery" as const } };
@@ -230,16 +234,17 @@ describe("方法を選び直したときの購入画面", () => {
   it("決済を始めた記録があるあいだ・通信中・配られていない方法は選び直せない", () => {
     expect(body).toContain("if (!session || session.attempt || busy || !methodChoices.includes(next) || next === method) return;");
   });
-  it("方法を保存し、数量を変えたときと同じく、見積もりと確認のチェックを消す", () => {
-    expect(body).toContain('save(withDeliveryMethod(session, next === "shipping" ? undefined : next)); setQuotation(null); setConfirmed(false); setNotice("");');
+  it("方法を保存し、数量を変えたときと同じく、見積もりを消す（確認のチェックは2026-11-27に廃止）", () => {
+    expect(body).toContain('save(withDeliveryMethod(session, next === "shipping" ? undefined : next)); setQuotation(null); setNotice("");');
     expect(body).toContain("catch { setNotice(receivingCopy.saveFailed); }");
     // 数量を変えたときの扱い（今までの行）と同じ3つを消している。
-    expect(panel).toContain('save({ ...session, cart }); setQuotation(null); setConfirmed(false); setNotice("");');
+    expect(panel).toContain('save({ ...session, cart }); setQuotation(null); setNotice("");');
+    expect(panel).not.toMatch(/setConfirmed|type="checkbox"/);
   });
   it("別の方法で取った見積もりは、表示にも決済の開始にも使わない", () => {
     expect(panel).toContain("const currentQuotation = quotation && quotedMethod === method ? quotation : null;");
-    expect(panel).toContain("setQuotation(quotationSchema.parse(result.body)); setQuotedMethod(method); setConfirmed(false); setNotice(\"\");");
-    expect(panel).toContain("if (!session || session.attempt || !currentQuotation || !confirmed || catalogStale || !catalog?.acceptingOrders) return;");
+    expect(panel).toContain("setQuotation(quotationSchema.parse(result.body)); setQuotedMethod(method); setNotice(\"\");");
+    expect(panel).toContain("if (!session || session.attempt || !currentQuotation || catalogStale || !catalog?.acceptingOrders) return;");
     expect(panel).toContain("{currentQuotation ? <div");
     expect(panel).not.toMatch(/\bquotation\.(items|shipping|total|acceptedQuote)/);
   });
@@ -348,7 +353,7 @@ describe("条件の欄は、選んだ方法に合わせる", () => {
     expect(html).not.toMatch(/[¥￥]|\d+\s*円/);
   });
   it("購入画面は、表示している見積もりを取った方法で条件を出す", () => {
-    expect(panel).toContain("<PurchaseConditions method={quotedMethod} />");
+    expect(panel).toContain("<CheckoutTerms method={currentQuotation ? quotedMethod : method} />");
   });
 });
 

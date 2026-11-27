@@ -1,7 +1,8 @@
 /** Presentation rules of the cart on the purchase screen. They only decide
  * what a button offers; the purchase screen's own `quantity()` still saves the
- * cart, enforces the 20-line limit and clears any quoted total. No amount is
- * computed here: totals are always the quote's answer. */
+ * cart, enforces the 20-line limit and clears any quoted total. The only sum
+ * here is the cart's 小計 (owner's spec); shipping and the total charged are
+ * always the quote's answer. */
 export interface CatalogItemView { skuId: string; name: string; unit: string; unitPrice: number; maxQuantity: number }
 export interface CartLine { skuId: string; quantity: number }
 
@@ -24,4 +25,9 @@ export function drawerLines(cart: readonly CartLine[], items: readonly CatalogIt
     const item = items.find(candidate => candidate.skuId === line.skuId) ?? null;
     return { ...line, item, label: item ? `${item.name} ${item.unit}` : labels.get(line.skuId) ?? `選択した商品 ${index + 1}` };
   });
+}
+
+/** 小計 of the cart lines whose product is in the loaded list (catalog price × quantity). */
+export function cartSubtotal(lines: readonly DrawerLine[]): number {
+  return lines.reduce((sum, line) => sum + (line.item ? line.item.unitPrice * line.quantity : 0), 0);
 }

@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beanDisplaySchema, beanPageId, joinCatalogWithDisplay, type BeanDisplay } from "../bean-display";
-import { addButtonState, drawerLines, quantityAfterAdd } from "../bean-cart";
+import { addButtonState, cartSubtotal, drawerLines, quantityAfterAdd } from "../bean-cart";
 import { BeanCard, type BeanItem } from "../components/BeanCard";
 import { CartDrawer } from "../components/CartDrawer";
 
@@ -52,26 +52,27 @@ describe("カートに入れる・上限・外す", () => {
     expect(lines.map(line => [line.label, line.item?.maxQuantity ?? null])).toEqual([[`${item(idB).name} 300g・豆`, 3], ["前の豆 100g", null]]);
     expect(drawerLines([{ skuId: "x", quantity: 1 }], [], new Map())[0].label).toBe("選択した商品 1");
   });
-  it("カートの画面は増減・外す・合計の確認へ進むボタンを持ち、金額の合計は自分で計算しない", () => {
+  it("カートの画面は増減・外す・小計・「購入手続きへ」を持ち、送料や合計は出さない（それは見積もりの答えだけ）", () => {
     const lines = drawerLines([{ skuId: `bn_${idA}_300`, quantity: 3 }, { skuId: `bn_${idB}_300`, quantity: 1 }], [item(idA), item(idB)], new Map());
-    const html = renderToStaticMarkup(<CartDrawer open lines={lines} count={4} busy={false} locked={false} stale={false} images={new Map([[`bn_${idA}_300`, `/api/notion-image/${idA}`]])} failedImages={new Set()} onImageError={() => {}} onChange={() => {}} onClose={() => {}} onQuote={() => {}} />);
+    const html = renderToStaticMarkup(<CartDrawer open lines={lines} count={4} subtotal={cartSubtotal(lines)} busy={false} locked={false} stale={false} images={new Map([[`bn_${idA}_300`, `/api/notion-image/${idA}`]])} failedImages={new Set()} onImageError={() => {}} onChange={() => {}} onClose={() => {}} onCheckout={() => {}} />);
     expect(html).toContain("カート（4点）");
     expect(html).toContain('role="dialog"'); expect(html).toContain('aria-modal="true"');
     expect(html).toMatch(/<button[^>]*disabled=""[^>]*aria-label="架空豆1a 300g・豆の数量を1つ増やす"/);
     expect(html).not.toMatch(/<button[^>]*disabled=""[^>]*aria-label="架空豆2b 300g・豆の数量を1つ増やす"/);
     expect(html).toContain('aria-label="架空豆1a 300g・豆を選択から外す"');
-    expect(html).toContain("送料を含む合計を確認");
+    expect(html).toContain("購入手続きへ");
     expect(html).toContain(`/api/notion-image/${idA}`);
-    for (const word of ["小計", "合計：", "¥8,100", "¥10,800", "送料無料"]) expect(html).not.toContain(word);
+    expect(html).toMatch(/小計<\/span><span[^>]*>¥10,800</); // 3×2,700 + 1×2,700 (catalog prices)
+    for (const word of ["合計：", "送料", "送料無料", "送料を含む合計を確認", "選ぶだけでは注文されません"]) expect(html).not.toContain(word);
     expect(html.match(/h-11 w-11/g)?.length).toBeGreaterThanOrEqual(5); // 44px targets
   });
-  it("操作中・決済の準備後・更新前の一覧では、合計の確認へ進めない", () => {
+  it("操作中・決済の準備後・更新前の一覧では、購入手続きへ進めない", () => {
     const lines = drawerLines([{ skuId: `bn_${idA}_300`, quantity: 1 }], [item(idA)], new Map());
     for (const state of [{ busy: true, locked: false, stale: false }, { busy: false, locked: true, stale: false }, { busy: false, locked: false, stale: true }]) {
-      const html = renderToStaticMarkup(<CartDrawer open lines={lines} count={1} {...state} images={new Map()} failedImages={new Set()} onImageError={() => {}} onChange={() => {}} onClose={() => {}} onQuote={() => {}} />);
-      expect(html).toMatch(/disabled=""[^>]*>送料を含む合計を確認<\/button>/);
+      const html = renderToStaticMarkup(<CartDrawer open lines={lines} count={1} subtotal={2700} {...state} images={new Map()} failedImages={new Set()} onImageError={() => {}} onChange={() => {}} onClose={() => {}} onCheckout={() => {}} />);
+      expect(html).toMatch(/disabled=""[^>]*>購入手続きへ<\/button>/);
     }
-    expect(renderToStaticMarkup(<CartDrawer open lines={[]} count={0} busy={false} locked={false} stale={false} images={new Map()} failedImages={new Set()} onImageError={() => {}} onChange={() => {}} onClose={() => {}} onQuote={() => {}} />)).toContain("カートは空です");
+    expect(renderToStaticMarkup(<CartDrawer open lines={[]} count={0} subtotal={0} busy={false} locked={false} stale={false} images={new Map()} failedImages={new Set()} onImageError={() => {}} onChange={() => {}} onClose={() => {}} onCheckout={() => {}} />)).toContain("カートは空です");
   });
 });
 

@@ -63,14 +63,15 @@ describe("購入の前に見せるお届けと返品の条件", () => {
     const html = renderToStaticMarkup(<><PurchaseConditions /><PurchaseLegalLinks /></>);
     expect(html).not.toMatch(/[¥￥]|\d+\s*円/);
   });
-  it("購入画面では、合計の後・確認のチェックの前に条件を出す", () => {
+  it("購入画面では、合計の後・「お支払いへ進む」の前に条件を出す（チェックボックスは置かない）", () => {
     const panel = read("src/features/shop/components/PurchasePanel.tsx");
     const total = panel.indexOf("<dt>合計</dt>");
-    const conditions = panel.indexOf("<PurchaseConditions method={quotedMethod} />");
-    const confirm = panel.indexOf("商品・数量と、送料を含む合計を確認しました");
+    const conditions = panel.indexOf("<CheckoutTerms method=");
+    const pay = panel.indexOf("{checkoutCopy.pay}</button>");
     expect(total).toBeGreaterThan(-1);
     expect(conditions).toBeGreaterThan(total);
-    expect(confirm).toBeGreaterThan(conditions);
+    expect(pay).toBeGreaterThan(conditions);
+    expect(panel).not.toContain("商品・数量と、送料を含む合計を確認しました");
     expect(panel).toContain("<PurchaseLegalLinks />");
   });
   it("注文状況の画面は main を1つだけ持ち、案内ページへのリンクを置く", () => {

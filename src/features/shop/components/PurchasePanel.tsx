@@ -1,27 +1,30 @@
 "use client";
 
-import { PurchaseBrandBar, PurchaseBrandHeader, purchaseUi } from "./PurchaseBrand";
+import { PurchaseBrandBar, purchaseUi } from "./PurchaseBrand";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import Link from "next/link";
 import { z } from "zod";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import { buyerProductPublicationSchema } from "../product-publication-view";
 import { BEAN_DISPLAY_PATH, beanDisplayResponseSchema, groupCatalogItems, joinCatalogWithDisplay, type BeanDisplay } from "../bean-display";
-import { drawerLines, quantityAfterAdd } from "../bean-cart";
+import { cartSubtotal, drawerLines, quantityAfterAdd } from "../bean-cart";
 import { BeanCard, type BeanItem } from "./BeanCard";
 import { BeanDetailModal } from "./BeanDetailModal";
 import { CartButton, CartDrawer } from "./CartDrawer";
+import { CheckoutTerms, MethodPicker, PaymentPendingBanner } from "./CheckoutParts";
 import { FreshnessStrip, NewArrivalBanner } from "./shop-catalog-parts";
-import { purchaserStatusSchema, cancellationCopy } from "../purchaser-status";
-import { CheckoutCancellationPanel } from "./CheckoutCancellationPanel";
-import { PurchaseConditions, PurchaseLegalLinks, ReceivingMethodChoice } from "./PurchaseTerms";
+import { purchaserStatusSchema } from "../purchaser-status";
+import { PurchaseLegalLinks } from "./PurchaseTerms";
 import { UnlistedCartItems } from "./UnlistedCartItems";
 import { recoverRejectedCheckout, unlistedCartLines, shippingFailureNotice } from "../purchase-recovery";
-import { allowedCheckoutLocation, purchaseKeyForStatus, readPurchaseSession, reconcilePurchasedCart, withDeliveryMethod, writePurchaseSession, type PurchaseAttempt, type PurchaseSession } from "../purchase-session";
+import { allowedCheckoutLocation, applyCheckoutCancellation, markCheckoutCancellation, purchaseKeyForStatus, readPurchaseSession, reconcilePurchasedCart, withDeliveryMethod, writePurchaseSession, type PurchaseAttempt, type PurchaseSession } from "../purchase-session";
 import { catalogDeliveryMethodsSchema, checkoutRequestBody, quoteRequestBody, receivingCopy, requestedMethod, selectableMethods, shippingFeeLabel, type DeliveryMethod } from "../receiving-method";
 import { catalogReceptionSchema, receptionPauseNotice } from "../reception-notice";
+import { checkoutCopy } from "../checkout-copy";
+import { isCheckoutRefused, readRestartOutcome } from "../checkout-outcome";
+import { usePageStartsAtTop } from "./use-page-top";
 
 const product = z.object({ skuId: z.string(), name: z.string(), unit: z.string(), unitPrice: z.number().int().nonnegative(), kind: z.enum(["physical", "gift"]), maxQuantity: z.number().int().min(0).max(20), publication: buyerProductPublicationSchema.optional() }).strict();
 // deliveryMethods: present only when the management side offers receiving methods. Absent, or not in the agreed
@@ -34,9 +37,7 @@ type Catalog = z.infer<typeof catalogSchema>; type Quotation = z.infer<typeof qu
 const money = (value: number) => `¥${value.toLocaleString("ja-JP")}`;
 const button = purchaseUi.primary;
 function purchaseNotice(error: unknown, fallback: string) {
-  return error instanceof Error && error.message === "PURCHASE_BUSY"
-    ? "現在アクセスが集中しています。少し時間を空けてからもう一度お試しください。決済を始めた場合は買い直さず、同じ注文の状況を確認してください。"
-    : fallback;
+  return error instanceof Error && error.message === "PURCHASE_BUSY" ? checkoutCopy.busy : fallback;
 }
 async function post(action: string, body: unknown) {
   const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 15000);
@@ -54,7 +55,6 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [quotation, setQuotation] = useState<Quotation | null>(null);
   const [quotedMethod, setQuotedMethod] = useState<DeliveryMethod>("shipping");
-  const [confirmed, setConfirmed] = useState(false);
   const [busy, setBusy] = useState(true); const inFlight = useRef(false);
   const alive = useRef(true);
   const cancellationIntents = useRef(new Set<string>());
@@ -62,16 +62,22 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
   const [physicalSkus, setPhysicalSkus] = useState(new Set<string>());
   const [catalogStale, setCatalogStale] = useState(false);
   const [notice, setNotice] = useState(""); const [fatal, setFatal] = useState(false);
+  // 「お支払い画面を開けませんでした」: kept apart from `notice` so the total that is
+  // asked for right after does not wipe it; cleared on the next press.
+  const [refused, setRefused] = useState(false);
   // Presentation only: Notion display rows, photo failures, the open detail and
-  // the cart drawer. None of it is sent with a quote or a checkout.
+  // the cart panel. None of it is sent with a quote or a checkout.
   const [displays, setDisplays] = useState<BeanDisplay[]>([]);
   const [failedImages, setFailedImages] = useState(new Set<string>());
   const [detailSku, setDetailSku] = useState<string | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
+  const [drawerStep, setDrawerStep] = useState<"cart" | "checkout">("cart");
   const [added, setAdded] = useState<string | null>(null); const addedTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  // After the cart's 「送料を含む合計を確認」: once that request has finished, move
-  // focus (and the view) to the quoted total, or to the section with its notice.
-  const revealQuote = useRef(false);
+  // The total is asked for once per (cart, method) while the checkout section is
+  // open. A failed quote is not repeated by itself (no request loops).
+  const lastQuoteKey = useRef("");
+  const settledChecked = useRef(false);
+  usePageStartsAtTop();
   useEffect(() => {
     // Optional display data. A failure only means cards without photos; it never
     // blocks, hides or changes what the catalog sells.
@@ -98,7 +104,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
         const loaded = catalogSchema.parse(result.body);
         if (live) { rememberCatalog(loaded); setSession(saved); setCatalog(loaded); }
       } catch (error) {
-        if (live) { setFatal(true); setNotice(purchaseNotice(error, "商品または保存情報を確認できませんでした。以前の注文がある場合は状況を確認し、買い直さないでください。")); }
+        if (live) { setFatal(true); setNotice(purchaseNotice(error, checkoutCopy.loadFailed)); }
       } finally { if (live) setBusy(false); }
     })();
     return () => { live = false; alive.current = false; };
@@ -119,11 +125,11 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
   }
   async function run(action: () => Promise<void>) {
     if (inFlight.current) return; inFlight.current = true; setBusy(true); setNotice("");
-    try { await action(); } catch (error) { if (alive.current) setNotice(purchaseNotice(error, "通信または保存情報を確認できませんでした。決済を始めた場合は同じ注文の状況を確認してください。自動で新しい注文は作りません。")); }
+    try { await action(); } catch (error) { if (alive.current) setNotice(purchaseNotice(error, checkoutCopy.network)); }
     finally { inFlight.current = false; if (alive.current) setBusy(false); }
   }
   async function refreshCatalog(message: string) {
-    setQuotation(null); setConfirmed(false); setCatalogStale(true); setNotice(message);
+    setQuotation(null); setCatalogStale(true); setNotice(message);
     try {
       const result = await send("catalog", {});
       if (!result.ok) throw new Error("CATALOG_UNAVAILABLE");
@@ -140,44 +146,47 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     if (value > 0 && !session.cart.some(l => l.skuId === skuId) && session.cart.length >= 20) { setNotice("一度に選べる商品は20種類までです。先に選んだ商品の数量を0にすると外せます。"); return false; }
     try {
       const cart = session.cart.filter(l => l.skuId !== skuId); if (value > 0) cart.push({ skuId, quantity: value });
-      save({ ...session, cart }); setQuotation(null); setConfirmed(false); setNotice("");
+      save({ ...session, cart }); setQuotation(null); setNotice("");
       return true;
     } catch { setNotice("カートを保存できません。内容を保持できるまで決済は始めません。"); return false; }
   }
   function chooseMethod(next: DeliveryMethod) {
     if (!session || session.attempt || busy || !methodChoices.includes(next) || next === method) return;
     try {
-      save(withDeliveryMethod(session, next === "shipping" ? undefined : next)); setQuotation(null); setConfirmed(false); setNotice("");
+      save(withDeliveryMethod(session, next === "shipping" ? undefined : next)); setQuotation(null); setNotice("");
     } catch { setNotice(receivingCopy.saveFailed); }
   }
   async function preview() {
     if (!session?.cart.length || catalogStale) return;
-    setQuotation(null); setConfirmed(false);
+    setQuotation(null);
     const result = await send("quote", quoteRequestBody(session.cart, method));
     if (!result.ok) {
       const shippingNotice = shippingFailureNotice(result.body);
       if (shippingNotice) { setNotice(shippingNotice); return; }
-      await refreshCatalog("合計を確認できませんでした。商品と数量を見直してください。この操作では注文・請求は始まりません。"); return;
+      await refreshCatalog(checkoutCopy.quoteFailed); return;
     }
-    setQuotation(quotationSchema.parse(result.body)); setQuotedMethod(method); setConfirmed(false); setNotice("");
+    setQuotation(quotationSchema.parse(result.body)); setQuotedMethod(method); setNotice("");
   }
   // isNewPurchase: true only when called from begin() with a purchaseKey it just
-  // generated in this tab (G-4). The "同じ注文の決済へ戻る" button below calls this
-  // with its existing attempt and leaves it false; a prior attempt with that key may
-  // already have created an order, so SALES_PAUSED is never read as "no order" there.
+  // generated in this tab (G-4). 「お支払いに戻る」 calls this with its existing
+  // attempt and leaves it false; a prior attempt with that key may already have
+  // created an order, so SALES_PAUSED is never read as "no order" there.
   async function checkout(attempt: PurchaseAttempt, isNewPurchase = false) {
     const current = readPurchaseSession(sessionStorage);
     save({ ...current, viewKey: attempt.purchaseKey });
     const result = await send("checkout", checkoutRequestBody(attempt));
     const latest = readPurchaseSession(sessionStorage);
-    if (latest.attempt?.purchaseKey !== attempt.purchaseKey || latest.attempt.cancelRequested || cancellationIntents.current.has(attempt.purchaseKey)) { setNotice("決済中止の確認を続けています。新しい決済画面へは進みません。"); return; }
+    // 「やり直す」 was pressed meanwhile: never open a new payment page.
+    if (latest.attempt?.purchaseKey !== attempt.purchaseKey || latest.attempt.cancelRequested || cancellationIntents.current.has(attempt.purchaseKey)) return;
+    // Stripe refused the payment page and the server ended that order (409, or
+    // the same key replayed: 200 with no page and payment closed). Clear the
+    // attempt; the next 「お支払いへ進む」 starts a new one with a new key.
+    if (isCheckoutRefused(result.ok, result.body)) { save({ ...latest, attempt: null, viewKey: null }); setRefused(true); openCheckout(); return; }
     if (!result.ok) {
       const recovered = recoverRejectedCheckout(latest, attempt.purchaseKey, result.body, { isNewPurchase });
-      if (recovered) {
-        save(recovered.session);
-        await refreshCatalog(recovered.notice);
-      } else setNotice(shippingFailureNotice(result.body, true) ?? "同じ注文の確認が必要です。買い直さず「この注文の状況を確認」から確認してください。決済の再開も同じ注文を使います。");
-      return;
+      if (recovered) { save(recovered.session); await refreshCatalog(recovered.notice); return; }
+      // Unknown outcome: keep the attempt. The banner offers お支払いに戻る / やり直す.
+      showPending(); return;
     }
     purchaserStatusSchema.parse(result.body.status);
     if (result.body.checkoutUrl === null) { window.location.assign("/shop/success"); return; }
@@ -185,11 +194,27 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     window.location.assign(result.body.checkoutUrl);
   }
   async function begin() {
-    if (!session || session.attempt || !currentQuotation || !confirmed || catalogStale || !catalog?.acceptingOrders) return;
+    if (!session || session.attempt || !currentQuotation || catalogStale || !catalog?.acceptingOrders) return;
+    setRefused(false);
     const bytes = crypto.getRandomValues(new Uint8Array(32)); const purchaseKey = Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
     const attempt: PurchaseAttempt = { purchaseKey, lines: session.cart, acceptedQuote: currentQuotation.acceptedQuote, ...(method === "shipping" ? {} : { deliveryMethod: method }) };
     // Save the exact attempt atomically BEFORE an external outcome can become unknown.
     save({ ...session, attempt, viewKey: purchaseKey }); await checkout(attempt, true);
+  }
+  // 「やり直す」: ONE cancel request for the previous checkout (never resent by
+  // itself). Ended → straight back to the checkout section, cart kept.
+  async function restart() {
+    if (!session?.attempt) return;
+    const key = session.attempt.purchaseKey; cancellationIntents.current.add(key);
+    setSession(markCheckoutCancellation(sessionStorage, key));
+    const result = await send("cancel", { purchaseKey: key, confirmed: true });
+    const outcome = readRestartOutcome(result.ok, result.body);
+    if (outcome.kind === "toStatus") { save({ ...readPurchaseSession(sessionStorage), viewKey: key }); location.assign("/shop/success"); return; }
+    if (outcome.kind === "ended") {
+      const next = applyCheckoutCancellation(sessionStorage, key, outcome.result);
+      if (!next.attempt) { cancellationIntents.current.delete(key); setSession(next); setQuotation(null); openCheckout(); return; }
+    }
+    setNotice(checkoutCopy.restartRetry);
   }
   async function anotherOrder() {
     if (!session?.attempt) return;
@@ -197,19 +222,34 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     if (cancellationIntents.current.has(session.attempt.purchaseKey)) return;
     if (!result.ok) throw new Error("STATUS_UNAVAILABLE");
     const status = purchaserStatusSchema.parse(result.body.status);
-    if (status.payment !== "confirmed") { setNotice("前の注文をまだ確認できません。先に注文状況を確認してください。"); return; }
+    if (status.payment !== "confirmed") return;
     const updated = reconcilePurchasedCart(sessionStorage, session.attempt.purchaseKey, status);
     const history = updated.history.some(h => h.orderReference === status.orderReference) ? updated.history : [...updated.history, { purchaseKey: session.attempt.purchaseKey, orderReference: status.orderReference }];
     // A new order starts from shipping again; the finished order keeps its own method on the server.
-    save({ ...withDeliveryMethod(updated, undefined), attempt: null, history }); setQuotation(null); setConfirmed(false);
+    save({ ...withDeliveryMethod(updated, undefined), attempt: null, history }); setQuotation(null);
   }
+  /** Opens the cart panel on the checkout section; its total is asked for right away. */
+  function openCheckout() { lastQuoteKey.current = ""; setDetailSku(null); setDrawerStep("checkout"); setCartOpen(true); }
+  /** An unfinished checkout: close the panel and start the page at the banner. */
+  function showPending() {
+    setCartOpen(false); setDrawerStep("cart");
+    requestAnimationFrame(() => { const target = document.getElementById("payment-pending"); target?.scrollIntoView({ block: "start", behavior: "instant" }); target?.focus({ preventScroll: true }); });
+  }
+  // A paid order kept in this tab (back from the status page): read its status
+  // once (a read, not an order) and start a fresh cart. No button to press.
+  const finishSettled = useEffectEvent(() => { void run(anotherOrder); });
+  const settled = Boolean(session?.attempt?.settledOrderId);
   useEffect(() => {
-    if (!revealQuote.current || busy) return;
-    revealQuote.current = false;
-    const target = document.getElementById(currentQuotation ? "purchase-quote" : "purchase-summary");
-    target?.focus({ preventScroll: true }); target?.scrollIntoView({ block: "start" });
-  }, [busy, currentQuotation]);
+    if (!settled || busy || settledChecked.current) return;
+    settledChecked.current = true; finishSettled();
+  }, [settled, busy]);
   const selected = session?.cart.reduce((sum, l) => sum + l.quantity, 0) ?? 0;
+  const quoteKey = session && !session.attempt && session.cart.length ? `${JSON.stringify(session.cart)}|${method}` : "";
+  const requestQuote = useEffectEvent(() => { void run(preview); });
+  useEffect(() => {
+    if (!cartOpen || drawerStep !== "checkout" || !quoteKey || busy || catalogStale || currentQuotation || lastQuoteKey.current === quoteKey) return;
+    lastQuoteKey.current = quoteKey; requestQuote();
+  }, [cartOpen, drawerStep, quoteKey, busy, catalogStale, currentQuotation]);
   // Presentation of the selection. Every catalog item is shown (with or without
   // display data); adding goes through quantity(), the same path as before.
   const beans: BeanItem[] = catalog ? joinCatalogWithDisplay(catalog.items, displays) : [];
@@ -222,54 +262,33 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     if (next === null || !quantity(item.skuId, next)) return;
     setAdded(item.skuId); clearTimeout(addedTimer.current); addedTimer.current = setTimeout(() => setAdded(null), 1200);
   }
-  function quoteFromCart() {
-    setCartOpen(false); revealQuote.current = true;
-    void run(preview);
-  }
-  const shopping = Boolean(catalog && session && !session.attempt);
-  const intro = !session?.attempt;
+  const lines = catalog && session ? drawerLines(session.cart, catalog.items, catalogLabels) : [];
+  const pending = Boolean(session?.attempt && !session.attempt.settledOrderId);
   const shell = "mx-auto max-w-3xl px-6 md:px-8";
-  const noticeBlock = notice ? <div role="alert" className={`${purchaseUi.notice} mb-8`}><p>{notice}</p>{notice.includes("配送条件") || notice.includes("発送できる数量") ? <a href="/contact" className={`mt-3 ${purchaseUi.link}`}>配送について相談する</a> : null}</div> : null;
-  const busyBlock = busy ? <p role="status" className="mb-6 text-sm text-haicha">確認しています…</p> : null;
+  const noticeBlock = notice ? <div role="alert" className={`${purchaseUi.notice} mb-6`}><p>{notice}</p>{notice.includes("配送条件") || notice.includes("発送できる数量") ? <a href="/contact" className={`mt-2 ${purchaseUi.link}`}>配送について相談する</a> : null}</div> : null;
+  const banner = pending && session?.attempt ? <div className={`${shell} ${shopRoot ? "pt-12" : "pt-2"} pb-2`}>
+    <PaymentPendingBanner canResume={!session.attempt.cancelRequested} resumeDisabled={!catalog?.acceptingOrders} busy={busy} line={notice}
+      onResume={() => { void run(() => checkout(session.attempt!)); }} onRestart={() => { void run(restart); }} />
+  </div> : null;
+  const checkoutBody = currentQuotation ? currentQuotation.items : null;
   return <main className="min-h-screen bg-kominka-white pb-28 text-sumi">
     {!shopRoot ? <div className="px-5 pt-8 sm:px-8"><div className="mx-auto max-w-6xl"><PurchaseBrandBar /></div></div> : null}
-    {intro ? <>
-      <PageHero title="ONLINE SHOP" subtitle="焙煎したてをお届け" image="/images/experience/coffee-beans-close.jpg" compact={!shopRoot} />
-      {shopRoot ? <NewArrivalBanner /> : null}
-      <FreshnessStrip />
-    </> : <div className={`${shell} ${shopRoot ? "pt-28 md:pt-32" : "pt-6"}`}><PurchaseBrandHeader title="珈琲を選ぶ" description="商品について読みながら、お好きな珈琲をお選びください。送料と合計は、お支払いの前に確認できます。" shopRoot /></div>}
+    {!shopRoot ? banner : null}
+    <PageHero title="ONLINE SHOP" subtitle="焙煎したてをお届け" image="/images/experience/coffee-beans-close.jpg" compact={!shopRoot} />
+    {shopRoot ? <NewArrivalBanner /> : null}
+    <FreshnessStrip />
+    {shopRoot ? banner : null}
 
-    {!shopping ? <div className={`${shell} ${intro ? "py-16 md:py-24" : ""}`}>
-      {busyBlock}{noticeBlock}
-      {fatal ? <section className={purchaseUi.section}><button className={purchaseUi.primary} onClick={() => location.reload()}>読み直す</button><p className="mt-4"><a href="/shop/success" className={purchaseUi.link}>以前の注文状況を確認</a></p></section> : null}
-      {session?.attempt ? <section className={purchaseUi.section}>
-        <h2 className={purchaseUi.heading}>{session.attempt.cancelRequested ? "決済中止の確認を続けています" : session.attempt.settledOrderId ? "前の注文のお支払いを確認済みです" : "決済の準備を始めた記録があります"}</h2>
-        <p className="mt-3 text-sm leading-relaxed">同じ内容の新しい注文は作らず、このタブに残した確認情報を使って状況を確認・再開します。</p>
-        <button disabled={busy} className={`mt-4 ${purchaseUi.link} font-medium`} onClick={() => {
-          try { save({ ...session, viewKey: session.attempt!.purchaseKey }); location.assign("/shop/success"); }
-          catch { setNotice("確認情報を保存できませんでした。"); }
-        }}>この注文の状況を確認</button>
-        {!session.attempt.cancelRequested ? <div className="mt-4">{session.attempt.settledOrderId
-          ? <button className={purchaseUi.primary} disabled={busy} onClick={() => { void run(anotherOrder); }}>新しく商品を選ぶ</button>
-          : <button className={purchaseUi.primary} disabled={busy || !catalog?.acceptingOrders} onClick={() => { void run(() => checkout(session.attempt!)); }}>同じ注文の決済へ戻る</button>}</div> : null}
-      </section> : null}
-      {session?.attempt ? <CheckoutCancellationPanel purchaseKey={session.attempt.purchaseKey} payment={session.attempt.settledOrderId ? "confirmed" : undefined} pending={session.attempt.cancelRequested} onIntent={() => {
-        const key = session.attempt!.purchaseKey; cancellationIntents.current.add(key);
-        setSession(previous => previous?.attempt?.purchaseKey === key ? { ...previous, attempt: { ...previous.attempt, cancelRequested: true } } : previous);
-      }} onSessionChange={setSession} onOutcome={outcome => {
-        setQuotation(null); setConfirmed(false);
-        setNotice(outcome.cancellation === "not_created" ? "注文は作られていませんでした。カートの内容を残しています。合計を確認し直してから購入できます。" : outcome.cancellation === "closed" && outcome.status.payment === "closed" ? cancellationCopy.closed : "");
-      }} /> : null}
+    {!catalog || fatal ? <div className={`${shell} py-16 md:py-24`}>
+      {busy && !catalog ? <p role="status" className="text-center text-sm text-haicha">確認しています…</p> : null}
+      {fatal ? <div className="text-center"><p role="alert" className="text-sm text-haicha">{notice}</p><button className={`mt-6 ${purchaseUi.primary}`} onClick={() => location.reload()}>読み直す</button><p className="mt-2"><a href="/shop/success" className={purchaseUi.link}>以前の注文状況を確認</a></p></div> : null}
     </div> : null}
 
-    {catalog && session && !session.attempt ? <>
+    {catalog && session ? <>
       <section id="bean-lineup" className="py-24 md:py-36 overflow-hidden scroll-mt-20" aria-label="商品と数量">
         <div className="max-w-6xl mx-auto px-6 md:px-8">
-          <ScrollReveal>
-            <p className="mx-auto mb-16 max-w-2xl text-center text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide md:mb-24">商品について読みながら、お好きな珈琲をお選びください。送料と合計は、お支払いの前に確認できます。</p>
-          </ScrollReveal>
+          {!pending && !cartOpen ? <div className="mx-auto max-w-3xl">{noticeBlock}</div> : null}
           {!catalog.acceptingOrders ? <p className={`${purchaseUi.notice} mb-10`}>{receptionPauseNotice(catalog.reception) ?? "現在は注文を受け付けていません。金額の確認はできますが、決済へは進めません。"}</p> : null}
-          {catalogStale ? <p className="mb-10 text-sm leading-loose text-haicha">現在は更新前の商品一覧です。更新できるまで決済には進めません。選択から外す操作はできます。</p> : null}
           {!beans.length ? <p className="py-16 text-center text-sm text-haicha">現在選べる商品はありません。</p> : <div className="space-y-24 md:space-y-32">
             {groupCatalogItems(beans).map(group => <section key={group.key} aria-labelledby={`product-group-${group.key}`}>
               <ScrollReveal>
@@ -292,54 +311,44 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
           </div>
           <div className="mt-10 flex flex-col items-center gap-2">
             {catalog.nextOffset !== null ? <button className={purchaseUi.secondary} disabled={busy || catalogStale} onClick={() => { void run(async () => { const result = await post("catalog", { offset: catalog.nextOffset }); if (!result.ok) throw new Error("CATALOG_UNAVAILABLE"); const next = catalogSchema.parse(result.body); rememberCatalog(next); setCatalog({ ...next, items: [...catalog.items, ...next.items.filter(i => !catalog.items.some(old => old.skuId === i.skuId))] }); }); }}>ほかの商品を表示</button> : null}
-            <button className={purchaseUi.link} disabled={busy} onClick={() => { void run(() => refreshCatalog("商品と数量を確認し、合計を確認し直してください。")); }}>商品一覧を更新</button>
+            {catalogStale ? <button className={purchaseUi.link} disabled={busy} onClick={() => { void run(() => refreshCatalog("")); }}>商品一覧を更新</button> : null}
           </div>
-          <p className="text-center text-sm text-haicha mt-12">※ 豆の在庫状況により、取り扱い銘柄が変更になる場合があります。</p>
-        </div>
-      </section>
-
-      <section id="purchase-summary" tabIndex={-1} className="scroll-mt-20 border-t border-usuzumi bg-tsuchikabe/50 py-24 md:py-32 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-karekusa" aria-label="送料と合計">
-        <div className={shell}>
-          <p aria-hidden="true" className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">Order</p>
-          <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">送料と合計を確認</h2>
-          <div className="my-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-            <p className="text-sm text-haicha">選択中：{selected}点</p>
-            {selected ? <button type="button" className={purchaseUi.link} onClick={() => setCartOpen(true)}>カート（{selected}点）</button> : <span className="text-xs text-haicha">選ぶだけでは注文されません</span>}
-          </div>
-          {busyBlock}{noticeBlock}
-          <ReceivingMethodChoice methods={methodChoices} value={method} disabled={busy} onChange={chooseMethod} />
-          <button className={purchaseUi.secondary} disabled={busy || catalogStale || !selected} onClick={() => { void run(preview); }}>送料を含む合計を確認</button>
-          {currentQuotation ? <div id="purchase-quote" tabIndex={-1} aria-label="送料を含む合計" className="mt-10 scroll-mt-24 space-y-6 focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-karekusa">
-            <ul className="divide-y divide-usuzumi/60">{currentQuotation.items.map(item => <li key={item.skuId} className="break-words py-4 first:pt-0">
-              <p className="font-serif text-base tracking-wide text-konsumi">{item.name} {item.unit} × {item.quantity}</p>
-              <p className="mt-1 text-sm text-haicha">{money(item.unitPrice * item.quantity)}</p>
-            </li>)}</ul>
-            <dl className="border-y border-usuzumi py-6">
-              <div className="flex items-baseline justify-between gap-4 text-sm"><dt>{shippingFeeLabel(quotedMethod)}</dt><dd>{money(currentQuotation.shipping)}</dd></div>
-              <div className="mt-4 flex flex-wrap items-baseline justify-between gap-4 text-sm"><dt>合計</dt><dd className={purchaseUi.statusTitle}>{money(currentQuotation.total)}</dd></div>
-            </dl>
-            <PurchaseConditions method={quotedMethod} />
-            <label className="flex min-h-12 cursor-pointer items-start gap-3 py-3 text-sm leading-relaxed"><input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} className={purchaseUi.checkbox} /><span>商品・数量と、送料を含む合計を確認しました</span></label>
-            <button className={button} disabled={busy || catalogStale || !confirmed || !catalog.acceptingOrders} onClick={() => { void run(begin); }}>この金額で決済画面へ</button>
-            <p className="text-sm leading-loose text-haicha">次はStripeでカード情報を入力します。まだ支払いは完了しません。</p>
-            <p className="text-xs leading-loose text-haicha">注文の確認情報はこのタブに保存します。お支払いと結果の確認が終わるまで、タブを閉じずにお進みください。</p>
-          </div> : null}
         </div>
       </section>
 
       <BeanDetailModal item={detail} quantity={detail ? qtyOf(detail.skuId) : 0} blocked={blocked} added={detail ? added === detail.skuId : false}
         imageFailed={detail ? failedImages.has(detail.skuId) : false} onImageError={() => { if (detail) failImage(detail.skuId); }}
         onAdd={() => { if (detail) { addOne(detail); setDetailSku(null); } }} onClose={() => setDetailSku(null)} />
-      <CartButton count={selected} onOpen={() => setCartOpen(true)} />
-      <CartDrawer open={cartOpen} lines={drawerLines(session.cart, catalog.items, catalogLabels)} count={selected} busy={busy} locked={Boolean(session.attempt)} stale={catalogStale}
+      <CartButton count={selected} onOpen={() => { setDrawerStep("cart"); setCartOpen(true); }} />
+      <CartDrawer open={cartOpen} step={drawerStep} lines={lines} count={selected} subtotal={cartSubtotal(lines)} busy={busy} locked={Boolean(session.attempt)} stale={catalogStale}
         images={new Map(beans.flatMap(item => item.display?.image ? [[item.skuId, item.display.image] as const] : []))} failedImages={failedImages} onImageError={failImage}
-        onChange={(skuId, value) => { quantity(skuId, value); }} onClose={() => setCartOpen(false)} onQuote={quoteFromCart} />
+        onChange={(skuId, value) => { quantity(skuId, value); }} onClose={() => { setCartOpen(false); setDrawerStep("cart"); }}
+        onCheckout={openCheckout} onBack={() => setDrawerStep("cart")}
+        checkout={<div className="space-y-6">
+          {refused ? <p role="alert" className={purchaseUi.notice}>{checkoutCopy.refused}</p> : null}
+          {noticeBlock}
+          {catalogStale ? <button className={purchaseUi.link} disabled={busy} onClick={() => { void run(() => refreshCatalog("")); }}>商品一覧を更新</button> : null}
+          <ul aria-label="ご注文の商品" className="divide-y divide-usuzumi/60 border-y border-usuzumi">{(checkoutBody ?? lines.flatMap(line => line.item ? [{ skuId: line.skuId, name: line.item.name, unit: line.item.unit, unitPrice: line.item.unitPrice, quantity: line.quantity }] : [])).map(item => <li key={item.skuId} className="flex items-baseline justify-between gap-4 py-3 text-sm">
+            <span className="min-w-0 break-words">{item.name} <span className="text-haicha">{item.unit} × {item.quantity}</span></span>
+            <span className="shrink-0">{money(item.unitPrice * item.quantity)}</span>
+          </li>)}</ul>
+          <MethodPicker methods={methodChoices} value={method} disabled={busy} onChange={chooseMethod} />
+          {currentQuotation ? <div id="purchase-quote" aria-live="polite">
+            <dl className="space-y-2">
+              <div className="flex items-baseline justify-between gap-4 text-sm"><dt>{shippingFeeLabel(quotedMethod)}</dt><dd>{money(currentQuotation.shipping)}</dd></div>
+              <div className="flex flex-wrap items-baseline justify-between gap-4 text-sm"><dt>合計</dt><dd className={purchaseUi.statusTitle}>{money(currentQuotation.total)}</dd></div>
+            </dl>
+          </div> : busy ? <p role="status" className="text-sm text-haicha">確認しています…</p> : <button type="button" className={purchaseUi.link} disabled={busy || catalogStale} onClick={() => { void run(preview); }}>{checkoutCopy.quoteRetry}</button>}
+          <CheckoutTerms method={currentQuotation ? quotedMethod : method} />
+        </div>}
+        checkoutFooter={<>
+          {!catalog.acceptingOrders ? <p className="text-sm text-sumi">{receptionPauseNotice(catalog.reception) ?? "現在は注文を受け付けていません。"}</p> : null}
+          <button className={`${button} w-full`} disabled={busy || catalogStale || !currentQuotation || !catalog.acceptingOrders || Boolean(session.attempt)} onClick={() => { void run(begin); }}>{checkoutCopy.pay}</button>
+        </>} />
     </> : null}
 
     <div className={shell}>
-      {session?.history.length ? <section className={purchaseUi.section}><h2 className={purchaseUi.heading}>このタブで確認した注文</h2>{session.history.map(h => <button disabled={busy} key={h.orderReference} className={`my-2 w-full break-all text-left ${purchaseUi.link}`} onClick={() => { try { save({ ...session, viewKey: h.purchaseKey }); location.assign("/shop/success"); } catch { setNotice("確認情報を保存できませんでした。"); } }}>注文 {h.orderReference} を確認</button>)}</section> : null}
-      {session?.attempt ? <p className="mt-6 text-sm leading-relaxed">このタブを閉じると確認情報を失う場合があります。わからない場合は買い直さず、店舗へお問い合わせください。</p> : null}
-      <div className="mt-10">{shopRoot ? <Link href="/" className={purchaseUi.link}>三十日珈琲のホームへ戻る</Link> : <a href="/shop" className={purchaseUi.link}>ショップの案内へ戻る</a>}</div>
+      <div className="mt-6">{shopRoot ? <Link href="/" className={purchaseUi.link}>三十日珈琲のホームへ戻る</Link> : <a href="/shop" className={purchaseUi.link}>ショップの案内へ戻る</a>}</div>
       <PurchaseLegalLinks />
     </div>
   </main>;
