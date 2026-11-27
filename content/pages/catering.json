@@ -42,26 +42,26 @@
       {
         "label": "S",
         "name": "Sプラン",
-        "price": "¥10,000",
-        "campaign": "初回半額 ¥5,000",
+        "price": "¥7,000",
+        "campaign": "初回30%オフ ¥4,900",
         "description": "〜15名様向け",
         "includes": ["ポット1本（約3.4L）", "15〜20杯分", "紙カップ付き", "配送・回収費込み"]
       },
       {
         "label": "M",
         "name": "Mプラン",
-        "price": "¥18,000",
+        "price": "¥14,000",
         "featured": true,
         "description": "〜30名様向け",
-        "note": "Sプラン×2より2,000円お得",
+        "note": "1杯あたり350円",
         "includes": ["ポット2本（約6.8L）", "30〜40杯分", "紙カップ付き", "配送・回収費込み"]
       },
       {
         "label": "L",
         "name": "Lプラン",
-        "price": "¥26,000",
+        "price": "¥21,000",
         "description": "〜45名様向け",
-        "note": "1杯あたり約400円台の高コスパ",
+        "note": "1杯あたり350円",
         "includes": ["ポット3本（約10.2L）", "45〜60杯分", "紙カップ付き", "配送・回収費込み"]
       }
     ],
@@ -70,8 +70,8 @@
   "largePlans": {
     "heading": "大規模プラン",
     "items": [
-      { "name": "LLプラン", "capacity": "〜80名様", "price": "¥34,000" },
-      { "name": "MAXプラン", "capacity": "〜100名様", "price": "¥42,000" }
+      { "name": "LLプラン", "capacity": "〜80名様", "price": "¥28,000" },
+      { "name": "MAXプラン", "capacity": "〜100名様", "price": "¥35,000" }
     ]
   },
   "planFootnotes": [
