@@ -3,7 +3,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { CHECKOUT_FORM_STORAGE_KEY, UENOHARA_POSTAL_CODES, checkoutFormWire, checkoutFormWireSchema, normalizePhone, emptyCheckoutForm, localDeliveryAllowed, normalizePostalCode, readCheckoutFormDraft, validateCheckoutForm, writeCheckoutFormDraft, type CheckoutFormDraft } from "../checkout-form";
 import { lookupPostalAddress } from "../postal-address";
-import { CheckoutFormFields, formCopy } from "../components/CheckoutForm";
+import { isValidElement, type ReactElement, type ReactNode } from "react";
+import { CheckoutFormFields, NewsletterField, formCopy, newsletterKeepTogether, newsletterNoteId } from "../components/CheckoutForm";
 import { checkoutRequestBody } from "../receiving-method";
 import { purchaseAttemptSchema } from "../purchase-session";
 import config from "../../../../next.config";
@@ -121,13 +122,14 @@ describe("郵便番号から住所（外部のサービスを使わない）", (
 describe("入力欄の見た目と操作", () => {
   const render = (form: CheckoutFormDraft, method: "shipping" | "local_delivery" | "store_pickup", errors = {}) =>
     renderToStaticMarkup(<CheckoutFormFields form={form} method={method} errors={errors} disabled={false} onChange={noop} onBlur={noop} />);
-  it("配送: 購入者・お届け先（ご購入者と同じ＝既定でオン）・備考・メルマガ（既定でオフ）", () => {
+  it("配送: 購入者・お届け先（ご購入者と同じ＝既定でオン）・備考・メルマガ（既定でオン）", () => {
     const html = render(emptyCheckoutForm, "shipping");
-    for (const text of [formCopy.buyer, formCopy.recipient, formCopy.same, formCopy.postalCode, formCopy.remarksHint, formCopy.newsletter]) expect(html).toContain(text);
+    for (const text of [formCopy.buyer, formCopy.recipient, formCopy.same, formCopy.postalCode, formCopy.remarksHint]) expect(html).toContain(text);
+    expect(html.replace(/<[^>]+>/g, "")).toContain(formCopy.newsletter);
     expect(formCopy.remarksHint).toBe("お届け希望日時などがあればご記入ください（ご希望に添えない場合があります）");
     expect(formCopy.newsletter).toBe("三十日珈琲からのお知らせをメールで受け取る");
     const checkboxes = [...html.matchAll(/<input type="checkbox"[^>]*>/g)].map(m => m[0]);
-    expect(checkboxes).toHaveLength(2); expect(checkboxes[0]).toContain("checked"); expect(checkboxes[1]).not.toContain("checked");
+    expect(checkboxes).toHaveLength(2); expect(checkboxes[0]).toContain("checked"); expect(checkboxes[1]).toContain("checked");
     expect(html).not.toContain(formCopy.sender);
     for (const ac of ["name", "email", "tel", "shipping postal-code", "shipping address-level1", "shipping address-line1"]) expect(html.toLowerCase()).toContain(`autocomplete="${ac}"`);
   });
@@ -148,6 +150,65 @@ describe("入力欄の見た目と操作", () => {
   it("上野原市内お届けで市外の郵便番号は、押す前からすぐ知らせる", () => {
     expect(render({ ...filled, postalCode: "1000001" }, "local_delivery")).toContain("上野原市内のご住所のみお届けできます");
     expect(render(filled, "local_delivery")).not.toContain("上野原市内のご住所のみお届けできます");
+  });
+  it("メルマガ: 初めて開いた人は最初からオン。すぐ下に説明があり、チェック欄とつながる", () => {
+    expect(emptyCheckoutForm.newsletter).toBe(true);
+    expect(formCopy.newsletterNote).toBe("チェックを入れたままご購入いただくと、三十日珈琲からのお知らせメールの配信に同意したことになります。不要な方はチェックを外してください。配信はメール内のリンクからいつでも止められます。");
+    const html = render(emptyCheckoutForm, "shipping");
+    const checkbox = [...html.matchAll(/<input type="checkbox"[^>]*>/g)].map(m => m[0])[1];
+    expect(checkbox).toContain("checked"); expect(checkbox).toContain(`aria-describedby="${newsletterNoteId}"`);
+    // チェック欄の文字も説明も16px（text-base）。説明は label のすぐ後・同じまとまりの中で、本文と同じ墨色・行間は詰める（小さすぎ・薄すぎにしない）。
+    // 押せる範囲は label（高さ48px以上）のまま。説明は label に重ねない（負の余白なし）。
+    // 見出しの役のチェック欄は中くらいの太さ。「メールで受け取る」は言葉の途中で折り返さない。説明との間は 6px（mt-1.5）。
+    expect(formCopy.newsletter.endsWith(newsletterKeepTogether)).toBe(true);
+    expect(html).toContain(`<div><label class="flex min-h-12 cursor-pointer items-center gap-3 text-base font-medium">${checkbox}<span>三十日珈琲からのお知らせを<span class="whitespace-nowrap">メールで受け取る</span></span></label><div id="${newsletterNoteId}" class="mt-1.5 pl-8 text-base leading-relaxed text-sumi">${formCopy.newsletterNote}</div></div>`);
+    // 行間を詰めるため <p>（全体の決まりで行間2倍）にしない。label に重ねる負の余白もなし。
+    expect(html).not.toContain(`<p id="${newsletterNoteId}"`);
+    expect(html).not.toMatch(new RegExp(`id="${newsletterNoteId}" class="[^"]*-mt-`));
+    expect(render(emptyCheckoutForm, "store_pickup")).toContain(formCopy.newsletterNote);
+  });
+  it("メルマガ: 外せる。外した状態は空のチェックで表示し、送る値は false（付けたままなら true）", () => {
+    const found: ReactElement<{ type?: string; onChange?: (event: { target: { checked: boolean } }) => void }>[] = [];
+    const walk = (node: ReactNode) => {
+      if (Array.isArray(node)) node.forEach(walk);
+      else if (isValidElement<{ type?: string; children?: ReactNode }>(node)) { if (node.type === "input" && node.props.type === "checkbox") found.push(node); walk(node.props.children); }
+    };
+    const toggled: boolean[] = [];
+    walk(NewsletterField({ checked: true, disabled: false, onToggle: value => toggled.push(value) }));
+    expect(found).toHaveLength(1);
+    found[0].props.onChange?.({ target: { checked: false } });
+    expect(toggled).toEqual([false]);
+    const off = render({ ...emptyCheckoutForm, newsletter: false }, "shipping");
+    expect([...off.matchAll(/<input type="checkbox"[^>]*>/g)].map(m => m[0])[1]).not.toContain("checked");
+    expect(off).toContain(formCopy.newsletterNote);
+    expect(checkoutFormWire({ ...filled, newsletter: false }, "shipping").newsletter).toBe(false);
+    expect(checkoutFormWire(filled, "shipping").newsletter).toBe(true);
+  });
+  it("メルマガ: 下書きに残った false（本人が外した）はそのまま。下書きがない・壊れているときだけ初期値のオン", () => {
+    const map = new Map<string, string>(); const storage = { getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => { map.set(k, v); } };
+    expect(readCheckoutFormDraft(storage).newsletter).toBe(true);
+    writeCheckoutFormDraft(storage, { ...filled, newsletter: false }); expect(readCheckoutFormDraft(storage).newsletter).toBe(false);
+    map.set(CHECKOUT_FORM_STORAGE_KEY, JSON.stringify({ ...filled, newsletter: false })); expect(readCheckoutFormDraft(storage)).toEqual({ ...filled, newsletter: false });
+    map.set(CHECKOUT_FORM_STORAGE_KEY, "{"); expect(readCheckoutFormDraft(storage).newsletter).toBe(true);
+  });
+  it("メルマガ: 外したチェックは「戻る」や再読み込みで勝手に戻らない（下書きに false が残り、開き直しても外れたまま）", () => {
+    const map = new Map<string, string>(); const storage = { getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => { map.set(k, v); } };
+    // 初めて開く → オン。本人が外す（画面と同じく、変えるたびに下書きへ書く）。
+    let form = readCheckoutFormDraft(storage); expect(form.newsletter).toBe(true);
+    const inputs: ReactElement<{ onChange(event: { target: { checked: boolean } }): void }>[] = [];
+    const walk = (node: ReactNode) => {
+      if (Array.isArray(node)) node.forEach(walk);
+      else if (isValidElement<{ type?: string; children?: ReactNode }>(node)) { if (node.type === "input") inputs.push(node as never); walk(node.props.children); }
+    };
+    walk(NewsletterField({ checked: form.newsletter, disabled: false, onToggle: value => { form = { ...form, newsletter: value }; writeCheckoutFormDraft(storage, form); } }));
+    inputs[0].props.onChange({ target: { checked: false } });
+    // 再読み込み・Stripe からの「戻る」＝同じタブで下書きを読み直す。
+    const reopened = readCheckoutFormDraft(storage);
+    expect(reopened.newsletter).toBe(false);
+    expect([...render(reopened, "shipping").matchAll(/<input type="checkbox"[^>]*>/g)].map(m => m[0])[1]).not.toContain("checked");
+    expect(checkoutFormWire({ ...reopened, ...filled, newsletter: reopened.newsletter }, "shipping").newsletter).toBe(false);
+    // 付け直した人は、開き直してもオンのまま。
+    writeCheckoutFormDraft(storage, { ...reopened, newsletter: true }); expect(readCheckoutFormDraft(storage).newsletter).toBe(true);
   });
   it("押せる場所は44px以上、文字は16px（iPhoneで拡大されない）", () => {
     const html = render({ ...emptyCheckoutForm, sameAsBuyer: false }, "shipping");

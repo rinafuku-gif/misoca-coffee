@@ -13,6 +13,7 @@ export const formCopy = {
   choose: "選んでください", senderBuyer: "ご購入者のお名前", senderShop: "三十日珈琲",
   remarks: "備考（任意）", remarksHint: "お届け希望日時などがあればご記入ください（ご希望に添えない場合があります）",
   newsletter: "三十日珈琲からのお知らせをメールで受け取る",
+  newsletterNote: "チェックを入れたままご購入いただくと、三十日珈琲からのお知らせメールの配信に同意したことになります。不要な方はチェックを外してください。配信はメール内のリンクからいつでも止められます。",
   checkLine1: "番地を確かめてください", notFound: "この郵便番号の住所が見つかりませんでした",
 } as const;
 
@@ -25,6 +26,20 @@ function Field({ field, label, error, hint, children }: { field: FormField; labe
     {children}
     {error ? <p id={`${fieldId(field)}-error`} className="mt-1 border-l-2 border-error pl-2 text-xs leading-relaxed text-sumi">{error}</p>
       : hint ? <p id={`${fieldId(field)}-hint`} role="status" className="mt-1 text-xs leading-relaxed text-karekusa">{hint}</p> : null}
+  </div>;
+}
+export const newsletterNoteId = "checkout-newsletter-note";
+/** 言葉の途中で折り返さないまとまり（390px で「…お知らせを／メールで受け取る」と切れる）。 */
+export const newsletterKeepTogether = "メールで受け取る";
+/** メルマガのチェック（既定でオン・16px・中くらいの太さ＝見出しの役）と、6px あけたすぐ下の説明（同意の意味を示す。16px・本文と同じ墨色・行間は詰めてひとまとまりに）。押せる範囲は label 全体のまま（説明は label に重ねない）。
+ * 説明は <p> にしない: globals.css の `p { line-height: 2 }` が行間の指定より強く、詰められないため。 */
+export function NewsletterField({ checked, disabled, onToggle }: { checked: boolean; disabled: boolean; onToggle(checked: boolean): void }) {
+  return <div>
+    <label className="flex min-h-12 cursor-pointer items-center gap-3 text-base font-medium">
+      <input type="checkbox" checked={checked} disabled={disabled} aria-describedby={newsletterNoteId} onChange={event => onToggle(event.target.checked)} className={purchaseUi.checkbox} />
+      <span>{formCopy.newsletter.slice(0, -newsletterKeepTogether.length)}<span className="whitespace-nowrap">{newsletterKeepTogether}</span></span>
+    </label>
+    <div id={newsletterNoteId} className="mt-1.5 pl-8 text-base leading-relaxed text-sumi">{formCopy.newsletterNote}</div>
   </div>;
 }
 const described = (field: FormField, error?: string, hint?: string) =>
@@ -102,8 +117,6 @@ export function CheckoutFormFields({ form, method, errors, disabled, onChange, o
       <textarea id={fieldId("remarks")} name="remarks" value={form.remarks} maxLength={LIMITS.remarks} rows={3} aria-describedby={`${fieldId("remarks")}-note`} aria-invalid={errors.remarks ? true : undefined}
         className={`${input} py-2`} onChange={event => set("remarks")(event.target.value)} onBlur={() => onBlur("remarks")} />
     </Field>
-    <label className="flex min-h-12 cursor-pointer items-center gap-3 text-sm">
-      <input type="checkbox" checked={form.newsletter} disabled={disabled} onChange={event => set("newsletter")(event.target.checked)} className={purchaseUi.checkbox} />{formCopy.newsletter}
-    </label>
+    <NewsletterField checked={form.newsletter} disabled={disabled} onToggle={set("newsletter")} />
   </div>;
 }

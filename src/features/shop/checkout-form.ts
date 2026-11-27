@@ -21,9 +21,11 @@ export interface CheckoutFormDraft {
   postalCode: string; prefecture: string; city: string; line1: string; line2: string;
   sender: Sender; remarks: string; newsletter: boolean;
 }
+/** メルマガは最初からオン（外せる）。下書きに残った本人の選択（false を含む）は
+ * readCheckoutFormDraft がそのまま返すので、この初期値で上書きしない。 */
 export const emptyCheckoutForm: CheckoutFormDraft = {
   buyerName: "", buyerEmail: "", buyerPhone: "", sameAsBuyer: true, recipientName: "", recipientPhone: "",
-  postalCode: "", prefecture: "", city: "", line1: "", line2: "", sender: "buyer", remarks: "", newsletter: false,
+  postalCode: "", prefecture: "", city: "", line1: "", line2: "", sender: "buyer", remarks: "", newsletter: true,
 };
 export type FormField = Exclude<keyof CheckoutFormDraft, "sameAsBuyer" | "sender" | "newsletter">;
 export type FormErrors = Partial<Record<FormField, string>>;
