@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { PurchaseBrandBar, purchaseUi } from "./PurchaseBrand";
-import { CANCEL_REQUEST_PATH, cancelCopy, cancelRequestBody, readCancelLink, readCancelRequestAnswer, type CancelRequestAction, type CancelView } from "../order-cancel";
+import { CANCEL_REQUEST_PATH, cancelCopy, cancelDeadlineLabel, cancelRequestBody, readCancelLink, readCancelRequestAnswer, type CancelRequestAction, type CancelView } from "../order-cancel";
 import { usePageStartsAtTop } from "./use-page-top";
 
 const yen = (value: number) => `¥${value.toLocaleString("ja-JP")}`;
@@ -20,7 +20,7 @@ export function OrderCancelView({ view, busy, lastAction, onRecord, onRetry }: {
   const answer = view.kind === "answer" ? view.answer : view.kind === "retry" ? view.answer : undefined;
   const state = view.kind === "answer" ? view.answer.state : null;
   const title = state === "recorded" ? cancelCopy.recordedTitle : cancelCopy.title;
-  const line = state === "recorded" ? cancelCopy.recorded : state === "requested" ? cancelCopy.requested : state === "shipped" || state === "closed" ? cancelCopy.refused
+  const line = state === "recorded" ? cancelCopy.recorded : state === "requested" ? cancelCopy.requested : state === "handled" ? cancelCopy.handled : state === "expired" ? cancelCopy.expired : state === "shipped" || state === "closed" ? cancelCopy.refused
     : view.kind === "notAvailable" ? cancelCopy.notAvailable : view.kind === "retry" ? cancelCopy.retry : view.kind === "loading" ? cancelCopy.loading : "";
   return <>
     <div aria-hidden="true" className="mb-6 h-px w-10 bg-gold" />
@@ -30,6 +30,7 @@ export function OrderCancelView({ view, busy, lastAction, onRecord, onRetry }: {
       <p className="text-sm text-haicha">{cancelCopy.orderNumber}：<span className="break-all text-sumi">{answer.orderReference}</span></p>
       <ul className="mt-3 divide-y divide-usuzumi/60">{answer.items.map((item, i) => <li key={i} className="py-3 text-sm break-words">{item.name} <span className="text-haicha">{item.unit} × {item.quantity}</span></li>)}</ul>
       <p className="mt-2 flex items-baseline justify-between gap-4 border-t border-usuzumi pt-4 font-serif text-xl text-konsumi"><span>{cancelCopy.total}</span><span>{yen(answer.total)}</span></p>
+      {answer.state === "open" && cancelDeadlineLabel(answer.deadline) ? <p className="mt-3 text-sm text-karekusa">{cancelDeadlineLabel(answer.deadline)}</p> : null}
     </section> : null}
     {state === "open" || view.kind === "retry" && lastAction === "record" && answer?.state === "open"
       ? <button type="button" className={`mt-8 ${purchaseUi.primary}`} disabled={busy} onClick={onRecord}>{busy ? cancelCopy.loading : cancelCopy.button}</button>

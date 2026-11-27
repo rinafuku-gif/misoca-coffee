@@ -1,8 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import { cancelCopy, cancelRequestAnswerSchema, cancelRequestBody, readCancelLink, readCancelRequestAnswer, type CancelRequestAnswer, type CancelView } from "../order-cancel";
+import { cancelCopy, cancelDeadlineLabel, cancelRequestAnswerSchema, cancelRequestBody, cancelRequestBodyByKey, readCancelLink, readCancelRequestAnswer, statusCancelCopy, statusCancelView, type CancelRequestAnswer, type CancelView } from "../order-cancel";
 import { OrderCancelView } from "../components/OrderCancelPanel";
+import { StatusCancelBlock } from "../components/StatusCancel";
 import { isUnmeasuredPath } from "@/shared/ui/SiteMeasurement";
 
 const token = "a".repeat(64);
@@ -16,7 +17,7 @@ describe("発送前のキャンセル受付（CHECKOUT-FORM-WIRE.md §5）", () 
     expect(Object.keys(cancelRequestBody(link, "record"))).toEqual(["orderReference", "token", "action"]);
     for (const bad of ["", "?o=x", `?o=a/b&t=${token}`, `?o=x&t=${"A".repeat(64)}`, `?o=x&t=${token}0`]) expect(readCancelLink(bad)).toBeNull();
   });
-  it("答えの読み方: 200 は5つの状態、404/400 は使えないリンク、503/429/通信の失敗はもう一度", () => {
+  it("答えの読み方: 200 は7つの状態（4c）、404/400 は使えないリンク、503/429/通信の失敗はもう一度", () => {
     expect(readCancelRequestAnswer(200, answer("open"))).toEqual({ kind: "answer", answer: answer("open") });
     expect(readCancelRequestAnswer(404, { error: "PURCHASE_NOT_AVAILABLE" }).kind).toBe("notAvailable");
     expect(readCancelRequestAnswer(400, { error: "INVALID_REQUEST" }).kind).toBe("notAvailable");
@@ -25,7 +26,8 @@ describe("発送前のキャンセル受付（CHECKOUT-FORM-WIRE.md §5）", () 
     // Same answer shape as the shared transport.
     const transport = readFileSync("src/features/shop/ledger/purchase-server-transport.ts", "utf8");
     expect(transport).toContain('"cancel-request": cancelRequest');
-    expect(transport).toContain('state: z.enum(["open", "requested", "recorded", "shipped", "closed"])');
+    expect(transport).toContain('state: z.enum(["open", "requested", "recorded", "handled", "shipped", "expired", "closed"])');
+    expect(transport).toContain("deadline: z.number().int().nonnegative().optional()");
     expect(cancelRequestAnswerSchema.safeParse(answer("closed")).success).toBe(true);
   });
   it("open: 注文の要約と、ボタン「キャンセルを申し込む」1つ（確かめの画面なし）", () => {
@@ -55,5 +57,55 @@ describe("発送前のキャンセル受付（CHECKOUT-FORM-WIRE.md §5）", () 
     const panel = readFileSync("src/features/shop/components/OrderCancelPanel.tsx", "utf8");
     expect(panel).toContain('credentials: "omit"'); expect(panel).not.toMatch(/next\/(link|navigation)|<Link/);
     expect(panel.match(/ask\("record"/g)).toHaveLength(1);
+  });
+});
+
+describe("round 4c: 2つの返事の形・期限・注文状況のページ", () => {
+  const deadline = Date.UTC(2026, 11, 27, 14, 59); // 12月27日 23:59 JST
+  it("今の管理側（v58・期限なし）と4c（期限つき・handled/expired）の返事をどちらも読む", () => {
+    expect(readCancelRequestAnswer(200, answer("open")).kind).toBe("answer");
+    for (const state of ["handled", "expired"] as const) expect(readCancelRequestAnswer(200, { ...answer(state), deadline }).kind).toBe("answer");
+    expect(readCancelRequestAnswer(200, { ...answer("open"), deadline: -1 }).kind).toBe("retry");
+  });
+  it("期限は日本時間で「キャンセル受付期限：M月D日」。無ければ出さない", () => {
+    expect(cancelDeadlineLabel(deadline)).toBe("キャンセル受付期限：12月27日");
+    expect(cancelDeadlineLabel(Date.UTC(2026, 11, 27, 15, 0))).toBe("キャンセル受付期限：12月28日");
+    expect(cancelDeadlineLabel(undefined)).toBeNull();
+  });
+  it("メールのリンクのページ: open は期限を出す。handled・expired は1行・ボタンなし", () => {
+    expect(render({ kind: "answer", answer: { ...answer("open"), deadline } })).toContain("キャンセル受付期限：12月27日");
+    expect(render({ kind: "answer", answer: answer("open") })).not.toContain("キャンセル受付期限");
+    for (const [state, line] of [["handled", cancelCopy.handled], ["expired", cancelCopy.expired]] as const) {
+      const html = render({ kind: "answer", answer: { ...answer(state), deadline } }); expect(html).toContain(line); expect(html).not.toContain("<button");
+    }
+  });
+  it("注文状況のページからは購入キーだけを送る（合言葉なし・ほかの項目なし）", () => {
+    expect(cancelRequestBodyByKey("b".repeat(64), "preview")).toEqual({ purchaseKey: "b".repeat(64), action: "preview" });
+  });
+  it("注文状況のページの見せ方: open だけボタン。requested は済みの1行。shipped/handled/expired/closed と 400・404・503 の確かめは黙って出さない", () => {
+    expect(statusCancelView({ kind: "answer", answer: { ...answer("open"), deadline } }, "preview")).toEqual({ kind: "open", deadline });
+    expect(statusCancelView({ kind: "answer", answer: answer("requested") }, "preview")).toEqual({ kind: "accepted", recordedNow: false });
+    expect(statusCancelView({ kind: "answer", answer: answer("recorded") }, "record")).toEqual({ kind: "accepted", recordedNow: true });
+    for (const state of ["shipped", "handled", "expired", "closed"] as const) expect(statusCancelView({ kind: "answer", answer: answer(state) }, "preview").kind).toBe("hidden");
+    for (const status of [400, 404, 503, 429, 0]) expect(statusCancelView(readCancelRequestAnswer(status, null), "preview").kind).toBe("hidden");
+    expect(statusCancelView(readCancelRequestAnswer(503, null), "record", deadline)).toEqual({ kind: "retry", deadline });
+  });
+  it("ボタン → その場の1行「本当にキャンセルしますか？ はい／いいえ」 → 受け付けの1行", () => {
+    const block = (view: Parameters<typeof StatusCancelBlock>[0]["view"], confirming = false) => renderToStaticMarkup(<StatusCancelBlock view={view} confirming={confirming} busy={false} onAsk={() => {}} onYes={() => {}} onNo={() => {}} />);
+    const open = block({ kind: "open", deadline });
+    expect(open).toContain("キャンセル受付期限：12月27日"); expect(open.match(/<button/g)).toHaveLength(1); expect(open).toContain(`>${statusCancelCopy.button}</button>`);
+    const asking = block({ kind: "open", deadline }, true);
+    expect(asking).toContain(statusCancelCopy.confirm); expect(asking).toContain(">はい</button>"); expect(asking).toContain(">いいえ</button>"); expect(asking).not.toContain(`>${statusCancelCopy.button}</button>`);
+    expect(block({ kind: "accepted", recordedNow: true })).toContain("キャンセルを受け付けました。お店から返金のご連絡をします。");
+    expect(block({ kind: "accepted", recordedNow: false })).toContain("キャンセルを受け付け済みです");
+    expect(block({ kind: "hidden" })).toBe("");
+    expect(block({ kind: "open", deadline: undefined })).not.toContain("キャンセル受付期限");
+  });
+  it("注文状況のページは支払い確認済みのときだけ、status と同じ購入キーで1回だけ確かめる", () => {
+    const status = readFileSync("src/features/shop/components/PurchaserStatusPanel.tsx", "utf8");
+    expect(status).toContain('{data.payment === "confirmed" && view.purchaseKey ? <StatusCancel purchaseKey={view.purchaseKey} /> : null}');
+    const part = readFileSync("src/features/shop/components/StatusCancel.tsx", "utf8");
+    expect(part).toContain("if (asked.current === purchaseKey) return;"); expect(part).toContain('credentials: "omit"');
+    expect(part.match(/send\(purchaseKey, "record"\)/g)).toHaveLength(1);
   });
 });

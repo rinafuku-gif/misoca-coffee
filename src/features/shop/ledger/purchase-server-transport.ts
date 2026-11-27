@@ -58,9 +58,12 @@ const quotation = z.object({ items: z.array(z.object({ skuId: z.string(), name: 
   shipping: z.number().int().nonnegative(), total: z.number().int().nonnegative(), acceptedQuote: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
 const checkoutUrl = z.string().url().refine(raw => { const url = new URL(raw); return url.protocol === "https:" && url.hostname === "checkout.stripe.com"
   && !url.username && !url.password && !url.port && /^\/[a-z]\/pay\/cs_[A-Za-z0-9_]+$/.test(url.pathname); });
-// 発送前のキャンセル受付 (CHECKOUT-FORM-SPEC-A): the shop page /shop/order-cancel relays the link's order number and token.
-const cancelRequest = z.object({ orderReference: z.string().min(1).max(128), state: z.enum(["open", "requested", "recorded", "shipped", "closed"]),
-  items: z.array(z.object({ name: z.string(), unit: z.string(), quantity: z.number().int().positive() }).strict()).max(20), total: z.number().int().nonnegative() }).strict();
+// 発送前のキャンセル受付 (CHECKOUT-FORM-SPEC-A): the shop page /shop/order-cancel relays the link's order number and token;
+// the order-status page relays its purchase key. deadline = the last moment (ms) a request is accepted (optional so this
+// copy also reads the answer of the management release before it, which has no deadline: release the site first).
+const cancelRequest = z.object({ orderReference: z.string().min(1).max(128), state: z.enum(["open", "requested", "recorded", "handled", "shipped", "expired", "closed"]),
+  items: z.array(z.object({ name: z.string(), unit: z.string(), quantity: z.number().int().positive() }).strict()).max(20), total: z.number().int().nonnegative(),
+  deadline: z.number().int().nonnegative().optional() }).strict();
 const schemas = {
   catalog, quote: quotation, checkout: z.object({ checkoutUrl: checkoutUrl.nullable(), status: purchaserStatusSchema }).strict(),
   status: z.object({ status: purchaserStatusSchema }).strict(), cancel: purchaseCancellationResultSchema, "cancel-request": cancelRequest,

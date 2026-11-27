@@ -74,7 +74,9 @@ describe("計測するページと計測しないページの行き来は、ペ�
     // 2026-11-27: the compact checkout section and the pending-payment banner.
     "CheckoutParts.tsx",
     // 2026-11-27: the purchase form (購入者・お届け先・送り主・備考・メルマガ).
-    "CheckoutForm.tsx"].map(name => join(components, name));
+    "CheckoutForm.tsx",
+    // 2026-11-27 (4c): the status page's cancel request.
+    "StatusCancel.tsx"].map(name => join(components, name));
 
   it("2つのページが使う部品は、この一覧のとおり（増えたらこの試験を見直す）", () => {
     expect(read("src/app/shop/order/page.tsx")).toContain('from "@/features/shop/components/PurchasePanel"');
@@ -85,7 +87,7 @@ describe("計測するページと計測しないページの行き来は、ペ�
     expect([...read(join(components, "PurchasePanel.tsx")).matchAll(/from "\.\/([a-z][a-z-]*)"/g)].map(match => match[1]).sort()).toEqual(["shop-catalog-parts", "use-page-top"]);
     expect([...read(join(components, "PurchaserStatusPanel.tsx")).matchAll(/from "\.\/([a-z][a-z-]*)"/g)].map(match => match[1])).toEqual(["use-page-top"]);
     expect(read(join(components, "use-page-top.ts"))).not.toMatch(/next\/(link|navigation)|<Link/);
-    expect(imported("PurchaserStatusPanel.tsx")).toEqual(["PurchaseBrand", "PurchaseTerms"]);
+    expect(imported("PurchaserStatusPanel.tsx")).toEqual(["PurchaseBrand", "PurchaseTerms", "StatusCancel"]);
     const known = new Set(insideOnly.map(path => path.slice(components.length + 1, -".tsx".length)));
     for (const path of insideOnly) for (const name of imported(path.slice(components.length + 1))) expect(known.has(name), `${path} → ${name}`).toBe(true);
   });

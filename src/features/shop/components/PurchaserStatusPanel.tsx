@@ -9,8 +9,9 @@ import { purchaseKeyForStatus, reconcilePurchasedCart, applyCheckoutCancellation
 import { PurchaseLegalLinks, purchaseConditions } from "./PurchaseTerms";
 import { statusCopy } from "../checkout-copy";
 import { usePageStartsAtTop } from "./use-page-top";
+import { StatusCancel } from "./StatusCancel";
 
-type View = { kind: "loading" | "missing" | "unavailable" | "busy" | "offline" | "ready"; status?: BuyerStatus };
+type View = { kind: "loading" | "missing" | "unavailable" | "busy" | "offline" | "ready"; status?: BuyerStatus; purchaseKey?: string };
 const yen = (value: number) => `¥${value.toLocaleString("ja-JP")}`;
 /** While the payment notice has not arrived, the page checks again by itself
  * (a read only) every few seconds; a button appears only after 30 seconds. */
@@ -55,7 +56,7 @@ export function PurchaserStatusPanel() {
         reconcilePurchasedCart(sessionStorage, key, result);
         if (result.cancellation !== "none") applyCheckoutCancellation(sessionStorage, key, { cancellation: result.cancellation, status: result });
       } catch { setCartWarning("このタブのカートを整理できませんでした。同じ商品を買い直す前に、カートをご確認ください。"); }
-      if (active.current === controller) setView({ kind: "ready", status: result });
+      if (active.current === controller) setView({ kind: "ready", status: result, purchaseKey: key });
     }).catch(() => {
       if (active.current === controller) setView(previous => ({ ...previous, kind: "offline" }));
     }).finally(() => { clearTimeout(timer); if (active.current === controller) setRefreshing(false); });
@@ -99,6 +100,8 @@ export function PurchaserStatusPanel() {
           {data.physical !== "not_applicable" ? <PhysicalStatus status={data} /> : null}
           {data.giftDelivery !== "not_applicable" ? <div><dt className="font-medium">ギフト券</dt><dd className="mt-1 leading-relaxed">{giftCopy[data.giftDelivery]}</dd></div> : null}
         </dl> : null}
+        {/* Paid orders only: the server's preview decides whether a request is possible. */}
+        {data.payment === "confirmed" && view.purchaseKey ? <StatusCancel purchaseKey={view.purchaseKey} /> : null}
       </section> : null}
       <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-2">
         <a href="/shop" className={purchaseUi.primary}>{statusCopy.back}</a>
