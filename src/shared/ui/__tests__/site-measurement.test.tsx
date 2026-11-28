@@ -70,7 +70,7 @@ describe("計測するページと計測しないページの行き来は、ペ�
   // Everything the two pages render (their imports, followed by hand).
   const insideOnly = ["PurchaseBrand.tsx", "PurchaserStatusPanel.tsx", "CheckoutCancellationPanel.tsx", "PurchaseTerms.tsx", "ProductPublicationDetails.tsx", "UnlistedCartItems.tsx",
     // 2026-11-26: the purchase screen's cards, detail and cart (and their shared parts).
-    "BeanCard.tsx", "BeanDetailModal.tsx", "CartDrawer.tsx", "shop-catalog-parts.tsx",
+    "BeanCard.tsx", "BeanDetailModal.tsx", "CartDrawer.tsx", "shop-catalog-parts.tsx", "ProductCardDetails.tsx",
     // 2026-11-27: the compact checkout section and the pending-payment banner.
     "CheckoutParts.tsx",
     // 2026-11-27: the purchase form (購入者・お届け先・送り主・備考・メルマガ).
@@ -90,6 +90,7 @@ describe("計測するページと計測しないページの行き来は、ペ�
     expect([...read(join(components, "PurchaserStatusPanel.tsx")).matchAll(/from "\.\/([a-z][a-z-]*)"/g)].map(match => match[1])).toEqual(["use-page-top"]);
     expect(read(join(components, "use-page-top.ts"))).not.toMatch(/next\/(link|navigation)|<Link/);
     expect(imported("PurchaserStatusPanel.tsx")).toEqual(["PickupGuideText", "PurchaseBrand", "PurchaseTerms", "StatusCancel"]);
+    expect(read(join(components, "ProductCardDetails.tsx"))).not.toMatch(/next\/(link|navigation)|<Link|<a\b/);
     const known = new Set(insideOnly.map(path => path.slice(components.length + 1, -".tsx".length)));
     for (const path of insideOnly) for (const name of imported(path.slice(components.length + 1))) expect(known.has(name), `${path} → ${name}`).toBe(true);
   });

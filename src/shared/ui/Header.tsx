@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
@@ -12,6 +12,12 @@ const navItems = [
   { href: "/#news", label: "ニュース・コラム" },
   { href: "/access", label: "アクセス" },
   { href: "/#contact", label: "お問い合わせ" },
+];
+
+const serviceLinks = [
+  { href: "/experience", label: "焙煎体験" },
+  { href: "/catering", label: "コーヒーケータリング" },
+  { href: "/mobile-roasting", label: "出張焙煎体験" },
 ];
 
 const sidebarVariants = {
@@ -72,6 +78,8 @@ export function Header() {
   const forceScrolled = LIGHT_BG_PAGES.includes(pathname);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(forceScrolled);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const servicesLink = useRef<HTMLAnchorElement>(null);
 
   const handleScroll = useCallback(() => {
     setScrolled(forceScrolled || window.scrollY > 20);
@@ -142,25 +150,74 @@ export function Header() {
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex shrink-0 items-center gap-1.5 xl:gap-3">
-            {navItems.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className={`relative inline-flex min-h-11 items-center whitespace-nowrap px-2 xl:px-3 text-[13px] xl:text-sm tracking-wide transition-colors duration-300 group ${
-                  scrolled
-                    ? "text-sumi hover:text-karekusa"
-                    : "text-white/90 hover:text-white"
-                }`}
-              >
-                {item.label}
-                <span
-                  aria-hidden="true"
-                  className={`absolute bottom-0 left-2 right-2 xl:left-3 xl:right-3 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
-                    scrolled ? "bg-karekusa" : "bg-white"
+            {navItems.map((item) => {
+              const isServices = item.href === "/#services";
+              const link = (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  ref={isServices ? servicesLink : undefined}
+                  aria-expanded={isServices ? servicesOpen : undefined}
+                  aria-controls={isServices && servicesOpen ? "header-service-links" : undefined}
+                  onClick={isServices ? () => setServicesOpen(false) : undefined}
+                  className={`relative inline-flex min-h-11 items-center whitespace-nowrap px-2 xl:px-3 text-[13px] xl:text-sm tracking-wide transition-colors duration-300 group ${
+                    scrolled
+                      ? "text-sumi hover:text-karekusa"
+                      : "text-white/90 hover:text-white"
                   }`}
-                />
-              </a>
-            ))}
+                >
+                  {item.label}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute bottom-0 left-2 right-2 xl:left-3 xl:right-3 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
+                      scrolled ? "bg-karekusa" : "bg-white"
+                    }`}
+                  />
+                </a>
+              );
+              if (!isServices) return link;
+              return (
+                <div
+                  key={item.href}
+                  className="relative"
+                  onPointerEnter={(event) => {
+                    if (event.pointerType === "mouse") setServicesOpen(true);
+                  }}
+                  onPointerLeave={(event) => {
+                    if (event.pointerType === "mouse" && !event.currentTarget.contains(document.activeElement)) {
+                      setServicesOpen(false);
+                    }
+                  }}
+                  onFocus={(event) => {
+                    if (event.target.matches(":focus-visible")) setServicesOpen(true);
+                  }}
+                  onBlur={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget)) setServicesOpen(false);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Escape" && servicesOpen) {
+                      servicesLink.current?.focus();
+                      setServicesOpen(false);
+                    }
+                  }}
+                >
+                  {link}
+                  {servicesOpen && (
+                    <div id="header-service-links" className="absolute left-0 top-full z-10 min-w-52 pt-2">
+                      <ul className="rounded-sm border border-usuzumi/30 bg-white py-2 shadow-lg">
+                        {serviceLinks.map((child) => (
+                          <li key={child.href}>
+                            <a href={child.href} className="flex min-h-11 items-center whitespace-nowrap px-5 text-sm text-sumi hover:bg-tsuchikabe/50 hover:text-karekusa">
+                              {child.label}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </nav>
 
           {/* Desktop CTA: オンラインショップ + 焙煎体験 */}
@@ -280,6 +337,17 @@ export function Header() {
                       >
                         {item.label}
                       </a>
+                      {item.href === "/#services" && (
+                        <ul className="pl-4">
+                          {serviceLinks.map((child) => (
+                            <li key={child.href}>
+                              <a href={child.href} className="flex min-h-11 items-center text-sm text-haicha hover:text-sumi" onClick={() => setMobileOpen(false)}>
+                                {child.label}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </motion.div>
                   ))}
                 </div>

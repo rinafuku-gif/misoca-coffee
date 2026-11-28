@@ -8,6 +8,7 @@ import { joinCatalogWithDisplay, readBeanDisplays, type BeanDisplay } from "@/fe
 import { homeShopLineup } from "@/features/shop/home-shop-lineup";
 import { shopItemHrefFor } from "@/features/shop/shop-item-link";
 import { yen } from "@/features/shop/components/BeanCard";
+import { ProductCardDetails } from "@/features/shop/components/ProductCardDetails";
 import { ProductPhoto } from "@/features/shop/components/shop-catalog-parts";
 import { LineRecommendation } from "@/features/contact/LineRecommendation";
 import { InstagramAccounts } from "@/features/contact/InstagramAccounts";
@@ -287,44 +288,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── 5. New Arrival ─── */}
-      <section className="bg-tsuchikabe py-36 md:py-52">
-        <div className="max-w-6xl mx-auto px-6 md:px-8">
-          <div className="flex flex-col md:flex-row gap-12 md:gap-20 items-center">
-            <ScrollReveal direction="left" className="w-full md:w-1/2">
-              <div className="relative aspect-[3/2] overflow-hidden">
-                <Image
-                  src={homeContent.newArrival.image}
-                  alt={homeContent.newArrival.imageAlt}
-                  fill
-                  className="object-cover hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
-            </ScrollReveal>
-            <ScrollReveal direction="right" delay={0.2} className="w-full md:w-1/2">
-              <p className="font-[family-name:var(--font-display)] text-[11px] tracking-[0.5em] text-gold font-light mb-6 uppercase">
-                {homeContent.newArrival.eyebrow}
-              </p>
-              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6">
-                {homeContent.newArrival.heading}
-              </h2>
-              <div className="w-10 h-px bg-gold/40 mb-8" />
-              <p className="text-sm md:text-[15px] text-haicha leading-[2.2] tracking-wide mb-10">
-                {homeContent.newArrival.body}
-              </p>
-              <Link
-                href={homeContent.newArrival.ctaHref}
-                className="inline-flex items-center gap-3 border border-karekusa/30 text-karekusa text-xs tracking-[0.15em] px-7 py-3.5 hover:bg-karekusa hover:text-white transition-all duration-500"
-              >
-                {homeContent.newArrival.ctaLabel}
-                <ArrowIcon />
-              </Link>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
-
       {/* ─── 6. Experience CTA ─── */}
       <section className="relative h-[70vh] md:h-[80vh] overflow-hidden">
         <Image
@@ -367,6 +330,29 @@ export default function Home() {
             </div>
           </ScrollReveal>
 
+          <ScrollReveal className="mb-12 md:mb-16">
+            <div className="flex flex-col items-start gap-5 border-y border-usuzumi/60 py-6 md:flex-row md:items-center md:justify-between md:gap-8">
+              <div>
+                <p className="font-[family-name:var(--font-display)] text-[11px] uppercase tracking-[0.4em] text-karekusa">
+                  {homeContent.newArrival.eyebrow}
+                </p>
+                <h3 className="mt-2 font-serif text-lg font-light tracking-wide text-konsumi md:text-xl">
+                  {homeContent.newArrival.heading}
+                </h3>
+                <p className="mt-2 text-sm leading-loose text-haicha">
+                  {homeContent.newArrival.body}
+                </p>
+              </div>
+              <Link
+                href={homeContent.newArrival.ctaHref}
+                className="inline-flex min-h-11 shrink-0 items-center gap-3 border border-karekusa/30 px-5 py-2 text-xs tracking-wide text-karekusa transition-colors hover:bg-karekusa hover:text-white"
+              >
+                {homeContent.newArrival.ctaLabel}
+                <ArrowIcon />
+              </Link>
+            </div>
+          </ScrollReveal>
+
           {productsState !== "ready" || products.length === 0 ? (
             <p role="status" className="text-center text-sm text-haicha py-8">
               {productsState === "loading" ? "商品を読み込み中..." : productsState === "error" ? "商品を読み込めませんでした" : "現在掲載している商品はありません"}
@@ -384,6 +370,7 @@ export default function Home() {
                   <h3 className="font-serif text-base text-konsumi mb-3 tracking-wider font-light">
                     {item.name}
                   </h3>
+                  <ProductCardDetails item={item} showRoast />
                   <p className="text-karekusa text-sm tracking-wider">
                     {yen(item.unitPrice)}
                     <span className="text-xs text-haicha ml-2">/ {item.unit}</span>

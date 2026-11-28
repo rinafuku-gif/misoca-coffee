@@ -37,7 +37,7 @@
   },
   "onlineShop": {
     "eyebrow": "Online Shop",
-    "heading": "焙煎したてをお届け",
+    "heading": "自家焙煎のコーヒー",
     "ctaLabel": "オンラインショップへ",
     "ctaHref": "/shop"
   },
@@ -85,11 +85,9 @@
   },
   "newArrival": {
     "eyebrow": "New Arrival",
-    "image": "/images/about/scenery-1.jpg",
-    "imageAlt": "上野原のゆずを使ったインフューズドコーヒー",
-    "heading": "上野原のゆずから生まれた、もうひとつのコーヒー",
-    "body": "山梨県上野原市の規格外ゆずを、コーヒー生豆に漬け込んでから焙煎した、紅茶のように楽しむ新しい一杯。",
-    "ctaLabel": "詳しく見る",
+    "heading": "上野原ゆずインフューズドコーヒー",
+    "body": "上野原の規格外ゆずを使った、紅茶のように楽しめる一杯。",
+    "ctaLabel": "ゆずコーヒーの詳細を見る",
     "ctaHref": "/shop/uenohara-yuzu"
   },
   "hero": {

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { z } from "zod";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
+import { roastChoice, roastChoices, type RoastChoice } from "../product-merchandising";
 import { groupCatalogItems, joinCatalogWithDisplay, readBeanDisplays, type BeanDisplay } from "../bean-display";
 import { catalogProductSchema, catalogSchema, postPurchase as post, type Catalog } from "../purchase-catalog";
 import { cartSubtotal, drawerLines, quantityAfterAdd } from "../bean-cart";
@@ -39,6 +40,7 @@ function purchaseNotice(error: unknown, fallback: string) {
 }
 export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {}) {
   const [session, setSession] = useState<PurchaseSession | null>(null);
+  const [roastFilter, setRoastFilter] = useState<RoastChoice | "all">("all");
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [quotation, setQuotation] = useState<Quotation | null>(null);
   const [quotedMethod, setQuotedMethod] = useState<DeliveryMethod>("shipping");
@@ -273,6 +275,8 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
   // Presentation of the selection. Every catalog item is shown (with or without
   // display data); adding goes through quantity(), the same path as before.
   const beans: BeanItem[] = catalog ? joinCatalogWithDisplay(catalog.items, displays) : [];
+  const coffeeRoasts = new Set(beans.filter(item => item.skuId.startsWith("bn_")).map(item => roastChoice(item.display?.roast)));
+  const availableRoasts = roastChoices.filter(choice => coffeeRoasts.has(choice.key) || roastFilter === choice.key);
   const detail = beans.find(item => item.skuId === detailSku) ?? null;
   const blocked = busy || Boolean(session?.attempt);
   const qtyOf = (skuId: string) => session?.cart.find(l => l.skuId === skuId)?.quantity ?? 0;
@@ -356,8 +360,37 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
                   <h2 id={`product-group-${group.key}`} className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">{group.heading}</h2>
                 </div>
               </ScrollReveal>
+              {shopRoot && group.key === "beans" && (availableRoasts.length > 1 || roastFilter !== "all") ? (
+                <div className="mb-10 flex flex-wrap justify-center gap-2" role="group" aria-label="焙煎度で絞り込む">
+                  {[{ key: "all", label: "すべての豆" } as const, ...availableRoasts].map(choice => (
+                    <button
+                      key={choice.key}
+                      type="button"
+                      aria-pressed={roastFilter === choice.key}
+                      onClick={() => setRoastFilter(choice.key)}
+                      className={`min-h-11 border px-4 py-2 text-sm transition-colors ${
+                        roastFilter === choice.key
+                          ? "border-karekusa bg-karekusa text-white"
+                          : "border-karekusa/30 text-karekusa hover:bg-tsuchikabe"
+                      }`}
+                    >
+                      {choice.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+              {group.key === "beans" && roastFilter !== "all" && !coffeeRoasts.has(roastFilter) ? (
+                <p role="status" className="mb-8 text-center text-sm text-haicha">
+                  この焙煎度の商品は現在ありません。
+                  <button type="button" className="ml-2 min-h-11 text-sm text-karekusa underline" onClick={() => setRoastFilter("all")}>
+                    すべての豆を表示する
+                  </button>
+                </p>
+              ) : null}
               <ul className="grid gap-14 sm:grid-cols-2 md:grid-cols-3 md:gap-x-10 md:gap-y-16">
-                {group.items.map((item, i) => <li key={item.skuId} data-sku={item.skuId} className={linkedSku === item.skuId ? "outline outline-2 outline-offset-8 outline-gold-dark" : undefined}><ScrollReveal delay={(i % 3) * 0.1} className="h-full">
+                {group.items.map((item, i) => (
+                  group.key !== "beans" || roastFilter === "all" || roastChoice(item.display?.roast) === roastFilter
+                ) && <li key={item.skuId} data-sku={item.skuId} className={linkedSku === item.skuId ? "outline outline-2 outline-offset-8 outline-gold-dark" : undefined}><ScrollReveal delay={(i % 3) * 0.1} className="h-full">
                   <BeanCard item={item} quantity={qtyOf(item.skuId)} blocked={blocked} added={added === item.skuId}
                     imageFailed={failedImages.has(item.skuId)} onImageError={() => failImage(item.skuId)}
                     onOpen={() => setDetailSku(item.skuId)} onAdd={() => addOne(item)} />

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { BeanDisplay } from "../bean-display";
 import { addButtonState, type CatalogItemView } from "../bean-cart";
 import type { BuyerProductPublication } from "../product-publication-view";
+import { ProductCardDetails } from "./ProductCardDetails";
 import { CheckIcon, ProductPhoto } from "./shop-catalog-parts";
 
 /** A sellable catalog item with its (optional) Notion display row. Name, unit
@@ -50,7 +51,7 @@ export function BeanCard({ item, quantity, blocked, added, imageFailed, onImageE
       </div>
       {d?.origin ? <p className="text-xs tracking-[0.3em] text-karekusa uppercase mb-2">{d.origin}</p> : null}
       <h3 className="font-serif text-base text-konsumi mb-3 tracking-wider font-light leading-snug break-words">{item.name}</h3>
-      {d?.flavor ? <p className="text-sm text-haicha mb-3 leading-[2] tracking-wide line-clamp-2">{d.flavor}</p> : null}
+      <ProductCardDetails item={item} />
       {d?.process || d?.variety ? <div className="flex flex-wrap gap-1.5 mb-4">
         {[d.process, d.variety].filter(Boolean).map(tag => <span key={tag} className="text-xs text-haicha border border-karekusa/15 px-2 py-0.5 tracking-wide">{tag}</span>)}
       </div> : null}

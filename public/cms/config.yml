@@ -47,6 +47,34 @@ collections:
   - name: "pages"
     label: "サイトページ"
     files:
+      - name: "shop-merchandising"
+        label: "ショップの商品バッジ・一言"
+        file: "content/pages/shop-merchandising.json"
+        fields:
+          - label: "表示を指定する商品"
+            name: items
+            widget: list
+            required: false
+            fields:
+              - label: "商品コード"
+                name: key
+                widget: string
+                hint: "商品の共有URLにある item= の値を入力。上野原ゆずドリップバッグは yuzu-drip-bag。"
+                pattern: ['^(yuzu-drip-bag|bn_[a-f0-9]{32}_300|gd_[a-f0-9]{32}_1)$', "有効な商品コードを入力してください"]
+              - label: "バッジ"
+                name: badge
+                widget: select
+                required: false
+                options:
+                  - { label: "NEW", value: "new" }
+                  - { label: "おすすめ", value: "recommended" }
+              - label: "味わいの一言"
+                name: note
+                widget: string
+                required: false
+                hint: "70文字以内。空欄なら商品に登録されたフレーバーを表示します。"
+                pattern: ['^.{0,70}$', "70文字以内で入力してください"]
+
       # ============================================================ HOME
       - name: "home"
         label: "トップページ"
@@ -179,14 +207,12 @@ collections:
                       - { label: "三十日珈琲について", value: "/about" }
                   - { label: "ボタンのラベル", name: cta, widget: string }
 
-          - label: "New Arrival セクション"
+          - label: "オンラインショップ内の新商品案内"
             name: newArrival
             widget: object
             collapsed: true
             fields:
               - { label: "見出し上テキスト（英字）", name: eyebrow, widget: string }
-              - { label: "画像", name: image, widget: image }
-              - { label: "画像の代替テキスト", name: imageAlt, widget: string }
               - { label: "見出し", name: heading, widget: string }
               - { label: "本文", name: body, widget: text }
               - { label: "ボタンのラベル", name: ctaLabel, widget: string }
