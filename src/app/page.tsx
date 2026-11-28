@@ -11,6 +11,7 @@ import { yen } from "@/features/shop/components/BeanCard";
 import { ProductPhoto } from "@/features/shop/components/shop-catalog-parts";
 import { LineRecommendation } from "@/features/contact/LineRecommendation";
 import { InstagramAccounts } from "@/features/contact/InstagramAccounts";
+import { CoffeeStandLink } from "@/features/stand/components/CoffeeStandLink";
 import { HeroSlideshow } from "@/shared/ui/HeroSlideshow";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import homeContent from "@content/pages/home.json";
@@ -97,7 +98,7 @@ export default function Home() {
               <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
                 {homeContent.ourStory.eyebrow}
               </p>
-              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
+              <h2 id="about" tabIndex={-1} className="mx-auto w-fit scroll-mt-40 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-karekusa font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
                 {homeContent.ourStory.heading}
               </h2>
             </div>
@@ -200,7 +201,7 @@ export default function Home() {
               <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
                 {homeContent.services.eyebrow}
               </p>
-              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
+              <h2 id="services" tabIndex={-1} className="mx-auto w-fit scroll-mt-40 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-karekusa font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
                 {homeContent.services.heading}
               </h2>
             </div>
@@ -370,6 +371,9 @@ export default function Home() {
                 {homeContent.onlineShop.ctaLabel}
                 <ArrowIcon />
               </Link>
+              <div className="mt-8">
+                <CoffeeStandLink />
+              </div>
             </div>
           </ScrollReveal>
         </div>
@@ -383,7 +387,7 @@ export default function Home() {
               <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
                 {homeContent.journal.eyebrow}
               </p>
-              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
+              <h2 id="news" tabIndex={-1} className="mx-auto w-fit scroll-mt-40 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-karekusa font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
                 {homeContent.journal.heading}
               </h2>
             </div>

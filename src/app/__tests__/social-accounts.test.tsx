@@ -21,8 +21,8 @@ describe("Instagram は本店とコーヒースタンドの2つ、LINE も（202
     expect(stand.followUs.igHref).toBe("https://www.instagram.com/misoca_coffeestand");
     expect(lineAccount).toEqual({ label: "LINE公式アカウント", href: contact.line.href });
     expect(contact.line.href).toBe("https://lin.ee/ihDBxM8");
-    // 呼び方はサイトのメニュー・フッターと同じ。
-    expect(read("src/shared/ui/Footer.tsx")).toContain('{ href: "/stand", label: "コーヒースタンド" }');
+    // フッターからは、コーヒーが飲める場所としてスタンドを案内する。
+    expect(read("src/shared/ui/Footer.tsx")).toContain('{ href: "/stand", label: "コーヒーが飲める場所" }');
   });
   it("トップ: Instagram は単独の欄にせず、LINE の欄の中（見出しは1つ）。2つのアカウントを添え書きつきで並べる", () => {
     const html = renderToStaticMarkup(<LineRecommendation variant="home"><InstagramAccounts /></LineRecommendation>);

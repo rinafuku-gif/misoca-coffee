@@ -13,20 +13,24 @@ describe("ヘッダー: オンラインショップと焙煎体験の予約を�
     const nav = source.slice(source.indexOf("const navItems"), source.indexOf("];", source.indexOf("const navItems")));
     expect(nav).not.toContain("オンラインショップ");
     expect(nav).not.toContain('"/shop"');
-    for (const label of ["サービス", "コーヒースタンド", "三十日珈琲について", "アクセス", "お問い合わせ"]) expect(nav).toContain(label);
-    // 2026-11-28: the menu's LINE became お問い合わせ (/contact, where LINE is offered first).
-    expect(nav).toContain('{ href: "/contact", label: "お問い合わせ" }'); expect(nav).not.toContain("lin.ee");
+    expect(nav).not.toContain('"/stand"');
+    expect(nav).not.toContain("lin.ee");
     const html = renderToStaticMarkup(<Header />);
     const desktopNav = html.slice(html.indexOf('<nav class="hidden lg:flex'), html.indexOf("</nav>"));
     expect(desktopNav).not.toContain(headerCtaCopy.shop);
+    const labels = [...desktopNav.matchAll(/<(?:a|button) [^>]+>([^<]+)<span/g)]
+      .map((match) => match[1]);
+    expect(labels).toEqual(["私たちについて", "サービス", "ニュース・コラム", "アクセス", "お問い合わせ"]);
+    const targets = [...desktopNav.matchAll(/href="([^"]+)"/g)].map((match) => match[1]);
+    expect(targets).toEqual(["/#about", "/#services", "/#news", "/access", "/#contact"]);
   });
   it("横長の画面: オンラインショップ → 焙煎体験の順。大きさ・文字組みは同じ、焙煎体験の見た目は今までどおり（金の塗り）", () => {
     const html = renderToStaticMarkup(<HeaderCtas pathname="/" variant="bar" />);
-    expect(html.startsWith('<div class="hidden lg:flex items-center gap-2">')).toBe(true);
+    expect(html.startsWith('<div class="hidden shrink-0 items-center gap-2 xl:gap-3 lg:flex">')).toBe(true);
     const [shop, experience] = anchors(html);
     expect(shop).toContain('href="/shop"'); expect(shop).toContain(`>${headerCtaCopy.shop}</a>`);
     expect(experience).toContain('href="/experience#reservation"'); expect(experience).toContain(`>${headerCtaCopy.experience}</a>`);
-    const size = "inline-block whitespace-nowrap px-3 xl:px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300";
+    const size = "inline-flex min-h-11 items-center whitespace-nowrap px-3 xl:px-5 text-[13px] xl:text-sm font-medium tracking-wide transition-all duration-300";
     expect(shop).toContain(`class="${size} bg-karekusa/90 hover:bg-karekusa text-white"`);
     expect(experience).toContain(`class="${size} bg-gold/90 hover:bg-gold text-white"`);
   });

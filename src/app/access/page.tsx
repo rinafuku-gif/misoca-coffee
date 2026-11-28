@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { CoffeeStandLink } from "@/features/stand/components/CoffeeStandLink";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import content from "@content/pages/access.json";
@@ -78,6 +79,11 @@ export default function AccessPage() {
                 title="三十日珈琲の地図"
                 className="w-full"
               />
+            </div>
+          </ScrollReveal>
+          <ScrollReveal>
+            <div className="border-t border-usuzumi/30 pt-8">
+              <CoffeeStandLink />
             </div>
           </ScrollReveal>
         </div>

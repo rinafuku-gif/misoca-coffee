@@ -48,9 +48,9 @@ describe("お問い合わせのページの言葉を、トップの Instagram �
     expect(page.indexOf('<LineRecommendation variant="contact" />')).toBeLessThan(page.indexOf("{/* フォームでのお問い合わせ */}"));
     expect(read("src/app/contact/layout.tsx")).toContain("description: contactContent.hero.description");
   });
-  it("ヘッダー: 真ん中のメニューの LINE はお問い合わせ（/contact）。LINE への直接のリンクはヘッダーから無くなる", () => {
+  it("ヘッダーのお問い合わせから、トップの問い合わせ案内へ進める", () => {
     const header = read("src/shared/ui/Header.tsx");
-    expect(header).toContain('{ href: "/contact", label: "お問い合わせ" }');
+    expect(header).toContain('{ href: "/#contact", label: "お問い合わせ" }');
     expect(header).not.toContain("lin.ee");
   });
 });

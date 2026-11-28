@@ -3,41 +3,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface NavChild {
-  href: string;
-  label: string;
-}
-
-interface NavItem {
-  label: string;
-  href: string;
-  children?: NavChild[];
-}
-
-const navItems: NavItem[] = [
-  {
-    label: "サービス",
-    href: "/experience",
-    children: [
-      { href: "/experience", label: "焙煎体験" },
-      { href: "/catering", label: "コーヒーケータリング" },
-      { href: "/mobile-roasting", label: "出張焙煎体験" },
-    ],
-  },
-  { label: "コーヒースタンド", href: "/stand" },
-  {
-    label: "三十日珈琲について",
-    href: "/about",
-    children: [
-      { href: "/about", label: "三十日珈琲について" },
-      { href: "/blog", label: "ジャーナル" },
-    ],
-  },
+const navItems = [
+  { href: "/#about", label: "私たちについて" },
+  { href: "/#services", label: "サービス" },
+  { href: "/#news", label: "ニュース・コラム" },
   { href: "/access", label: "アクセス" },
-  { href: "/contact", label: "お問い合わせ" },
+  { href: "/#contact", label: "お問い合わせ" },
 ];
 
 const sidebarVariants = {
@@ -71,8 +45,8 @@ const mobileItemVariants = {
 export const headerCtaCopy = { shop: "オンラインショップ", experience: "焙煎体験を予約する" } as const;
 const ctaLook = {
   bar: {
-    shop: "inline-block whitespace-nowrap px-3 xl:px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-karekusa/90 hover:bg-karekusa text-white",
-    experience: "inline-block whitespace-nowrap px-3 xl:px-7 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 bg-gold/90 hover:bg-gold text-white",
+    shop: "inline-flex min-h-11 items-center whitespace-nowrap px-3 xl:px-5 text-[13px] xl:text-sm font-medium tracking-wide transition-all duration-300 bg-karekusa/90 hover:bg-karekusa text-white",
+    experience: "inline-flex min-h-11 items-center whitespace-nowrap px-3 xl:px-5 text-[13px] xl:text-sm font-medium tracking-wide transition-all duration-300 bg-gold/90 hover:bg-gold text-white",
   },
   drawer: {
     shop: "block w-full text-center bg-karekusa hover:bg-karekusa-dark text-white py-3.5 text-sm font-medium tracking-wide transition-colors",
@@ -86,7 +60,7 @@ export function HeaderCtas({ pathname, variant, onNavigate }: { pathname: string
     : <Link href="/experience#reservation" className={look.experience} onClick={onNavigate}>{headerCtaCopy.experience}</Link>;
   const shop = <Link href="/shop" className={look.shop} onClick={onNavigate}>{headerCtaCopy.shop}</Link>;
   return variant === "bar"
-    ? <div className="hidden lg:flex items-center gap-2">{shop}{experience}</div>
+    ? <div className="hidden shrink-0 items-center gap-2 xl:gap-3 lg:flex">{shop}{experience}</div>
     : <div className="space-y-3">{experience}{shop}</div>;
 }
 
@@ -98,8 +72,6 @@ export function Header() {
   const forceScrolled = LIGHT_BG_PAGES.includes(pathname);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(forceScrolled);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleScroll = useCallback(() => {
     setScrolled(forceScrolled || window.scrollY > 20);
@@ -123,20 +95,6 @@ export function Header() {
     };
   }, [mobileOpen]);
 
-  const handleDropdownEnter = (label: string) => {
-    if (dropdownTimeoutRef.current) {
-      clearTimeout(dropdownTimeoutRef.current);
-      dropdownTimeoutRef.current = null;
-    }
-    setActiveDropdown(label);
-  };
-
-  const handleDropdownLeave = () => {
-    dropdownTimeoutRef.current = setTimeout(() => {
-      setActiveDropdown(null);
-    }, 150);
-  };
-
   return (
     <>
       <header
@@ -149,9 +107,9 @@ export function Header() {
         {/* Keep the accent and navigation in one sticky surface on iPad WebKit.
             The negative margin preserves the existing hero overlay without fixed-position drift. */}
         <div aria-hidden="true" className="absolute top-0 inset-x-0 h-[2px] bg-gold" />
-        <div className="max-w-7xl mx-auto px-6 md:px-8 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 xl:px-8 h-20 flex items-center justify-between gap-3 xl:gap-5">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link href="/" className="flex shrink-0 items-center gap-2 xl:gap-3 group">
             <div className="relative w-11 h-11 rounded-full overflow-hidden flex-shrink-0">
               <Image
                 src="/images/logo-circle-green.jpg"
@@ -177,102 +135,31 @@ export function Header() {
               alt="三十日珈琲 Shared Roasting"
               width={130}
               height={48}
-              className="transition-opacity duration-500 h-[44px] w-auto"
+              className="transition-opacity duration-500 h-10 xl:h-11 w-auto"
               priority
             />
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex shrink-0 items-center gap-1.5 xl:gap-3">
             {navItems.map((item) => (
-              <div
-                key={item.label}
-                className="relative"
-                onMouseEnter={() => item.children && handleDropdownEnter(item.label)}
-                onMouseLeave={() => item.children && handleDropdownLeave()}
+              <a
+                key={item.href}
+                href={item.href}
+                className={`relative inline-flex min-h-11 items-center whitespace-nowrap px-2 xl:px-3 text-[13px] xl:text-sm tracking-wide transition-colors duration-300 group ${
+                  scrolled
+                    ? "text-sumi hover:text-karekusa"
+                    : "text-white/90 hover:text-white"
+                }`}
               >
-                {item.children ? (
-                  <button
-                    aria-haspopup="true"
-                    aria-expanded={activeDropdown === item.label}
-                    onClick={() => setActiveDropdown(activeDropdown === item.label ? null : item.label)}
-                    onKeyDown={(event) => { if (event.key === "Escape") setActiveDropdown(null); }}
-                    className={`relative whitespace-nowrap px-2 xl:px-4 py-2 text-sm tracking-wide transition-colors duration-300 group ${
-                      scrolled
-                        ? "text-sumi hover:text-karekusa"
-                        : "text-white/90 hover:text-white"
-                    }`}
-                  >
-                    {item.label}
-                    <span
-                      className={`absolute bottom-0 left-2 right-2 xl:left-4 xl:right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
-                        scrolled ? "bg-karekusa" : "bg-white"
-                      }`}
-                    />
-                  </button>
-                ) : item.href.startsWith("http") ? (
-                  <a
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`relative whitespace-nowrap px-2 xl:px-4 py-2 text-sm tracking-wide transition-colors duration-300 group inline-block ${
-                      scrolled
-                        ? "text-sumi hover:text-karekusa"
-                        : "text-white/90 hover:text-white"
-                    }`}
-                  >
-                    {item.label}
-                    <span
-                      className={`absolute bottom-0 left-2 right-2 xl:left-4 xl:right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
-                        scrolled ? "bg-karekusa" : "bg-white"
-                      }`}
-                    />
-                  </a>
-                ) : (
-                  <Link
-                    href={item.href}
-                    className={`relative whitespace-nowrap px-2 xl:px-4 py-2 text-sm tracking-wide transition-colors duration-300 group inline-block ${
-                      scrolled
-                        ? "text-sumi hover:text-karekusa"
-                        : "text-white/90 hover:text-white"
-                    }`}
-                  >
-                    {item.label}
-                    <span
-                      className={`absolute bottom-0 left-2 right-2 xl:left-4 xl:right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
-                        scrolled ? "bg-karekusa" : "bg-white"
-                      }`}
-                    />
-                  </Link>
-                )}
-
-                {/* Dropdown */}
-                {item.children && (
-                  <AnimatePresence>
-                    {activeDropdown === item.label && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 8 }}
-                        transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute top-full left-0 pt-3"
-                      >
-                        <div className="bg-white rounded-sm shadow-lg border border-usuzumi/30 py-2 min-w-[200px]">
-                          {item.children.map((child) => (
-                            <Link
-                              key={child.href}
-                              href={child.href}
-                              className="block px-5 py-2.5 text-sm text-sumi hover:text-karekusa hover:bg-tsuchikabe/50 transition-colors duration-200"
-                            >
-                              {child.label}
-                            </Link>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                )}
-              </div>
+                {item.label}
+                <span
+                  aria-hidden="true"
+                  className={`absolute bottom-0 left-2 right-2 xl:left-3 xl:right-3 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ${
+                    scrolled ? "bg-karekusa" : "bg-white"
+                  }`}
+                />
+              </a>
             ))}
           </nav>
 
@@ -281,7 +168,7 @@ export function Header() {
 
           {/* Mobile Toggle - Hamburger morphing to X */}
           <button
-            className="lg:hidden relative w-10 h-10 flex items-center justify-center"
+            className="lg:hidden relative w-11 h-11 flex items-center justify-center"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? "メニューを閉じる" : "メニューを開く"}
           >
@@ -356,7 +243,7 @@ export function Header() {
                 <button
                   onClick={() => setMobileOpen(false)}
                   aria-label="メニューを閉じる"
-                  className="w-10 h-10 flex items-center justify-center text-sumi"
+                  className="w-11 h-11 flex items-center justify-center text-sumi"
                 >
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <path d="M4 4L16 16M16 4L4 16" />
@@ -386,47 +273,13 @@ export function Header() {
                       initial="closed"
                       animate="open"
                     >
-                      {item.children ? (
-                        <div>
-                          <Link
-                            href={item.href}
-                            className="block py-3 text-sm font-medium text-konsumi tracking-wide border-b border-usuzumi/20"
-                            onClick={() => setMobileOpen(false)}
-                          >
-                            {item.label}
-                          </Link>
-                          <div className="pl-4">
-                            {item.children.map((child) => (
-                              <Link
-                                key={child.href}
-                                href={child.href}
-                                className="block py-2.5 text-sm text-haicha hover:text-sumi transition-colors"
-                                onClick={() => setMobileOpen(false)}
-                              >
-                                {child.label}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      ) : item.href.startsWith("http") ? (
-                        <a
-                          href={item.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block py-3 text-sm font-medium text-konsumi tracking-wide border-b border-usuzumi/20"
-                          onClick={() => setMobileOpen(false)}
-                        >
-                          {item.label}
-                        </a>
-                      ) : (
-                        <Link
-                          href={item.href}
-                          className="block py-3 text-sm font-medium text-konsumi tracking-wide border-b border-usuzumi/20"
-                          onClick={() => setMobileOpen(false)}
-                        >
-                          {item.label}
-                        </Link>
-                      )}
+                      <a
+                        href={item.href}
+                        className="block py-3 text-sm font-medium text-konsumi tracking-wide border-b border-usuzumi/20"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        {item.label}
+                      </a>
                     </motion.div>
                   ))}
                 </div>

@@ -37,7 +37,7 @@ export function LineRecommendation({ variant, children }: { variant: keyof typeo
           <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
             {line.eyebrow}
           </p>
-          <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6">
+          <h2 id={variant === "home" ? "contact" : undefined} tabIndex={variant === "home" ? -1 : undefined} className={`${variant === "home" ? "mx-auto w-fit scroll-mt-40 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-karekusa " : ""}font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light mb-6`}>
             {line.heading}
           </h2>
           <p className={style.body}>

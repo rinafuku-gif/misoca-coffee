@@ -79,8 +79,8 @@
   },
   "journal": {
     "eyebrow": "Journal",
-    "heading": "コラム・お知らせ",
-    "ctaLabel": "すべてのジャーナルを見る",
+    "heading": "ニュース・コラム",
+    "ctaLabel": "ニュース・コラムをすべて見る",
     "ctaHref": "/blog"
   },
   "newArrival": {

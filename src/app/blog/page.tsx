@@ -44,7 +44,7 @@ export default function BlogPage() {
     <>
       <PageHero
         title="BLOG"
-        subtitle="コラム・お知らせ"
+        subtitle="ニュース・コラム"
         image="/images/hero/hero-4.jpg"
       />
 

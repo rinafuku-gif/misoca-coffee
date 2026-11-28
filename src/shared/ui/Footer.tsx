@@ -12,16 +12,17 @@ const footerLinks = [
     ],
   },
   {
-    title: "コーヒーを買う",
+    title: "コーヒーを楽しむ",
     links: [
       { href: "/shop", label: "オンラインショップ" },
-      { href: "/stand", label: "コーヒースタンド" },
+      { href: "/stand", label: "コーヒーが飲める場所" },
     ],
   },
   {
-    title: "三十日珈琲について",
+    title: "私たちについて",
     links: [
       { href: "/about", label: "三十日珈琲について" },
+      { href: "/blog", label: "ニュース・コラム" },
       { href: "/access", label: "アクセス" },
       { href: "/faq", label: "よくある質問" },
     ],
