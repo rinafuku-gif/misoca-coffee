@@ -13,7 +13,7 @@ describe("ヘッダー: オンラインショップと焙煎体験の予約を�
     const nav = source.slice(source.indexOf("const navItems"), source.indexOf("];", source.indexOf("const navItems")));
     expect(nav).not.toContain("オンラインショップ");
     expect(nav).not.toContain('"/shop"');
-    for (const label of ["体験する", "コーヒースタンド", "知る", "アクセス", "お問い合わせ"]) expect(nav).toContain(label);
+    for (const label of ["サービス", "コーヒースタンド", "三十日珈琲について", "アクセス", "お問い合わせ"]) expect(nav).toContain(label);
     // 2026-11-28: the menu's LINE became お問い合わせ (/contact, where LINE is offered first).
     expect(nav).toContain('{ href: "/contact", label: "お問い合わせ" }'); expect(nav).not.toContain("lin.ee");
     const html = renderToStaticMarkup(<Header />);

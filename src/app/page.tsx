@@ -321,41 +321,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── 7. Gallery ─── */}
-      <section className="py-28 md:py-40">
-        <div className="max-w-6xl mx-auto px-6 md:px-8">
-          <ScrollReveal>
-            <div className="text-center mb-16 md:mb-24">
-              <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
-                {homeContent.gallery.eyebrow}
-              </p>
-              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
-                {homeContent.gallery.heading}
-              </h2>
-            </div>
-          </ScrollReveal>
-        </div>
-        <div className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide px-6 md:px-8 pb-4 snap-x snap-mandatory">
-          {galleryImages.map((img) => (
-            <div
-              key={img.src}
-              className="flex-shrink-0 w-[70vw] md:w-[35vw] lg:w-[28vw] snap-center"
-            >
-              <div className="relative aspect-[3/4] overflow-hidden group">
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  fill
-                  className="object-cover hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
-                  sizes="(max-width: 768px) 70vw, (max-width: 1024px) 35vw, 28vw"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-700" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ─── 8. Online Shop ─── */}
       <section className="py-36 md:py-52">
         <div className="max-w-6xl mx-auto px-6 md:px-8">
@@ -477,6 +442,41 @@ export default function Home() {
               </Link>
             </div>
           </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ─── 7. Gallery ─── */}
+      <section className="py-28 md:py-40">
+        <div className="max-w-6xl mx-auto px-6 md:px-8">
+          <ScrollReveal>
+            <div className="text-center mb-16 md:mb-24">
+              <p className="text-[11px] tracking-[0.5em] text-gold/70 font-light mb-6 uppercase">
+                {homeContent.gallery.eyebrow}
+              </p>
+              <h2 className="font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light">
+                {homeContent.gallery.heading}
+              </h2>
+            </div>
+          </ScrollReveal>
+        </div>
+        <div className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide px-6 md:px-8 pb-4 snap-x snap-mandatory">
+          {galleryImages.map((img) => (
+            <div
+              key={img.src}
+              className="flex-shrink-0 w-[70vw] md:w-[35vw] lg:w-[28vw] snap-center"
+            >
+              <div className="relative aspect-[3/4] overflow-hidden group">
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  fill
+                  className="object-cover hover:scale-[1.03] transition-transform duration-[1.5s] ease-out"
+                  sizes="(max-width: 768px) 70vw, (max-width: 1024px) 35vw, 28vw"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-700" />
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

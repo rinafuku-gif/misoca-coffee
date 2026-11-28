@@ -19,17 +19,17 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    label: "体験する",
+    label: "サービス",
     href: "/experience",
     children: [
-      { href: "/experience", label: "焙煎体験予約" },
+      { href: "/experience", label: "焙煎体験" },
       { href: "/catering", label: "コーヒーケータリング" },
       { href: "/mobile-roasting", label: "出張焙煎体験" },
     ],
   },
   { label: "コーヒースタンド", href: "/stand" },
   {
-    label: "知る",
+    label: "三十日珈琲について",
     href: "/about",
     children: [
       { href: "/about", label: "三十日珈琲について" },
@@ -139,16 +139,16 @@ export function Header() {
 
   return (
     <>
-      {/* Gold accent line at very top */}
-      <div className="fixed top-0 left-0 right-0 z-[60] h-[2px] bg-gold" />
-
       <header
-        className={`fixed top-[2px] left-0 right-0 z-50 transition-all duration-500 ${
+        className={`sticky top-0 z-50 pt-[2px] -mb-[82px] transition-colors duration-500 ${
           scrolled
             ? "bg-white/90 backdrop-blur-xl shadow-[0_1px_0_rgba(213,209,201,0.5)]"
             : "bg-transparent"
         }`}
       >
+        {/* Keep the accent and navigation in one sticky surface on iPad WebKit.
+            The negative margin preserves the existing hero overlay without fixed-position drift. */}
+        <div aria-hidden="true" className="absolute top-0 inset-x-0 h-[2px] bg-gold" />
         <div className="max-w-7xl mx-auto px-6 md:px-8 h-20 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
@@ -193,6 +193,10 @@ export function Header() {
               >
                 {item.children ? (
                   <button
+                    aria-haspopup="true"
+                    aria-expanded={activeDropdown === item.label}
+                    onClick={() => setActiveDropdown(activeDropdown === item.label ? null : item.label)}
+                    onKeyDown={(event) => { if (event.key === "Escape") setActiveDropdown(null); }}
                     className={`relative whitespace-nowrap px-2 xl:px-4 py-2 text-sm tracking-wide transition-colors duration-300 group ${
                       scrolled
                         ? "text-sumi hover:text-karekusa"

@@ -129,13 +129,16 @@ h1 ヒーロー     : text-2xl md:text-4xl lg:text-5xl font-serif font-light tra
 
 ### ヘッダー
 
-- 固定位置（`fixed top-[2px]`）。最上部に gold の 2px ラインアクセント（`z-[60]`）
+- 上端追従（`sticky top-0`）。gold の2pxラインとナビを1つのヘッダー面にまとめる（`pt-[2px]`・`z-50`）。高さ82pxと`-mb-[82px]`で従来のヒーロー重ね表示を維持。iPadのブラウザバー変化を含む実機確認は別に行う。
 - スクロール前: `bg-transparent`、テキスト `text-white/90`
 - スクロール後: `bg-white/90 backdrop-blur-xl shadow-[0_1px_0_rgba(213,209,201,0.5)]`
 - ロゴは2種類のPNG画像でスクロール状態を切り替え（white/dark）
 - 高さ: `h-20`（80px）
 
 ### ナビゲーションリンク（デスクトップ）
+
+- 呼称案：「サービス」配下に「焙煎体験」「コーヒーケータリング」「出張焙煎体験」。トップとフッターも同じ名称を使用。写真確認前の未公開候補。
+- 子メニューはホバーとタップ／クリックで開き、Escapeで閉じる。
 
 - ホバー時: `scale-x-0 → scale-x-100` のunderline アニメーション（`origin-left`、`duration-300`）
 - ドロップダウン: `bg-white rounded-sm border border-usuzumi/30`、Framer Motion `y: 8 → 0`

@@ -4,9 +4,9 @@ import { InstagramIcon, LineIcon, instagramAccounts, lineAccount } from "./socia
 
 const footerLinks = [
   {
-    title: "体験する",
+    title: "サービス",
     links: [
-      { href: "/experience", label: "焙煎体験予約" },
+      { href: "/experience", label: "焙煎体験" },
       { href: "/catering", label: "コーヒーケータリング" },
       { href: "/mobile-roasting", label: "出張焙煎体験" },
     ],
@@ -19,7 +19,7 @@ const footerLinks = [
     ],
   },
   {
-    title: "知る",
+    title: "三十日珈琲について",
     links: [
       { href: "/about", label: "三十日珈琲について" },
       { href: "/access", label: "アクセス" },

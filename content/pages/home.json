@@ -8,8 +8,8 @@
     "ctaHref": "/experience"
   },
   "brandStatement": {
-    "line1": "焙煎する、届ける、出会う。",
-    "line2": "三十日珈琲の3つの体験をご紹介します。"
+    "line1": "焙煎体験から、出張サービスまで。",
+    "line2": "焙煎体験・コーヒーケータリング・出張焙煎体験をご案内します。"
   },
   "ourStory": {
     "eyebrow": "Our Story",
@@ -130,7 +130,7 @@
   },
   "services": {
     "eyebrow": "Services",
-    "heading": "三十日珈琲の体験",
+    "heading": "3つのサービス",
     "items": [
       {
         "title": "焙煎体験",
