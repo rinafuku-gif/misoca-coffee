@@ -1,8 +1,9 @@
 import type { BeanDisplay } from "../bean-display";
+import type { ProductCardSettings } from "../product-card-settings";
 import { productMerchandising } from "../product-merchandising";
 
 export function ProductCardDetails({ item, showRoast = false }: {
-  item: { skuId: string; name: string; display: BeanDisplay | null };
+  item: { skuId: string; name: string; display: BeanDisplay | null; merchandising?: ProductCardSettings };
   showRoast?: boolean;
 }) {
   const { badge, note } = productMerchandising(item);
@@ -23,7 +24,7 @@ export function ProductCardDetails({ item, showRoast = false }: {
           ) : null}
         </div>
       ) : null}
-      {note ? <p className="mb-3 line-clamp-2 text-sm leading-relaxed text-haicha">{note}</p> : null}
+      {note ? <p className={`mb-3 text-sm leading-relaxed text-haicha ${item.merchandising?.note ? "break-words" : "line-clamp-2"}`}>{note}</p> : null}
     </>
   );
 }

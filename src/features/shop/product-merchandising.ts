@@ -1,5 +1,6 @@
 import { z } from "zod";
 import config from "@content/pages/shop-merchandising.json";
+import { productCardBadgeLabels, type ProductCardSettings } from "./product-card-settings";
 import type { BeanDisplay } from "./bean-display";
 import { findShopItem, isShopItemSku } from "./shop-item-link";
 
@@ -14,14 +15,16 @@ const entries = config.items.flatMap(entry => {
   return parsed.success ? [parsed.data] : [];
 });
 
-const badgeLabels = { new: "NEW", recommended: "おすすめ" } as const;
-
-export function productMerchandising(item: { skuId: string; name: string; display: BeanDisplay | null }) {
+export function productMerchandising(item: { skuId: string; name: string; display: BeanDisplay | null; merchandising?: ProductCardSettings }) {
+  if (item.merchandising) {
+    const { badge, note } = item.merchandising;
+    return { badge: badge ? productCardBadgeLabels[badge] : undefined, note: note || item.display?.flavor.trim() };
+  }
   const exact = entries.find(entry => entry.key === item.skuId);
   const named = entries.find(entry => entry.key === "yuzu-drip-bag" && findShopItem("yuzu-drip-bag", [item]));
   const entry = exact ?? named;
   return {
-    badge: entry?.badge && badgeLabels[entry.badge],
+    badge: entry?.badge && productCardBadgeLabels[entry.badge],
     note: entry?.note || item.display?.flavor.trim(),
   };
 }

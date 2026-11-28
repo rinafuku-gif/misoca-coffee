@@ -3,6 +3,8 @@ import { z } from "zod";
 import { purchaserStatusSchema, purchaseCancellationResultSchema, RECEIVING_METHODS, DELIVERY_METHODS_HEADER, RECEPTION_HEADER } from "../purchaser-status";
 import { buyerProductPublicationSchema } from "../product-publication-view";
 
+import { PRODUCT_CARD_HEADER, productCardSettingsSchema } from "../product-card-settings";
+
 const paths = new Set(["catalog", "quote", "checkout", "status", "cancel", "cancel-request"].map(action => `/api/ec/purchase/${action}`));
 export const PURCHASE_WEBHOOK_PATH = "/api/ec/webhook";
 const privateHeaders = { "cache-control": "no-store, private", "referrer-policy": "no-referrer",
@@ -46,7 +48,8 @@ export async function readPurchaseTransportBytes(body: ReadableStream<Uint8Array
   } finally { signal.removeEventListener("abort", cancel); cancel(); reader.releaseLock(); }
 }
 const item = z.object({ skuId: z.string().min(1).max(128), name: z.string(), unit: z.string(), unitPrice: z.number().int().nonnegative(),
-  kind: z.enum(["physical", "gift"]), maxQuantity: z.number().int().min(0).max(20), publication: buyerProductPublicationSchema.optional() }).strict();
+  kind: z.enum(["physical", "gift"]), maxQuantity: z.number().int().min(0).max(20), publication: buyerProductPublicationSchema.optional(),
+  merchandising: productCardSettingsSchema.optional().catch(undefined) }).strict();
 // deliveryMethods: only present when the management side offers methods AND this proxy asked for it (header below). Absent = shipping only.
 // reception: only present when the reception switch (H) is open AND this proxy asked for it (header below). Absent = no switch / not paused by it.
 const reception = z.object({ state: z.literal("open") }).strict().or(
@@ -114,6 +117,7 @@ export function createPurchaseWebsiteProxy(options: { siteOrigin: string; backen
       if (!/^[a-f0-9]{64}$/.test(client) || !Number.isSafeInteger(at) || at < 0) return unavailable();
       const headers = new Headers({ "content-type": "application/json", authorization: `Bearer ${secret}`, "x-misoca-site-origin": siteOrigin,
         "x-misoca-client": client, "x-misoca-at": String(at), "x-misoca-request-id": randomUUID(), [DELIVERY_METHODS_HEADER]: "v1", [RECEPTION_HEADER]: "v1" });
+      if (url.pathname.endsWith("/catalog")) headers.set(PRODUCT_CARD_HEADER, "v1");
       const upstream = new Request(backendOrigin + url.pathname, { method: "POST", headers, body: payload, redirect: "manual", signal: controller.signal });
       // Race bounds adapters that don't implement AbortSignal correctly too.
       const response = await Promise.race([send(upstream), new Promise<never>((_, reject) => controller.signal.addEventListener("abort", () => reject(Error("OUTCOME_UNKNOWN")), { once: true }))]);

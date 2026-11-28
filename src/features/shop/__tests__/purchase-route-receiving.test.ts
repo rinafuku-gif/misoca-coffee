@@ -45,7 +45,10 @@ describe("サイトの受け口は、受け取り方法の項目を落とさず�
     for (const request of seen) {
       expect(request.headers["x-misoca-delivery-methods"]).toBe("v1");
       expect(request.headers["x-misoca-reception"]).toBe("v1");
-      expect(Object.keys(request.headers).sort()).toEqual(["authorization", "content-type", "x-misoca-at", "x-misoca-client", "x-misoca-delivery-methods", "x-misoca-reception", "x-misoca-request-id", "x-misoca-site-origin"]);
+      const isCatalog = request.url.endsWith("/catalog");
+      expect(request.headers["x-misoca-product-card"]).toBe(isCatalog ? "v1" : undefined);
+      expect(Object.keys(request.headers).sort()).toEqual(["authorization", "content-type", "x-misoca-at", "x-misoca-client", "x-misoca-delivery-methods",
+        ...(isCatalog ? ["x-misoca-product-card"] : []), "x-misoca-reception", "x-misoca-request-id", "x-misoca-site-origin"]);
     }
   });
 

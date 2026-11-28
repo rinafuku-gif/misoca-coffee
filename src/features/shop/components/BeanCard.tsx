@@ -3,13 +3,14 @@
 import { AnimatePresence, motion } from "framer-motion";
 import type { BeanDisplay } from "../bean-display";
 import { addButtonState, type CatalogItemView } from "../bean-cart";
+import type { ProductCardSettings } from "../product-card-settings";
 import type { BuyerProductPublication } from "../product-publication-view";
 import { ProductCardDetails } from "./ProductCardDetails";
 import { CheckIcon, ProductPhoto } from "./shop-catalog-parts";
 
 /** A sellable catalog item with its (optional) Notion display row. Name, unit
  * and price always come from the purchase catalog. */
-export type BeanItem = CatalogItemView & { kind: "physical" | "gift"; publication?: BuyerProductPublication; display: BeanDisplay | null };
+export type BeanItem = CatalogItemView & { kind: "physical" | "gift"; publication?: BuyerProductPublication; merchandising?: ProductCardSettings; display: BeanDisplay | null };
 export const yen = (value: number) => `¥${value.toLocaleString("ja-JP")}`;
 
 export function AddToCartButton({ item, quantity, blocked, added, onAdd, large = false }: {

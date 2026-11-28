@@ -2,6 +2,7 @@ import { z } from "zod";
 import { buyerProductPublicationSchema } from "./product-publication-view";
 import { catalogDeliveryMethodsSchema } from "./receiving-method";
 import { catalogReceptionSchema } from "./reception-notice";
+import { productCardSettingsSchema } from "./product-card-settings";
 
 /** The purchase catalog (`/api/ec/purchase/catalog`): what can be bought and for how
  * much. One reading for every screen that lists products (the shop and the home
@@ -11,7 +12,7 @@ export const catalogProductSchema = z.object({ skuId: z.string(), name: z.string
 // shape = shipping only, as before (it never fails the catalog). reception: present only when the reception
 // switch is open AND the site asked for it. Absent, or not in the agreed shape, keeps the fixed sentence (G-4).
 // Neither ever fails the catalog itself. Every other field is checked as strictly as before.
-export const catalogSchema = z.object({ items: z.array(catalogProductSchema).max(50), nextOffset: z.number().int().nonnegative().nullable(), acceptingOrders: z.boolean(), deliveryMethods: catalogDeliveryMethodsSchema, reception: catalogReceptionSchema }).strict();
+export const catalogSchema = z.object({ items: z.array(catalogProductSchema.extend({ merchandising: productCardSettingsSchema.optional().catch(undefined) })).max(50), nextOffset: z.number().int().nonnegative().nullable(), acceptingOrders: z.boolean(), deliveryMethods: catalogDeliveryMethodsSchema, reception: catalogReceptionSchema }).strict();
 export type Catalog = z.infer<typeof catalogSchema>;
 export type CatalogProduct = z.infer<typeof catalogProductSchema>;
 

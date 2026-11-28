@@ -12,9 +12,10 @@ describe("公開サイトとEC台帳の専用接続", () => {
       expect(request.url).toBe(backendOrigin + "/api/ec/purchase/catalog");
       // x-misoca-delivery-methods: the website states that it can read `deliveryMethods` in a catalog answer (added with the receiving methods).
       // x-misoca-reception: the website states that it can read `reception` in a catalog answer (added with the reception switch, H).
-      expect([...request.headers.keys()].sort()).toEqual(["authorization", "content-type", "x-misoca-at", "x-misoca-client", "x-misoca-delivery-methods", "x-misoca-reception", "x-misoca-request-id", "x-misoca-site-origin"]);
+      expect([...request.headers.keys()].sort()).toEqual(["authorization", "content-type", "x-misoca-at", "x-misoca-client", "x-misoca-delivery-methods", "x-misoca-product-card", "x-misoca-reception", "x-misoca-request-id", "x-misoca-site-origin"]);
       expect(request.headers.get("x-misoca-delivery-methods")).toBe("v1");
       expect(request.headers.get("x-misoca-reception")).toBe("v1");
+      expect(request.headers.get("x-misoca-product-card")).toBe("v1");
       expect(request.headers.get("authorization")).toBe(`Bearer ${serverKey}`);
       expect(request.redirect).toBe("manual");
       expect(await request.text()).toBe("{}"); return success();
