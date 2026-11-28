@@ -7,6 +7,9 @@ import Link from "next/link";
 import { z } from "zod";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
+import { isRoastBean, preferencesForCart, type RoastLevel, type RoastPreferences } from "../roast-preferences";
+import { readRoastAttempt, readRoastDraft, saveRoastAttempt, saveRoastDraft } from "../roast-preference-session";
+import { RoastPreferenceFields } from "./RoastPreferenceFields";
 import { roastChoice, roastChoices, type RoastChoice } from "../product-merchandising";
 import { groupCatalogItems, joinCatalogWithDisplay, readBeanDisplays, type BeanDisplay } from "../bean-display";
 import { catalogProductSchema, catalogSchema, postPurchase as post, type Catalog } from "../purchase-catalog";
@@ -56,6 +59,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
   const [refused, setRefused] = useState(false);
   // The purchase form. Errors show under a field once it was left, or for every
   // field after 「お支払いへ進む」 was pressed with something missing.
+  const [roastDraft, setRoastDraft] = useState<RoastPreferences>([]);
   const [form, setForm] = useState<CheckoutFormDraft>(emptyCheckoutForm);
   const [touched, setTouched] = useState(new Set<FormField>()); const [submitted, setSubmitted] = useState(false);
   // The server refused the form (400): one short line next to the pay button.
@@ -92,7 +96,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
         const result = await post("catalog", {});
         if (!result.ok) throw new Error("CATALOG_UNAVAILABLE");
         const loaded = catalogSchema.parse(result.body);
-        if (live) { rememberCatalog(loaded); setSession(saved); setCatalog(loaded); setForm(readCheckoutFormDraft(sessionStorage)); }
+        if (live) { rememberCatalog(loaded); setSession(saved); setCatalog(loaded); setForm(readCheckoutFormDraft(sessionStorage)); setRoastDraft(preferencesForCart(readRoastDraft(sessionStorage), saved.cart)); }
       } catch (error) {
         if (live) { setFatal(true); setNotice(purchaseNotice(error, checkoutCopy.loadFailed)); }
       } finally { if (live) setBusy(false); }
@@ -137,8 +141,23 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     try {
       const cart = session.cart.filter(l => l.skuId !== skuId); if (value > 0) cart.push({ skuId, quantity: value });
       save({ ...session, cart }); setQuotation(null); setNotice("");
+      if (value === 0) {
+        const pruned = roastDraft.filter(item => item.skuId !== skuId);
+        setRoastDraft(pruned);
+        try { saveRoastDraft(sessionStorage, pruned); } catch { /* Removed lines are also filtered before checkout. */ }
+      }
       return true;
     } catch { setNotice("カートを保存できません。内容を保持できるまで決済は始めません。"); return false; }
+  }
+  function chooseRoast(skuId: string, level?: RoastLevel) {
+    if (!session || session.attempt || busy || !isRoastBean(skuId) || !session.cart.some(line => line.skuId === skuId)) return;
+    const next = preferencesForCart(roastDraft, session.cart).filter(item => item.skuId !== skuId);
+    if (level) next.push({ skuId, level });
+    try {
+      saveRoastDraft(sessionStorage, next);
+      setRoastDraft(next);
+      setNotice("");
+    } catch { setNotice("焙煎度のご希望を保存できませんでした。もう一度お選びください。"); }
   }
   function chooseMethod(next: DeliveryMethod) {
     if (!session || session.attempt || busy || !methodChoices.includes(next) || next === method) return;
@@ -164,7 +183,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
   async function checkout(attempt: PurchaseAttempt, isNewPurchase = false) {
     const current = readPurchaseSession(sessionStorage);
     save({ ...current, viewKey: attempt.purchaseKey });
-    const result = await send("checkout", checkoutRequestBody(attempt));
+    const result = await send("checkout", checkoutRequestBody(attempt, readRoastAttempt(sessionStorage, attempt.purchaseKey)));
     const latest = readPurchaseSession(sessionStorage);
     // 「やり直す」 was pressed meanwhile: never open a new payment page.
     if (latest.attempt?.purchaseKey !== attempt.purchaseKey || latest.attempt.cancelRequested || cancellationIntents.current.has(attempt.purchaseKey)) return;
@@ -202,6 +221,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     if (formProblems(method)) return;
     const purchaseKey = newPurchaseKey();
     const attempt: PurchaseAttempt = { purchaseKey, lines: session.cart, acceptedQuote: currentQuotation.acceptedQuote, ...(method === "shipping" ? {} : { deliveryMethod: method }), form: checkoutFormWire(form, method) };
+    saveRoastAttempt(sessionStorage, purchaseKey, preferencesForCart(roastDraft, session.cart));
     // Save the exact attempt atomically BEFORE an external outcome can become unknown.
     save({ ...session, attempt, viewKey: purchaseKey }); await checkout(attempt, true);
   }
@@ -216,6 +236,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     if (formProblems(target)) { openCheckout(); return; }
     const purchaseKey = newPurchaseKey(), current = readPurchaseSession(sessionStorage);
     const attempt: PurchaseAttempt = { purchaseKey, lines: previous.lines, acceptedQuote: previous.acceptedQuote, ...(previous.deliveryMethod ? { deliveryMethod: previous.deliveryMethod } : {}), form: checkoutFormWire(form, target) };
+    saveRoastAttempt(sessionStorage, purchaseKey, readRoastAttempt(sessionStorage, previous.purchaseKey));
     save({ ...current, attempt, viewKey: purchaseKey }); await checkout(attempt, true);
   }
   // 「やり直す」: ONE cancel request for the previous checkout (never resent by
@@ -249,6 +270,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
     const history = updated.history.some(h => h.orderReference === status.orderReference) ? updated.history : [...updated.history, { purchaseKey: session.attempt.purchaseKey, orderReference: status.orderReference }];
     // A new order starts from shipping again; the finished order keeps its own method on the server.
     save({ ...withDeliveryMethod(updated, undefined), attempt: null, history }); setQuotation(null);
+    setRoastDraft(previous => preferencesForCart(previous, updated.cart));
   }
   /** Opens the cart panel on the checkout section; its total is asked for right away. */
   function openCheckout() { lastQuoteKey.current = ""; setDetailSku(null); setDrawerStep("checkout"); setCartOpen(true); }
@@ -337,7 +359,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
   return <main className="min-h-screen bg-kominka-white pb-28 text-sumi">
     {!shopRoot ? <div className="px-5 pt-8 sm:px-8"><div className="mx-auto max-w-6xl"><PurchaseBrandBar /></div></div> : null}
     {!shopRoot ? banner : null}
-    <PageHero title="ONLINE SHOP" subtitle="焙煎したてをお届け" image="/images/experience/coffee-beans-close.jpg" compact={!shopRoot} />
+    <PageHero title="ONLINE SHOP" subtitle="コーヒー豆とドリップバッグ" image="/images/experience/coffee-beans-close.jpg" compact={!shopRoot} />
     {shopRoot ? <NewArrivalBanner /> : null}
     <FreshnessStrip />
     {shopRoot ? banner : null}
@@ -361,7 +383,7 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
                 </div>
               </ScrollReveal>
               {shopRoot && group.key === "beans" && (availableRoasts.length > 1 || roastFilter !== "all") ? (
-                <div className="mb-10 flex flex-wrap justify-center gap-2" role="group" aria-label="焙煎度で絞り込む">
+                <div className="mb-10 flex flex-wrap justify-center gap-2" role="group" aria-label="おすすめの焙煎度で絞り込む">
                   {[{ key: "all", label: "すべての豆" } as const, ...availableRoasts].map(choice => (
                     <button
                       key={choice.key}
@@ -424,6 +446,14 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
             <span className="min-w-0 break-words">{item.name} <span className="text-haicha">{item.unit} × {item.quantity}</span></span>
             <span className="shrink-0">{money(item.unitPrice * item.quantity)}</span>
           </li>)}</ul>
+          <RoastPreferenceFields
+            items={lines.flatMap(line => line.item ? [{
+              skuId: line.skuId,
+              name: line.item.name,
+              recommended: beans.find(bean => bean.skuId === line.skuId)?.display?.roast.trim(),
+            }] : [])}
+            preferences={roastDraft} disabled={busy || Boolean(session.attempt)} onChange={chooseRoast}
+          />
           <MethodPicker methods={methodChoices} value={method} disabled={busy} unavailable={unavailableMethods} onChange={chooseMethod} />
           {currentQuotation ? <div id="purchase-quote" aria-live="polite">
             <dl className="space-y-2">

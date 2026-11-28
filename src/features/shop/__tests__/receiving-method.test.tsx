@@ -182,7 +182,7 @@ describe("方法ごとの依頼の本文", () => {
   });
   it("購入画面の2つの依頼は、この2つの関数だけで本文を作る", () => {
     expect(panel).toContain('const result = await send("quote", quoteRequestBody(session.cart, method));');
-    expect(panel).toContain('const result = await send("checkout", checkoutRequestBody(attempt));');
+    expect(panel).toContain('const result = await send("checkout", checkoutRequestBody(attempt, readRoastAttempt(sessionStorage, attempt.purchaseKey)));');
     expect(panel.match(/send\("(quote|checkout)"/g)).toHaveLength(2);
     expect(panel).toContain('acceptedQuote: currentQuotation.acceptedQuote, ...(method === "shipping" ? {} : { deliveryMethod: method }), form: checkoutFormWire(form, method) };');
     // 商品一覧・状況の本文は今までと同じ。

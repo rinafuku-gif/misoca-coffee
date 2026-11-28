@@ -1,6 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { isRoastBean } from "../roast-preferences";
+import { ProductCardBadges } from "./ProductCardDetails";
 import { AddToCartButton, yen, type BeanItem } from "./BeanCard";
 import { ProductPublicationDetails } from "./ProductPublicationDetails";
 import { CloseIcon, ProductFactGrid, ProductPhoto } from "./shop-catalog-parts";
@@ -28,7 +30,7 @@ export function BeanDetailModal({ item, quantity, blocked, added, imageFailed, o
         </button>
         <div className="relative aspect-[3/2] md:aspect-[16/9] overflow-hidden">
           <ProductPhoto image={d?.image ?? ""} alt={item.name} failed={imageFailed} onError={onImageError} sizes="(max-width: 768px) 100vw, 672px" variant="modal" />
-          {d?.roast ? <span className="absolute top-4 left-4 bg-konsumi/80 text-white text-xs px-3 py-1.5 tracking-wider">{d.roast}</span> : null}
+          <ProductCardBadges roast={d?.roast} recommendedRoast={isRoastBean(item.skuId)} />
         </div>
         <div className="p-6 sm:p-8 md:p-10">
           {d?.origin ? <p className="text-xs tracking-[0.3em] text-karekusa uppercase mb-2">{d.origin}</p> : null}

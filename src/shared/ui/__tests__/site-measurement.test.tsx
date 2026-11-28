@@ -74,7 +74,7 @@ describe("計測するページと計測しないページの行き来は、ペ�
     // 2026-11-27: the compact checkout section and the pending-payment banner.
     "CheckoutParts.tsx",
     // 2026-11-27: the purchase form (購入者・お届け先・送り主・備考・メルマガ).
-    "CheckoutForm.tsx",
+    "CheckoutForm.tsx", "RoastPreferenceFields.tsx",
     // 2026-11-27 (4c): the status page's cancel request.
     "StatusCancel.tsx",
     // 2026-11-28: the pickup guide's Instagram link (plain <a>, new tab) and the steps after a cancel request.
@@ -84,7 +84,7 @@ describe("計測するページと計測しないページの行き来は、ペ�
     expect(read("src/app/shop/order/page.tsx")).toContain('from "@/features/shop/components/PurchasePanel"');
     expect(read("src/app/shop/success/page.tsx")).toContain('from "@/features/shop/components/PurchaserStatusPanel"');
     const imported = (file: string) => [...read(join(components, file)).matchAll(/from "\.\/([A-Za-z]+)"/g)].map(match => match[1]).filter(name => /^[A-Z]/.test(name)).sort();
-    expect(imported("PurchasePanel.tsx")).toEqual(["BeanCard", "BeanDetailModal", "CartDrawer", "CheckoutForm", "CheckoutParts", "PurchaseBrand", "PurchaseTerms", "UnlistedCartItems"]);
+    expect(imported("PurchasePanel.tsx")).toEqual(["BeanCard", "BeanDetailModal", "CartDrawer", "CheckoutForm", "CheckoutParts", "PurchaseBrand", "PurchaseTerms", "RoastPreferenceFields", "UnlistedCartItems"]);
     // Lower-case modules are not caught by the pattern above; list them by hand.
     expect([...read(join(components, "PurchasePanel.tsx")).matchAll(/from "\.\/([a-z][a-z-]*)"/g)].map(match => match[1]).sort()).toEqual(["shop-catalog-parts", "use-page-top"]);
     expect([...read(join(components, "PurchaserStatusPanel.tsx")).matchAll(/from "\.\/([a-z][a-z-]*)"/g)].map(match => match[1])).toEqual(["use-page-top"]);

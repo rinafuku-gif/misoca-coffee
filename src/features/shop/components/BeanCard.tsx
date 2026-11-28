@@ -3,9 +3,11 @@
 import { AnimatePresence, motion } from "framer-motion";
 import type { BeanDisplay } from "../bean-display";
 import { addButtonState, type CatalogItemView } from "../bean-cart";
+import { isRoastBean } from "../roast-preferences";
+import { productMerchandising } from "../product-merchandising";
 import type { ProductCardSettings } from "../product-card-settings";
 import type { BuyerProductPublication } from "../product-publication-view";
-import { ProductCardDetails } from "./ProductCardDetails";
+import { ProductCardBadges, ProductCardDetails } from "./ProductCardDetails";
 import { CheckIcon, ProductPhoto } from "./shop-catalog-parts";
 
 /** A sellable catalog item with its (optional) Notion display row. Name, unit
@@ -42,17 +44,18 @@ export function BeanCard({ item, quantity, blocked, added, imageFailed, onImageE
   onImageError(): void; onOpen(): void; onAdd(): void;
 }) {
   const d = item.display;
+  const { badge, note } = productMerchandising(item);
   return <article className="group flex h-full flex-col">
     <button type="button" onClick={onOpen} aria-label={`${item.name}の詳細を見る`} className="block w-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-karekusa">
       <div className="relative aspect-[4/5] overflow-hidden mb-6">
         <ProductPhoto image={d?.image ?? ""} alt={item.name} failed={imageFailed} onError={onImageError} sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out" />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-700" />
-        {d?.roast ? <span className="absolute top-4 left-4 bg-konsumi/80 text-white text-xs px-3 py-1.5 tracking-wider">{d.roast}</span> : null}
+        <ProductCardBadges badge={badge} roast={d?.roast} recommendedRoast={isRoastBean(item.skuId)} />
         {item.maxQuantity === 0 ? <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><span className="text-white text-sm tracking-[0.2em]">在庫なし</span></div> : null}
       </div>
       {d?.origin ? <p className="text-xs tracking-[0.3em] text-karekusa uppercase mb-2">{d.origin}</p> : null}
       <h3 className="font-serif text-base text-konsumi mb-3 tracking-wider font-light leading-snug break-words">{item.name}</h3>
-      <ProductCardDetails item={item} />
+      <ProductCardDetails note={note} expanded={Boolean(item.merchandising?.note)} />
       {d?.process || d?.variety ? <div className="flex flex-wrap gap-1.5 mb-4">
         {[d.process, d.variety].filter(Boolean).map(tag => <span key={tag} className="text-xs text-haicha border border-karekusa/15 px-2 py-0.5 tracking-wide">{tag}</span>)}
       </div> : null}

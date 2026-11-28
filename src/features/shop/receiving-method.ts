@@ -1,3 +1,4 @@
+import type { RoastPreferences } from "./roast-preferences";
 import { z } from "zod";
 import { RECEIVING_METHODS, physicalCopy, type BuyerStatus } from "./purchaser-status";
 import type { CheckoutFormWire } from "./checkout-form";
@@ -49,11 +50,11 @@ export function quoteRequestBody(lines: CartLines, method: DeliveryMethod) {
 }
 /** Built only from the saved attempt, so returning to the same payment sends
  * the same method as the first request (or none, for shipping). */
-export function checkoutRequestBody(attempt: { purchaseKey: string; lines: CartLines; acceptedQuote: string; deliveryMethod?: ReceivingMethod; form?: CheckoutFormWire }) {
+export function checkoutRequestBody(attempt: { purchaseKey: string; lines: CartLines; acceptedQuote: string; deliveryMethod?: ReceivingMethod; form?: CheckoutFormWire }, roastPreferences: RoastPreferences = []) {
   const body = { purchaseKey: attempt.purchaseKey, lines: attempt.lines, acceptedQuote: attempt.acceptedQuote };
   const withMethod = attempt.deliveryMethod === undefined ? body : { ...body, deliveryMethod: attempt.deliveryMethod };
   // PROVISIONAL key until CHECKOUT-FORM-WIRE.md: absent unless the attempt carries the form.
-  return attempt.form === undefined ? withMethod : { ...withMethod, form: attempt.form };
+  return attempt.form === undefined ? withMethod : { ...withMethod, form: attempt.form, ...(roastPreferences.length ? { roastPreferences } : {}) };
 }
 
 // ---------------------------------------------------------------------------

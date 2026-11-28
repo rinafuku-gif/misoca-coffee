@@ -102,7 +102,7 @@ describe("写真の注記と文字の書体", () => {
     const { default: ShopPage } = await import("@/app/shop/page");
     const html = renderToStaticMarkup(<ShopPage />);
     for (const text of caption) expect(html).not.toContain(text);
-    expect(html).toContain("焙煎したてをお届け");
+    expect(html).toContain("コーヒー豆とドリップバッグ");
   });
   const files = ["PurchasePanel.tsx", "PurchaseBrand.tsx", "PurchaseTerms.tsx", "CheckoutCancellationPanel.tsx", "UnlistedCartItems.tsx", "ProductPublicationDetails.tsx", "BeanCard.tsx", "BeanDetailModal.tsx", "CartDrawer.tsx", "shop-catalog-parts.tsx"].map(name => `src/features/shop/components/${name}`);
   it("購入画面の部品は、サイトの書体（Noto Sans / Noto Serif / Playfairのラベル）以外を指定しない", () => {

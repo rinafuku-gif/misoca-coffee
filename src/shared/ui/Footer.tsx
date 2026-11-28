@@ -126,50 +126,35 @@ export function Footer() {
           <div className="lg:col-span-1 hidden lg:block" />
         </div>
 
-        {/* Social & Newsletter Row */}
-        <div className="mt-16 pt-8 border-t border-white/10">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-            {/* Instagram (三十日珈琲・コーヒースタンド) and LINE: each 44px high, named by its visible text */}
-            <div className="flex flex-wrap items-center gap-x-8 gap-y-1">
-              <a
-                href="https://www.instagram.com/misoca_coffee/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex min-h-11 items-center gap-3 text-sm text-ainezu hover:text-white transition-colors duration-300 group"
-              >
-                <InstagramIcon className="w-5 h-5" />
-                <span className="tracking-wide">@misoca_coffee</span>
-              </a>
-              <a
-                href={instagramAccounts[1].href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex min-h-11 items-center gap-3 text-sm text-ainezu hover:text-white transition-colors duration-300 group"
-              >
-                <InstagramIcon className="w-5 h-5" />
-                <span className="tracking-wide">{instagramAccounts[1].handle}</span>
-              </a>
-              <a
-                href={lineAccount.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex min-h-11 items-center gap-3 text-sm text-ainezu hover:text-white transition-colors duration-300 group"
-              >
-                <LineIcon className="w-5 h-5" />
-                <span className="tracking-wide">{lineAccount.label}</span>
-              </a>
-            </div>
-
-            {/* Newsletter placeholder */}
-            <a
-              href="https://my.prairie.cards/u/misocacoffee"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-ainezu/60 hover:text-ainezu tracking-wide transition-colors duration-300"
-            >
-              リンクまとめ（Prairie Cards）
-            </a>
-          </div>
+        {/* Social links */}
+        <div className="mt-16 flex flex-wrap items-center gap-x-8 gap-y-1 border-t border-white/10 pt-8">
+          <a
+            href="https://www.instagram.com/misoca_coffee/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-11 items-center gap-3 text-sm text-ainezu hover:text-white transition-colors duration-300 group"
+          >
+            <InstagramIcon className="w-5 h-5" />
+            <span className="tracking-wide">@misoca_coffee</span>
+          </a>
+          <a
+            href={instagramAccounts[1].href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-11 items-center gap-3 text-sm text-ainezu hover:text-white transition-colors duration-300 group"
+          >
+            <InstagramIcon className="w-5 h-5" />
+            <span className="tracking-wide">{instagramAccounts[1].handle}</span>
+          </a>
+          <a
+            href={lineAccount.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-11 items-center gap-3 text-sm text-ainezu hover:text-white transition-colors duration-300 group"
+          >
+            <LineIcon className="w-5 h-5" />
+            <span className="tracking-wide">{lineAccount.label}</span>
+          </a>
         </div>
 
         {/* Divider pattern */}

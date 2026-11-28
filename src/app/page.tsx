@@ -3,12 +3,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { readPurchaseCatalog, type CatalogProduct } from "@/features/shop/purchase-catalog";
+import { readPurchaseCatalog, type Catalog } from "@/features/shop/purchase-catalog";
 import { joinCatalogWithDisplay, readBeanDisplays, type BeanDisplay } from "@/features/shop/bean-display";
 import { homeShopLineup } from "@/features/shop/home-shop-lineup";
 import { shopItemHrefFor } from "@/features/shop/shop-item-link";
 import { yen } from "@/features/shop/components/BeanCard";
-import { ProductCardDetails } from "@/features/shop/components/ProductCardDetails";
+import { isRoastBean } from "@/features/shop/roast-preferences";
+import { productMerchandising } from "@/features/shop/product-merchandising";
+import { ProductCardBadges, ProductCardDetails } from "@/features/shop/components/ProductCardDetails";
 import { ProductPhoto } from "@/features/shop/components/shop-catalog-parts";
 import { LineRecommendation } from "@/features/contact/LineRecommendation";
 import { InstagramAccounts } from "@/features/contact/InstagramAccounts";
@@ -53,7 +55,7 @@ interface JournalEntry {
 
 export default function Home() {
   // ONLINE SHOP: the same purchase catalog as the shop (ゆずのドリップバッグ + 焙煎豆2つ).
-  const [products, setProducts] = useState<CatalogProduct[]>([]);
+  const [products, setProducts] = useState<Catalog["items"]>([]);
   const [productDisplays, setProductDisplays] = useState<BeanDisplay[] | null>(null);
   const [failedProductImages, setFailedProductImages] = useState<Set<string>>(new Set());
   const [productsState, setProductsState] = useState<"loading" | "ready" | "error">("loading");
@@ -359,25 +361,29 @@ export default function Home() {
             </p>
           ) : null}
           <div className="grid md:grid-cols-3 gap-10 md:gap-14">
-            {joinCatalogWithDisplay(products, productDisplays ?? []).map((item, i) => (
-              <ScrollReveal key={item.skuId} direction="up" delay={i * 0.15}>
-                <Link href={shopItemHrefFor(item.skuId)} className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-karekusa">
-                  <div className="relative aspect-[4/5] overflow-hidden mb-6">
-                    <ProductPhoto image={item.display?.image ?? ""} alt={item.name} failed={failedProductImages.has(item.skuId)}
-                      onError={() => setFailedProductImages((previous) => new Set(previous).add(item.skuId))}
-                      sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out" />
-                  </div>
-                  <h3 className="font-serif text-base text-konsumi mb-3 tracking-wider font-light">
-                    {item.name}
-                  </h3>
-                  <ProductCardDetails item={item} showRoast />
-                  <p className="text-karekusa text-sm tracking-wider">
-                    {yen(item.unitPrice)}
-                    <span className="text-xs text-haicha ml-2">/ {item.unit}</span>
-                  </p>
-                </Link>
-              </ScrollReveal>
-            ))}
+            {joinCatalogWithDisplay(products, productDisplays ?? []).map((item, i) => {
+              const { badge, note } = productMerchandising(item);
+              return (
+                <ScrollReveal key={item.skuId} direction="up" delay={i * 0.15}>
+                  <Link href={shopItemHrefFor(item.skuId)} className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-karekusa">
+                    <div className="relative aspect-[4/5] overflow-hidden mb-6">
+                      <ProductPhoto image={item.display?.image ?? ""} alt={item.name} failed={failedProductImages.has(item.skuId)}
+                        onError={() => setFailedProductImages((previous) => new Set(previous).add(item.skuId))}
+                        sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-[1.03] transition-transform duration-[1.5s] ease-out" />
+                      <ProductCardBadges badge={badge} roast={item.display?.roast} recommendedRoast={isRoastBean(item.skuId)} />
+                    </div>
+                    <h3 className="font-serif text-base text-konsumi mb-3 tracking-wider font-light">
+                      {item.name}
+                    </h3>
+                    <ProductCardDetails note={note} expanded={Boolean(item.merchandising?.note)} />
+                    <p className="text-karekusa text-sm tracking-wider">
+                      {yen(item.unitPrice)}
+                      <span className="text-xs text-haicha ml-2">/ {item.unit}</span>
+                    </p>
+                  </Link>
+                </ScrollReveal>
+              );
+            })}
           </div>
 
           <ScrollReveal delay={0.3}>
