@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { getJournalPosts } from "@/features/journal/notion";
+import { readJournalList } from "@/features/journal/site-journal";
 
 export const dynamic = "force-dynamic";
 const headers = { "Cache-Control": "private, no-store" };
 
 export async function GET() {
   try {
-    const posts = await getJournalPosts();
+    const posts = await readJournalList();
     return NextResponse.json(posts, { headers });
   } catch {
     return NextResponse.json(

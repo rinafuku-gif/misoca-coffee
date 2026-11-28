@@ -1,11 +1,17 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
+import {isJournalCoverRoute} from '../../journal/emdash-public';
 
 describe('every public consumer respects revocable media and nullable reference prices',()=>{
  it.each(['src/app/page.tsx','src/app/blog/page.tsx','src/app/blog/[id]/page.tsx'])('article cover bypasses optimizer in %s',path=>{
   const source=readFileSync(path,'utf8'),covers=[...source.matchAll(/<Image\s[\s\S]*?\/>/g)].filter(m=>m[0].includes('src={post.coverImage}'));
   expect(covers).toHaveLength(1);
-  expect(covers[0][0]).toContain('unoptimized={post.coverImage.startsWith("/api/notion-image/")}');
+  expect(covers[0][0]).toContain('unoptimized={isJournalCoverRoute(post.coverImage)}');
+ });
+ it('bypasses the optimizer for both revocable journal media routes',()=>{
+  expect(isJournalCoverRoute('/api/notion-image/legacy')).toBe(true);
+  expect(isJournalCoverRoute('/api/journal-media/article/image')).toBe(true);
+  expect(isJournalCoverRoute('/images/journal.jpg')).toBe(false);
  });
  it.each([['src/features/shop/components/ShopCatalog.tsx','product']])('public catalog validates API and does not invent fallback rows in %s',(path,item)=>{
   const source=readFileSync(path,'utf8');

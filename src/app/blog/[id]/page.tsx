@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getJournalPostById, getPageBlocks } from "@/features/journal/notion";
 import type { NotionBlock } from "@/features/journal/notion";
+import { readJournalArticle, readJournalMetadata } from "@/features/journal/site-journal";
+import { isJournalCoverRoute } from "@/features/journal/emdash-public";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import { siteOrigin } from "@/shared/seo/site-entities";
 
@@ -15,7 +16,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const post = await getJournalPostById(id);
+  const post = await readJournalMetadata(id);
   if (!post) return { title: "記事が見つかりません", robots: { index: false, follow: false } };
 
   // Nested metadata is replaced by Next.js, so the social block is complete.
@@ -57,9 +58,10 @@ function renderRichText(texts: RichText[]) {
   return texts.map((t, i) => {
     let el: React.ReactNode = t.plain_text;
     const a = t.annotations;
-    if (a?.bold) el = <strong key={i}>{el}</strong>;
-    if (a?.italic) el = <em key={i}>{el}</em>;
-    if (a?.strikethrough) el = <s key={i}>{el}</s>;
+    if (a?.bold) el = <strong>{el}</strong>;
+    if (a?.italic) el = <em>{el}</em>;
+    if (a?.strikethrough) el = <s>{el}</s>;
+    if (a?.underline) el = <u>{el}</u>;
     if (a?.code)
       el = (
         <code key={i} className="bg-tsuchikabe/50 px-1.5 py-0.5 text-sm rounded">
@@ -78,7 +80,7 @@ function renderRichText(texts: RichText[]) {
           {el}
         </a>
       );
-    return <span key={i}>{el}</span>;
+    return <span key={i} className="whitespace-pre-wrap">{el}</span>;
   });
 }
 
@@ -130,6 +132,20 @@ function NotionBlockRenderer({ block }: { block: NotionBlock }) {
         </li>
       );
 
+    case "journal_list": {
+      const { type, items } = block.journal_list as { type: string; items: { block: NotionBlock; lists: NotionBlock[] }[] };
+      const List = type === "number" ? "ol" : "ul";
+      return <List className={type === "number" ? "ml-5 list-decimal" : "ml-5 list-disc"}>
+        {items.map(item => <li key={item.block.id}>
+          <NotionBlockRenderer block={item.block} />
+          {item.lists.map(list => <NotionBlockRenderer key={list.id} block={list} />)}
+        </li>)}
+      </List>;
+    }
+
+    case "journal_code":
+      return <pre className="overflow-x-auto rounded bg-tsuchikabe/50 p-4 text-sm"><code>{block.journal_code}</code></pre>;
+
     case "quote":
       return (
         <blockquote className="border-l-2 border-gold/40 pl-6 py-2 my-4">
@@ -152,17 +168,15 @@ function NotionBlockRenderer({ block }: { block: NotionBlock }) {
         // Notion file型の一時URLは期限切れするのでプロキシ経由
         src = `/api/notion-image/${block.id}`;
       }
+      const image = (
+        <div className="relative aspect-[16/9] rounded-sm overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={src} alt={block.image.alt || caption || "記事画像"} className="object-cover w-full h-full absolute inset-0" loading="lazy" />
+        </div>
+      );
       return (
         <figure className="my-8">
-          <div className="relative aspect-[16/9] rounded-sm overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={src}
-              alt={caption || "記事画像"}
-              className="object-cover w-full h-full absolute inset-0"
-              loading="lazy"
-            />
-          </div>
+          {block.image.link ? <a href={block.image.link} className="block" rel="noopener noreferrer">{image}</a> : image}
           {caption && (
             <figcaption className="text-xs text-haicha/60 mt-3 text-center">
               {caption}
@@ -203,11 +217,9 @@ function NotionBlockRenderer({ block }: { block: NotionBlock }) {
 
 export default async function BlogPostPage({ params }: Props) {
   const { id } = await params;
-  const post = await getJournalPostById(id);
-  if (!post) notFound();
-  const blocks = await getPageBlocks(id);
-  // Publication may have been withdrawn while loading the body.
-  if (!await getJournalPostById(id)) notFound();
+  const article = await readJournalArticle(id);
+  if (!article) notFound();
+  const { post, blocks } = article;
 
   return (
     <>
@@ -242,7 +254,7 @@ export default async function BlogPostPage({ params }: Props) {
               <div className="relative aspect-[16/9] rounded-sm overflow-hidden">
                 <Image
                   src={post.coverImage}
-                  unoptimized={post.coverImage.startsWith("/api/notion-image/")}
+                  unoptimized={isJournalCoverRoute(post.coverImage)}
                   alt={post.title}
                   fill
                   className="object-cover"

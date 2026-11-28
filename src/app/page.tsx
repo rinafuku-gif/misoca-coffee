@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { isJournalCoverRoute } from "@/features/journal/emdash-public";
 import { useState, useEffect, useRef } from "react";
 import { readPurchaseCatalog, type Catalog } from "@/features/shop/purchase-catalog";
 import { joinCatalogWithDisplay, readBeanDisplays, type BeanDisplay } from "@/features/shop/bean-display";
@@ -426,7 +427,7 @@ export default function Home() {
                     {post.coverImage && !failedImages.has(post.id) ? (
                       <Image
                         src={post.coverImage}
-                        unoptimized={post.coverImage.startsWith("/api/notion-image/")}
+                        unoptimized={isJournalCoverRoute(post.coverImage)}
                         alt={post.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"

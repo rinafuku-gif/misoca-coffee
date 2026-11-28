@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { isJournalCoverRoute } from "@/features/journal/emdash-public";
 import Link from "next/link";
 import { PageHero } from "@/shared/ui/PageHero";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
@@ -84,7 +85,7 @@ export default function BlogPage() {
                       {post.coverImage && !failedImages.has(post.id) ? (
                         <Image
                           src={post.coverImage}
-                          unoptimized={post.coverImage.startsWith("/api/notion-image/")}
+                          unoptimized={isJournalCoverRoute(post.coverImage)}
                           alt={post.title}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
