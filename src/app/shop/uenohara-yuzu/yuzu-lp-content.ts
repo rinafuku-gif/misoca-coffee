@@ -15,7 +15,7 @@ import { shopItemLinks, type ShopItemRef } from "@/features/shop/shop-item-link"
  * JavaScript なしで読まれたとき・検索向けのデータにだけ使う。管理画面（Notion）で値段を変えたら合わせて直す。
  */
 
-/** 売る2つの商品。ボタンを押すと、ショップがその商品の欄まで送る（shop-item-link.ts）。 */
+/** 売る2つの商品。「カートに入れる」を押すと、ショップのカートに1つ入り、ショップでカートが開く（shop-item-link.ts）。 */
 export const yuzuProducts = [
   {
     key: "drip",
@@ -29,7 +29,8 @@ export const yuzuProducts = [
     detail: "1袋／中浅煎り",
     note: "",
     fallbackPrice: 250,
-    buy: "ドリップバッグを買う",
+    // ボタンの読み上げ名（見える文字は「カートに入れる」）
+    buy: "ドリップバッグをカートに入れる",
   },
   {
     key: "beans",
@@ -43,7 +44,7 @@ export const yuzuProducts = [
     // [旧ページ] ドリップバッグ1袋＝1杯分（10g）からの割り算（300g ÷ 10g）
     note: "ドリップバッグ1袋と同じ10gで1杯淹れると、約30杯分。",
     fallbackPrice: 3000,
-    buy: "焙煎豆を買う",
+    buy: "焙煎豆（300g）をカートに入れる",
   },
 ] as const;
 export type YuzuProduct = typeof yuzuProducts[number];
@@ -58,8 +59,8 @@ export const heroCopy = {
   // 2つ目の買う枠の見出し
   choose: "ドリップバッグか、焙煎豆か。",
   tax: "税込",
-  // ボタンを押すと、ショップのその商品の欄が開く（shop-item-link.ts）
-  where: "ボタンを押すと、ショップのその商品の欄が開きます。「カートに入れる」から購入へ進めます。",
+  // 「カートに入れる」：ショップのカートに1つ入り、ショップでカートが開く（数はカートの中で変えられる）
+  where: "「カートに入れる」を押すと、ショップのカートに1つ入り、カートが開きます。数はカートの中で変えられ、そのまま購入手続きへ進めます。",
   // [規約] 送料
   shipping: `送料は${shippingFeeNotation}。`,
 } as const;
@@ -125,7 +126,7 @@ export const faqItems = [
   {
     q: "どこで買えますか？",
     // [規約] 支払い方法
-    a: `このサイトのオンラインショップで買えます。ドリップバッグは「${yuzuProducts[0].shopGroup}」の欄の「${yuzuProducts[0].shopName}」、焙煎豆は「${yuzuProducts[1].shopGroup}」の欄の「${yuzuProducts[1].shopName}」です。このページのボタンからは、その商品の欄が直接開きます。お支払いは${purchaseConditions.paymentMethod}です。`,
+    a: `このサイトのオンラインショップで買えます。ドリップバッグは「${yuzuProducts[0].shopGroup}」の欄の「${yuzuProducts[0].shopName}」、焙煎豆は「${yuzuProducts[1].shopGroup}」の欄の「${yuzuProducts[1].shopName}」です。このページの「カートに入れる」からは、ショップのカートに直接入ります。お支払いは${purchaseConditions.paymentMethod}です。`,
   },
   {
     q: "焙煎豆は、豆のままですか？",
@@ -172,6 +173,8 @@ export const aboutCopy = {
 } as const;
 
 export const yuzuPagePhotos = {
+  // [ショップ] 焙煎豆の欄に登録されている写真（実際に見て確かめた中身）。画像そのものはショップと同じ所から読む（yuzu-catalog.tsx）
+  harvestAlt: "収穫用のかごに、葉のついたゆずがいっぱいに入っている写真",
   // [カード] 実際に印刷したパッケージカード。入稿データを仕上がりの大きさ（55×91mm・塗り足しなし）で画像にしたもの。
   cardFront: { src: "/images/shop/yuzu-card-front.webp", width: 967, height: 1600, alt: "ゆずインフューズドコーヒーのパッケージカード（表）。黄色い水彩の地に、三十日珈琲のロゴと「misoca coffee & Uenohara Yuzu」の文字" },
   cardBack: { src: "/images/shop/yuzu-card-back.webp", width: 967, height: 1600, alt: "パッケージカード（裏）。山梨県上野原市のゆずをコーヒーの生豆に漬け込み、香りを移してから焙煎しました。袋を開けた瞬間に立ちのぼる、ゆずのやさしい気配。軽やかで香り高い一杯です。淹れ方：お湯160ml、蒸らし30秒、抽出3分。" },

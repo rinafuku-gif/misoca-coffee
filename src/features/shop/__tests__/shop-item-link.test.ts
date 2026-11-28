@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { readShopItemKey, shopItemHref, shopItemLinks, shopItemTarget } from "../shop-item-link";
+import { readShopItemAdd, readShopItemKey, shopItemAddHref, shopItemHref, shopItemLinks, shopItemTarget, withoutShopItemAdd } from "../shop-item-link";
 
 const panel = readFileSync("src/features/shop/components/PurchasePanel.tsx", "utf8");
 const items = [
@@ -10,6 +10,16 @@ const items = [
 ];
 
 describe("ショップを指定の商品の欄で開くリンク（/shop?item=…）", () => {
+  it("商品ページの「カートに入れる」は ?item=…&add=1。add は 1 のときだけ。外したアドレスはほかの値を残す", () => {
+    expect(shopItemAddHref("yuzu-drip-bag")).toBe("/shop?item=yuzu-drip-bag&add=1");
+    expect(shopItemAddHref(`bn_${"a".repeat(32)}_300` as const)).toBe(`/shop?item=bn_${"a".repeat(32)}_300&add=1`);
+    expect(readShopItemAdd("?item=yuzu-drip-bag&add=1")).toBe(true);
+    for (const search of ["", "?item=yuzu-drip-bag", "?item=yuzu-drip-bag&add=0", "?item=yuzu-drip-bag&add=yes"]) expect(readShopItemAdd(search), search).toBe(false);
+    expect(withoutShopItemAdd("https://example.invalid/shop?item=yuzu-drip-bag&add=1")).toBe("/shop?item=yuzu-drip-bag");
+    expect(withoutShopItemAdd("https://example.invalid/shop?add=1&item=yuzu-drip-bag&utm_source=x#top")).toBe("/shop?item=yuzu-drip-bag&utm_source=x#top");
+    expect(readShopItemKey("?item=yuzu-drip-bag&add=1")).toBe("yuzu-drip-bag");
+  });
+
   it("決めてある名前だけを読む。ほかの値・値なしは指定なし（今までどおり先頭）", () => {
     expect(shopItemHref("yuzu-drip-bag")).toBe("/shop?item=yuzu-drip-bag");
     expect(readShopItemKey("?item=yuzu-drip-bag")).toBe("yuzu-drip-bag");
@@ -32,11 +42,20 @@ describe("ショップを指定の商品の欄で開くリンク（/shop?item=�
     expect(panel).toContain("if (!shopRoot || session?.attempt || cartOpen) return;");
   });
 
-  it("購入画面：送る処理は、カート・購入手続き・保存・通信に触れない（見る位置と目印だけ）", () => {
+  it("購入画面：送る処理は、保存・購入手続き・通信に直接触れない（カートに入れるのは画面自身の「カートに入れる」= addOne だけ）", () => {
     const block = panel.slice(panel.indexOf("const goToLinkedItem"), panel.indexOf("const lines = catalog && session"));
     expect(block.length).toBeGreaterThan(100);
-    for (const call of ["quantity(", "save(", "send(", "post(", "fetch(", "sessionStorage", "setCartOpen", "openCheckout", "setSession", "setQuotation", "location.assign", "history."]) expect(block, call).not.toContain(call);
+    for (const call of ["quantity(", "save(", "send(", "post(", "fetch(", "sessionStorage", "openCheckout", "setSession", "setQuotation", "location.assign", "history.push"]) expect(block, call).not.toContain(call);
     expect(block).toContain("scrollIntoView");
+    // &add=1：アドレスから先に外す（読み直しで二重に入らない）→ 支払いの途中なら何もしない → addOne → カートを開く
+    const drop = block.indexOf('window.history.replaceState(window.history.state, "", withoutShopItemAdd(window.location.href));');
+    expect(drop).toBeGreaterThan(0);
+    expect(drop).toBeLessThan(block.indexOf("if (!shopRoot || session?.attempt || cartOpen) return;"));
+    expect(block).toContain("if (item && (addOne(item) || qtyOf(item.skuId) > 0)) { setDrawerStep(\"cart\"); setCartOpen(true); return; }");
+    expect(block.match(/setCartOpen\(/g)).toHaveLength(1);
+    // 画面の「カートに入れる」も同じ addOne（入ったかどうかだけ返すようにした）
+    expect(panel).toContain("function addOne(item: BeanItem): boolean {");
+    expect(panel).toContain("if (next === null || !quantity(item.skuId, next)) return false;");
     // 商品カードの並びは今までどおり。目印は指定された商品の枠だけ
     expect(panel).toContain('<li key={item.skuId} data-sku={item.skuId} className={linkedSku === item.skuId ? "outline outline-2 outline-offset-8 outline-gold-dark" : undefined}>');
     expect(panel).toContain("groupCatalogItems(beans).map(group =>");

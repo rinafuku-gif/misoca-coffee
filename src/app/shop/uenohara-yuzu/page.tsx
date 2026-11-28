@@ -7,7 +7,7 @@ import { shopItemHref } from "@/features/shop/shop-item-link";
 import {
   aboutCopy, enjoyCopy, faqItems, heroCopy, processCopy, tasteCopy, yuzuPagePhotos, yuzuProducts,
 } from "./yuzu-lp-content";
-import { YuzuCatalogProvider, YuzuPrice } from "./yuzu-catalog";
+import { YuzuAddToCart, YuzuCartNotice, YuzuCatalogProvider, YuzuPrice, YuzuShopPhoto } from "./yuzu-catalog";
 
 // 売るのは、ゆずインフューズドコーヒーのドリップバッグと焙煎豆300gの2つ。
 // 最初の画面 → 味 → 作り方 → 飲み方 → もう一度買う → よくある質問 → 最後に小さく三十日珈琲について。
@@ -15,8 +15,14 @@ import { YuzuCatalogProvider, YuzuPrice } from "./yuzu-catalog";
 const pageUrl = `${siteOrigin}/shop/uenohara-yuzu`;
 
 // 金の地に墨の文字（購入画面の主ボタンと同じ組み合わせ。白文字はコントラストが足りない）。
-const buyButton =
-  "inline-flex min-h-12 shrink-0 items-center justify-center gap-2 sm:gap-3 border border-gold bg-gold px-5 sm:px-7 py-3 text-base font-medium tracking-wide text-sumi transition-colors duration-300 hover:underline hover:underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
+const buttonBase = "inline-flex min-h-12 shrink-0 items-center justify-center border px-5 sm:px-7 py-3 text-base font-medium tracking-wide transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white";
+const cartButtons = {
+  add: `${buttonBase} border-gold bg-gold text-sumi hover:underline hover:underline-offset-4`,
+  // ショップに並んでいないとき：ショップのその種類の欄を見るだけ（白い枠のボタン）
+  look: `${buttonBase} border-white/50 text-white hover:bg-white/15`,
+  // 在庫なし・商品一覧を読めないとき：押せない（ショップの在庫なしと同じ扱い）
+  disabled: `${buttonBase} border-white/30 text-white/70 cursor-not-allowed`,
+};
 // 英字の節ラベルはサイト共通の飾り（読む文ではない）。読み上げからは外す。
 const label = "font-[family-name:var(--font-display)] text-[11px] tracking-[0.5em] uppercase font-light";
 const h2 = "font-serif text-xl md:text-2xl text-konsumi tracking-wider font-light leading-[1.7] text-balance";
@@ -31,7 +37,8 @@ function ArrowRight() {
 }
 
 /** 2つの商品（ドリップバッグ・焙煎豆300g）から選んで買う枠。最初の画面ともう一度買う所で同じものを出す。
- * 値段はショップと同じ商品一覧から読む（YuzuPrice）。ボタンはショップのその商品の欄へ直接送る。 */
+ * 値段はショップと同じ商品一覧から読む（YuzuPrice）。「カートに入れる」は、ショップのカートに1つ入れて
+ * ショップでカートを開く（入れるのはショップ自身の「カートに入れる」。YuzuAddToCart・shop-item-link.ts）。 */
 function BuyBox() {
   return (
     <div className="border border-white/25 px-5 py-5 md:px-7 md:py-6">
@@ -44,20 +51,17 @@ function BuyBox() {
             <p className="mt-1 text-base text-white/80 leading-[1.8] tracking-wide">
               {product.detail}{product.note ? <span className="block">{product.note}</span> : null}
             </p>
-            {/* 値段とボタンは横に並べる。スマホのボタンは「買う」だけ見せる（読み上げは「〜を買う」） */}
+            {/* 値段とボタンは横に並べる（狭いときは「（税込）」が値段の下に回る） */}
             <div className="mt-3 flex items-center justify-between gap-3">
               <p className="flex flex-wrap items-baseline gap-x-2 text-white">
                 <YuzuPrice product={product.ref} fallbackPrice={product.fallbackPrice} tax={heroCopy.tax} />
               </p>
-              <Link href={shopItemHref(product.ref)} aria-label={product.buy} className={buyButton}>
-                <span aria-hidden="true" className="sm:hidden">買う</span>
-                <span aria-hidden="true" className="hidden sm:inline">{product.buy}</span>
-                <ArrowRight />
-              </Link>
+              <YuzuAddToCart product={product.ref} label={product.buy} styles={cartButtons} />
             </div>
           </li>
         ))}
       </ul>
+      <YuzuCartNotice />
       <p className="mt-1 text-base text-white/80 leading-[1.9] tracking-wide">{heroCopy.where}</p>
       <p className="mt-1 text-base text-white/80 leading-[1.9] tracking-wide">{heroCopy.shipping}</p>
     </div>
@@ -149,6 +153,8 @@ export default function UenoharaYuzuPage() {
             <p aria-hidden="true" className={`${label} text-karekusa mb-6`}>How It&apos;s Made</p>
             <h2 id="yuzu-process" className={`${h2} mb-8`}>{processCopy.heading}</h2>
             <p className={body}>{processCopy.intro}</p>
+            {/* ショップの焙煎豆の欄と同じ写真（ショップの商品の表示用データから読む。読めなければ出さない） */}
+            <YuzuShopPhoto product={yuzuProducts[1].ref} alt={yuzuPagePhotos.harvestAlt} className="mt-10" />
           </ScrollReveal>
           <div className="mt-14 grid gap-12 md:grid-cols-2 md:gap-16 md:items-start">
             <ScrollReveal>

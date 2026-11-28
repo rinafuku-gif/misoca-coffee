@@ -20,18 +20,18 @@ describe("お問い合わせのページの言葉を、トップの Instagram �
       formLinkLabel: "お問い合わせフォーム",
     });
     // 二重に持たない: ページの部品の中に同じ文を直接書いていない。
-    for (const path of ["src/app/contact/page.tsx", "src/app/contact/layout.tsx", "src/app/page.tsx", "src/features/contact/LineRecommendation.tsx"]) {
+    for (const path of ["src/app/contact/page.tsx", "src/app/contact/layout.tsx", "src/app/page.tsx", "src/features/contact/LineRecommendation.tsx", "src/features/contact/InstagramAccounts.tsx"]) {
       const source = read(path);
       for (const words of [contact.line.heading, contact.line.bodyLine1, contact.hero.description]) expect(source, path).not.toContain(words);
     }
     // 「お問い合わせフォーム」はフッターで /contact へのリンクに使っている言葉。
     expect(read("src/shared/ui/Footer.tsx")).toContain('{ href: "/contact", label: "お問い合わせフォーム" }');
   });
-  it("トップ: Instagram の欄のすぐ後、ページの最後の欄。トップの決まり（土壁の帯・本文・線のボタン）で、LINE のボタンとお問い合わせフォームへの文字リンク", () => {
+  it("トップ: ページの最後の欄。トップの決まり（土壁の帯・本文・線のボタン）で、LINE のボタンとお問い合わせフォームへの文字リンク（Instagram も同じ欄の中・2026-11-28）", () => {
     const home = read("src/app/page.tsx");
-    const instagram = home.indexOf("{/* ─── 10. Instagram ─── */}"), block = home.indexOf('<LineRecommendation variant="home" />');
-    expect(instagram).toBeGreaterThan(0); expect(block).toBeGreaterThan(instagram);
-    expect(home.slice(block)).toMatch(/^<LineRecommendation variant="home" \/>\n {4}<\/>\n {2}\);\n}/);
+    const block = home.indexOf('<LineRecommendation variant="home">');
+    expect(block).toBeGreaterThan(0);
+    expect(home.slice(block)).toMatch(/^<LineRecommendation variant="home">\n {8}<InstagramAccounts \/>\n {6}<\/LineRecommendation>\n {4}<\/>\n {2}\);\n}/);
     const html = renderToStaticMarkup(<LineRecommendation variant="home" />);
     expect(html).toContain('<section class="bg-tsuchikabe py-24 md:py-32">');
     for (const words of [contact.line.eyebrow, contact.line.heading, contact.line.bodyLine1, contact.line.bodyLine2, contact.line.buttonLabel]) expect(html).toContain(words);

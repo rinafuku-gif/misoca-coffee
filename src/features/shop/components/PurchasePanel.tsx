@@ -27,7 +27,7 @@ import { checkoutFormWire, emptyCheckoutForm, localDeliveryAllowed, readCheckout
 import { CheckoutFormFields, fieldId } from "./CheckoutForm";
 import { isAttemptConflict, isCheckoutRefused, isFormRefused, readRestartOutcome } from "../checkout-outcome";
 import { usePageStartsAtTop } from "./use-page-top";
-import { readShopItemKey, shopItemTarget } from "../shop-item-link";
+import { readShopItemAdd, readShopItemKey, shopItemTarget, withoutShopItemAdd } from "../shop-item-link";
 
 export { catalogSchema };
 const quotationSchema = z.object({ items: z.array(catalogProductSchema.omit({ maxQuantity: true }).extend({ quantity: z.number().int().min(1).max(20) })).max(20), total: z.number().int().nonnegative(), shipping: z.number().int().nonnegative(), acceptedQuote: z.string().regex(/^[a-f0-9]{64}$/) }).strict();
@@ -277,20 +277,31 @@ export function PurchasePanel({ shopRoot = false }: { shopRoot?: boolean } = {})
   const blocked = busy || Boolean(session?.attempt);
   const qtyOf = (skuId: string) => session?.cart.find(l => l.skuId === skuId)?.quantity ?? 0;
   const failImage = (skuId: string) => setFailedImages(previous => new Set(previous).add(skuId));
-  function addOne(item: BeanItem) {
+  /** 「カートに入れる」: true when one more was saved. */
+  function addOne(item: BeanItem): boolean {
     const next = quantityAfterAdd(item, qtyOf(item.skuId));
-    if (next === null || !quantity(item.skuId, next)) return;
+    if (next === null || !quantity(item.skuId, next)) return false;
     setAdded(item.skuId); clearTimeout(addedTimer.current); addedTimer.current = setTimeout(() => setAdded(null), 1200);
+    return true;
   }
   // /shop?item=<key> (from a product page): once the catalog is shown, move once to
   // that product and mark it. Without a known key nothing happens (the page stays at
   // the top). Never while a checkout is unfinished or the cart panel is open.
+  // With &add=1 (a product page's 「カートに入れる」): the flag is dropped from the address
+  // first, then this screen's own 「カートに入れる」 (addOne) and the cart opens.
   const [linkedSku, setLinkedSku] = useState<string | null>(null);
   const itemLinkHandled = useRef(false);
   const goToLinkedItem = useEffectEvent(() => {
+    const wantsAdd = shopRoot && readShopItemAdd(window.location.search);
+    if (wantsAdd) window.history.replaceState(window.history.state, "", withoutShopItemAdd(window.location.href));
     if (!shopRoot || session?.attempt || cartOpen) return;
     const target = shopItemTarget(readShopItemKey(window.location.search), beans);
     if (!target) return;
+    if (wantsAdd && "sku" in target) {
+      const item = beans.find(candidate => candidate.skuId === target.sku);
+      // Added, or already in the cart (e.g. at its limit): show the cart. Otherwise (在庫なし) show the product.
+      if (item && (addOne(item) || qtyOf(item.skuId) > 0)) { setDrawerStep("cart"); setCartOpen(true); return; }
+    }
     requestAnimationFrame(() => {
       const element = "sku" in target ? document.querySelector(`[data-sku="${CSS.escape(target.sku)}"]`) : document.getElementById(`product-group-${target.group}`);
       if (!element) return;

@@ -10,6 +10,7 @@ import { shopItemHrefFor } from "@/features/shop/shop-item-link";
 import { yen } from "@/features/shop/components/BeanCard";
 import { ProductPhoto } from "@/features/shop/components/shop-catalog-parts";
 import { LineRecommendation } from "@/features/contact/LineRecommendation";
+import { InstagramAccounts } from "@/features/contact/InstagramAccounts";
 import { HeroSlideshow } from "@/shared/ui/HeroSlideshow";
 import { ScrollReveal } from "@/shared/ui/ScrollReveal";
 import homeContent from "@content/pages/home.json";
@@ -479,40 +480,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── 10. Instagram ─── */}
-      <section className="py-32 md:py-48">
-        <div className="max-w-4xl mx-auto px-6 md:px-8 text-center">
-          <ScrollReveal>
-            <p className="font-serif text-konsumi text-base md:text-lg tracking-wider leading-[2.4] font-light mb-12">
-              {homeContent.instagram.bodyLine1}
-              <br />
-              {homeContent.instagram.bodyLine2}
-            </p>
-            <a
-              href={homeContent.instagram.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 border border-karekusa/30 text-karekusa text-xs tracking-[0.15em] px-7 py-3.5 hover:bg-karekusa hover:text-white transition-all duration-500"
-            >
-              <svg
-                className="w-4 h-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <rect x="2" y="2" width="20" height="20" rx="5" />
-                <circle cx="12" cy="12" r="5" />
-                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-              </svg>
-              {homeContent.instagram.handle}
-            </a>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ─── 11. Contact (the contact page's LINE block, words from content/pages/contact.json) ─── */}
-      <LineRecommendation variant="home" />
+      {/* ─── 10. Contact & Instagram (one section: the contact page's LINE block, then both
+           Instagram accounts — 三十日珈琲 and the coffee stand) ─── */}
+      <LineRecommendation variant="home">
+        <InstagramAccounts />
+      </LineRecommendation>
     </>
   );
 }

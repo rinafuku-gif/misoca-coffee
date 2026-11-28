@@ -4,7 +4,7 @@ import YuzuPage from "../shop/uenohara-yuzu/page";
 import { metadata } from "../shop/uenohara-yuzu/layout";
 import { statSync } from "node:fs";
 import { enjoyCopy, faqItems, heroCopy, yuzuPagePhotos, yuzuProducts } from "../shop/uenohara-yuzu/yuzu-lp-content";
-import { yuzuPriceView } from "../shop/uenohara-yuzu/yuzu-catalog";
+import { yuzuCartAction, yuzuPriceView, type CatalogState } from "../shop/uenohara-yuzu/yuzu-catalog";
 import { isShopItemSku, shopItemTarget } from "@/features/shop/shop-item-link";
 import { readFileSync } from "node:fs";
 import { pickupInstagramHref, pickupPlace } from "@/features/shop/receiving-method";
@@ -16,7 +16,7 @@ const sectionIds = [...visible.matchAll(/<section aria-labelledby="([^"]+)"/g)].
 const BEAN_SKU = "bn_2c30f0fdafad802f83a2dccc697c564e_300";
 
 describe("ゆずインフューズドコーヒー（ドリップバッグ・焙煎豆300g）を売るページ", () => {
-  it("最初の画面で、ドリップバッグと焙煎豆300gから選べる。名前・量・値段・買うボタンがある", () => {
+  it("最初の画面で、ドリップバッグと焙煎豆300gから選べる。名前・量・値段・「カートに入れる」がある", () => {
     const first = visible.slice(0, visible.indexOf('aria-labelledby="yuzu-taste"'));
     expect(first).toContain('ドリップバッグ<span class="inline-block">（1杯分・10g）</span>');
     expect(first).toContain("1袋／中浅煎り");
@@ -25,19 +25,19 @@ describe("ゆずインフューズドコーヒー（ドリップバッグ・焙�
     expect(first).toContain("ドリップバッグ1袋と同じ10gで1杯淹れると、約30杯分。");
     // JavaScript なしで読んだときは書いてある値段（ショップの値と同じ）
     expect(first).toContain(">¥250<"); expect(first).toContain(">¥3,000<");
-    expect(first).toContain('href="/shop?item=yuzu-drip-bag"');
-    expect(first).toContain(`href="/shop?item=${BEAN_SKU}"`);
-    expect(first.indexOf("ドリップバッグを買う")).toBeLessThan(first.indexOf("焙煎豆を買う"));
+    expect(first).toContain('href="/shop?item=yuzu-drip-bag&amp;add=1"');
+    expect(first).toContain(`href="/shop?item=${BEAN_SKU}&amp;add=1"`);
+    expect(first.indexOf('aria-label="ドリップバッグをカートに入れる"')).toBeLessThan(first.indexOf('aria-label="焙煎豆（300g）をカートに入れる"'));
   });
 
   it("節の順番：買う → 味 → 作り方 → 飲み方 → もう一度買う → 質問 → 最後に三十日珈琲について", () => {
     expect(sectionIds).toEqual(["yuzu-title", "yuzu-taste", "yuzu-process", "yuzu-enjoy", "yuzu-buy-again", "yuzu-faq", "yuzu-about"]);
-    // 買うボタンは2か所×2商品。どれもショップのその商品の欄へ送るリンク（ショップの先頭へは送らない）
-    expect(visible.match(/>ドリップバッグを買う</g)).toHaveLength(2);
-    expect(visible.match(/>焙煎豆を買う</g)).toHaveLength(2);
-    expect(visible.match(/href="\/shop\?item=yuzu-drip-bag"/g)).toHaveLength(2);
-    expect(visible.match(new RegExp(`href="/shop\\?item=${BEAN_SKU}"`, "g"))).toHaveLength(2);
+    // 「カートに入れる」は2か所×2商品。どれもショップのカートに入れて開くリンク（ショップの先頭へは送らない）
+    expect(visible.match(/>カートに入れる</g)).toHaveLength(4);
+    expect(visible.match(/href="\/shop\?item=yuzu-drip-bag&amp;add=1"/g)).toHaveLength(2);
+    expect(visible.match(new RegExp(`href="/shop\\?item=${BEAN_SKU}&amp;add=1"`, "g"))).toHaveLength(2);
     expect(visible).not.toContain('href="/shop"');
+    expect(visible).not.toMatch(/を買う</);
     expect(html.indexOf('href="/about"')).toBeGreaterThan(html.indexOf('aria-labelledby="yuzu-faq"'));
   });
 
@@ -60,6 +60,37 @@ describe("ゆずインフューズドコーヒー（ドリップバッグ・焙�
     expect(yuzuPriceView([drip, bean], BEAN_SKU, 3000)).toEqual({ kind: "price", price: 3200 });
     expect(yuzuPriceView([drip], BEAN_SKU, 3000)).toEqual({ kind: "notListed" });
     expect(yuzuPriceView([{ ...bean, maxQuantity: 0 }], BEAN_SKU, 3000)).toEqual({ kind: "soldOut" });
+  });
+
+  it("「カートに入れる」の扱いはショップと同じ：在庫なし・一覧を読めないときは押せない、並んでいないときはショップで見るだけ", () => {
+    const catalog = (items: { skuId: string; name: string; maxQuantity: number }[], acceptingOrders = true): CatalogState => ({ state: "ready", catalog: { items: items.map(item => ({ ...item, unit: "1袋", unitPrice: 250, kind: "physical" as const })), nextOffset: null, acceptingOrders, deliveryMethods: undefined, reception: undefined } });
+    const drip = { skuId: "gd_" + "4".repeat(32) + "_1", name: "ドリップバッグ（ゆずインフューズド）", maxQuantity: 20 };
+    const bean = { skuId: BEAN_SKU, name: "上野原産ゆずインフューズド (kenya)", maxQuantity: 20 };
+    expect(yuzuCartAction({ state: "loading" }, BEAN_SKU)).toBe("add");
+    expect(yuzuCartAction({ state: "failed" }, BEAN_SKU)).toBe("unavailable");
+    expect(yuzuCartAction(catalog([drip, bean]), "yuzu-drip-bag")).toBe("add");
+    expect(yuzuCartAction(catalog([drip, bean]), BEAN_SKU)).toBe("add");
+    expect(yuzuCartAction(catalog([drip, { ...bean, maxQuantity: 0 }]), BEAN_SKU)).toBe("soldOut");
+    expect(yuzuCartAction(catalog([drip]), BEAN_SKU)).toBe("notListed");
+    // 受付を止めているときもショップと同じ：カートには入れられる（案内の一文を出す）
+    expect(yuzuCartAction(catalog([drip, bean], false), BEAN_SKU)).toBe("add");
+    const source = readFileSync("src/app/shop/uenohara-yuzu/yuzu-catalog.tsx", "utf8");
+    expect(source).toContain('receptionPauseNotice(value.catalog.reception) ?? "現在は注文を受け付けていません。金額の確認はできますが、決済へは進めません。"');
+    expect(readFileSync("src/features/shop/components/PurchasePanel.tsx", "utf8")).toContain('"現在は注文を受け付けていません。金額の確認はできますが、決済へは進めません。"');
+    // カートの保存には触らない（入れるのはショップ自身の「カートに入れる」）
+    for (const word of ["sessionStorage", "writePurchaseSession", "readPurchaseSession"]) expect(source, word).not.toContain(word);
+  });
+
+  it("ゆずの写真は、ショップの焙煎豆の欄と同じ出どころから読む（二重に保存しない）。読めないときは何も出さない", () => {
+    const source = readFileSync("src/app/shop/uenohara-yuzu/yuzu-catalog.tsx", "utf8");
+    expect(source).toContain("readBeanDisplays(controller.signal)");
+    expect(source).toContain("beanPageId(product)");
+    expect(source).toContain("<ProductPhoto image={image}");
+    expect(source).toContain("if (!image || failed) return null;");
+    // JavaScript なしで読んだときは写真の枠も出ない（崩れない）
+    const process = visible.slice(visible.indexOf('aria-labelledby="yuzu-process"'), visible.indexOf('aria-labelledby="yuzu-enjoy"'));
+    expect(process).not.toContain("notion-image");
+    expect(yuzuPagePhotos.harvestAlt).toContain("ゆず");
   });
 
   it("よくある質問に、豆のまま（粉は並んでいない）・豆の保存・注文後に焙煎を、サイトの文で答える", () => {

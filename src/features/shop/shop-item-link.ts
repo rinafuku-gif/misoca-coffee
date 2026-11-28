@@ -32,6 +32,28 @@ export function shopItemHrefFor(skuId: string): string {
   return isShopItemSku(skuId) ? shopItemHref(skuId) : "/shop";
 }
 
+/** `&add=1` after `?item=…`: sent by a product page's 「カートに入れる」. Once the
+ * catalog is shown, the shop presses its own 「カートに入れる」 for that product
+ * (one more, the same limits, never while a payment is unfinished), opens the
+ * cart, and drops this flag from the address so a reload never adds again.
+ * Without it, `?item=…` keeps its meaning: move to the product. */
+export const SHOP_ADD_PARAM = "add";
+
+export function shopItemAddHref(ref: ShopItemRef): string {
+  return `${shopItemHref(ref)}&${SHOP_ADD_PARAM}=1`;
+}
+
+export function readShopItemAdd(search: string): boolean {
+  return new URLSearchParams(search).get(SHOP_ADD_PARAM) === "1";
+}
+
+/** The same address without the add flag (path, other parameters and hash kept). */
+export function withoutShopItemAdd(href: string): string {
+  const url = new URL(href);
+  url.searchParams.delete(SHOP_ADD_PARAM);
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
 /** The requested key or SKU id from a `location.search` string, or null. */
 export function readShopItemKey(search: string): ShopItemRef | null {
   const value = new URLSearchParams(search).get(SHOP_ITEM_PARAM);

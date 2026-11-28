@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { InstagramIcon, LineIcon, instagramAccounts, lineAccount } from "./social-accounts";
 
 const footerLinks = [
   {
@@ -127,28 +128,34 @@ export function Footer() {
         {/* Social & Newsletter Row */}
         <div className="mt-16 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-            {/* Instagram */}
-            <div className="flex items-center gap-4">
+            {/* Instagram (三十日珈琲・コーヒースタンド) and LINE: each 44px high, named by its visible text */}
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-1">
               <a
                 href="https://www.instagram.com/misoca_coffee/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-sm text-ainezu hover:text-white transition-colors duration-300 group"
+                className="flex min-h-11 items-center gap-3 text-sm text-ainezu hover:text-white transition-colors duration-300 group"
               >
-                <svg
-                  className="w-5 h-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="2" y="2" width="20" height="20" rx="5" />
-                  <circle cx="12" cy="12" r="5" />
-                  <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-                </svg>
+                <InstagramIcon className="w-5 h-5" />
                 <span className="tracking-wide">@misoca_coffee</span>
+              </a>
+              <a
+                href={instagramAccounts[1].href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-h-11 items-center gap-3 text-sm text-ainezu hover:text-white transition-colors duration-300 group"
+              >
+                <InstagramIcon className="w-5 h-5" />
+                <span className="tracking-wide">{instagramAccounts[1].handle}</span>
+              </a>
+              <a
+                href={lineAccount.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-h-11 items-center gap-3 text-sm text-ainezu hover:text-white transition-colors duration-300 group"
+              >
+                <LineIcon className="w-5 h-5" />
+                <span className="tracking-wide">{lineAccount.label}</span>
               </a>
             </div>
 
