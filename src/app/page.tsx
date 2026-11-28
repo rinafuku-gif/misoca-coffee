@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { readPurchaseCatalog, type CatalogProduct } from "@/features/shop/purchase-catalog";
 import { joinCatalogWithDisplay, readBeanDisplays, type BeanDisplay } from "@/features/shop/bean-display";
 import { homeShopLineup } from "@/features/shop/home-shop-lineup";
@@ -53,12 +53,43 @@ interface JournalEntry {
 export default function Home() {
   // ONLINE SHOP: the same purchase catalog as the shop (ゆずのドリップバッグ + 焙煎豆2つ).
   const [products, setProducts] = useState<CatalogProduct[]>([]);
-  const [productDisplays, setProductDisplays] = useState<BeanDisplay[]>([]);
+  const [productDisplays, setProductDisplays] = useState<BeanDisplay[] | null>(null);
   const [failedProductImages, setFailedProductImages] = useState<Set<string>>(new Set());
   const [productsState, setProductsState] = useState<"loading" | "ready" | "error">("loading");
   const [journals, setJournals] = useState<JournalEntry[]>([]);
   const [journalState, setJournalState] = useState<"loading" | "ready" | "error">("loading");
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  const landingSection = useRef<string | null>(null);
+
+  useEffect(() => {
+    const section = window.location.hash;
+    // The shop and journal can expand above these targets after a direct visit.
+    if (section !== "#news" && section !== "#contact") return;
+    const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    if (navigation?.type === "back_forward") return;
+
+    landingSection.current = section;
+    const release = () => { landingSection.current = null; };
+    const events = ["wheel", "touchstart", "pointerdown", "keydown", "hashchange"] as const;
+    for (const event of events) window.addEventListener(event, release, { passive: true, once: true });
+    return () => {
+      release();
+      for (const event of events) window.removeEventListener(event, release);
+    };
+  }, []);
+
+  useEffect(() => {
+    const section = landingSection.current;
+    if (!section || productsState === "loading") return;
+    const settled = productDisplays !== null && (section === "#news" || journalState !== "loading");
+    const frame = requestAnimationFrame(() => {
+      if (landingSection.current !== section || window.location.hash !== section) return;
+      document.getElementById(section.slice(1))?.scrollIntoView({ behavior: "instant", block: "start" });
+      if (settled) landingSection.current = null;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [productsState, productDisplays, journalState]);
 
   useEffect(() => {
     let active = true;
@@ -342,7 +373,7 @@ export default function Home() {
             </p>
           ) : null}
           <div className="grid md:grid-cols-3 gap-10 md:gap-14">
-            {joinCatalogWithDisplay(products, productDisplays).map((item, i) => (
+            {joinCatalogWithDisplay(products, productDisplays ?? []).map((item, i) => (
               <ScrollReveal key={item.skuId} direction="up" delay={i * 0.15}>
                 <Link href={shopItemHrefFor(item.skuId)} className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-karekusa">
                   <div className="relative aspect-[4/5] overflow-hidden mb-6">
